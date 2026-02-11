@@ -85,7 +85,7 @@
                         </div>
 
                         {{#hasevalcategories}}
-                        <div class="d-flex flex-wrap align-items-end gap-2 mb-3 p-2 border rounded bg-light"
+                        <div class="d-flex flex-wrap align-items-end gap-2 mb-2 p-2 border rounded bg-light"
                              data-evalteacher="{{evalteacher}}">
                             <div>
                                 <label for="eval-category-filter" class="form-label mb-0 small">
@@ -129,14 +129,14 @@
 
                         {{! Course summary bar }}
                         {{#coursesummarydata}}
-                        <div class="alert alert-info d-flex flex-wrap gap-3 mb-3">
+                        <div class="alert alert-info d-flex flex-wrap gap-3 mb-2">
                             <span><strong>{{#str}} totalenrolled, report_lmsace_reports {{/str}}:</strong> {{totalenrolled}}</span>
                             <span><strong>{{#str}} totalcompleted, report_lmsace_reports {{/str}}:</strong> {{totalcompleted}}</span>
                         </div>
                         {{/coursesummarydata}}
 
                         {{! Filters bar }}
-                        <div class="d-flex flex-wrap align-items-end gap-2 mb-3 p-2 border rounded bg-light">
+                        <div class="d-flex flex-wrap align-items-end gap-2 mb-2 p-2 border rounded bg-light">
                             <div>
                                 <label for="eval-modtype-filter" class="form-label mb-0 small">{{#str}} filterbyactivitytype, report_lmsace_reports {{/str}}</label>
                                 <select id="eval-modtype-filter" class="form-select form-select-sm custom-select">

@@ -56,14 +56,14 @@
         {{#stackuserreports}}
         <div class="lmsace-reports count-block">
             <ul>
-                <li><a href="#"><i class="fa fa-book"></i> <span> {{courses}} {{#str}}courses{{/str}}</span></a></li>
-                <li><a href="#"><i class="fa fa-check-circle-o"></i> <span> {{completed}} {{#str}} coursecompletion, report_lmsace_reports{{/str}}</span></a></li>
-                <li><a href="#"><i class="fa fa-certificate"></i> <span> {{badges}} {{#str}} badges {{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-book"></i> <span><b>{{courses}}</b> {{#str}}courses{{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-check-circle-o"></i> <span><b>{{completed}}</b> {{#str}} coursecompletion, report_lmsace_reports{{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-certificate"></i> <span><b>{{badges}}</b> {{#str}} badges {{/str}}</span></a></li>
                 {{#showpoints}}
-                    <li><a href="#"><i class="fa fa-star"></i> <span> {{points}} {{#str}} points, report_lmsace_reports{{/str}}</span></a></li>
+                    <li><a href="#"><i class="fa fa-star"></i> <span><b>{{points}}</b> {{#str}} points, report_lmsace_reports{{/str}}</span></a></li>
                 {{/showpoints}}
-                <li><a href="#"><i class="fa fa-file-text-o"></i>  <span> {{assignsubmission}} {{#str}} assignsubmission, report_lmsace_reports {{/str}}</span></a></li>
-                <li><a href="#"><i class="fa fa-file"></i>  <span> {{quiz_attempts}} {{#str}} quizattempts, report_lmsace_reports {{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-file-text-o"></i> <span><b>{{assignsubmission}}</b> {{#str}} assignsubmission, report_lmsace_reports {{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-file"></i> <span><b>{{quiz_attempts}}</b> {{#str}} quizattempts, report_lmsace_reports {{/str}}</span></a></li>
             </ul>
         </div>
         {{/stackuserreports}}

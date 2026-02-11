@@ -31,7 +31,7 @@
 
         {{^reportbase}}
             {{#hascoursecategories}}
-            <div class="d-flex flex-wrap align-items-end gap-2 mb-3 p-2 border rounded bg-light">
+            <div class="d-flex flex-wrap align-items-end gap-2 mb-2 p-2 border rounded bg-light">
                 <div>
                     <label for="course-category-filter" class="form-label mb-0 small">
                         {{#str}} filterbycategory, report_lmsace_reports {{/str}}
@@ -75,11 +75,11 @@
         {{#stackcoursereports}}
         <div class="lmsace-reports count-block">
             <ul>
-                <li><a href="#"><i class="fa fa-sign-in"></i>  <span> {{enrolled}} {{#str}} enrolments, report_lmsace_reports{{/str}} </span></a></li>
-                <li><a href="#"><i class="fa fa-cubes"></i> <span> {{modules}} {{#str}} modules, report_lmsace_reports{{/str}} </span></a></li>
-                <li><a href="#"><i class="fa fa-gears"></i> <span> {{resources}} {{#str}} resources, report_lmsace_reports{{/str}} </span></a></li>
+                <li><a href="#"><i class="fa fa-sign-in"></i> <span><b>{{enrolled}}</b> {{#str}} enrolments, report_lmsace_reports{{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-cubes"></i> <span><b>{{modules}}</b> {{#str}} modules, report_lmsace_reports{{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-gears"></i> <span><b>{{resources}}</b> {{#str}} resources, report_lmsace_reports{{/str}}</span></a></li>
                 {{#mostactivities}}
-                    <li><a href="#"><i class="{{icon}}"></i> <span> {{count}} {{name}} </span></a></li>
+                    <li><a href="#"><i class="{{icon}}"></i> <span><b>{{count}}</b> {{name}}</span></a></li>
                 {{/mostactivities}}
             </ul>
         </div>

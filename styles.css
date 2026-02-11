@@ -300,14 +300,14 @@
 
 /* --- Info Block --- */
 .lmsace-reports-body .reports-block .info-block {
-    padding: 24px;
-    margin-bottom: 24px;
+    padding: 16px;
+    margin-bottom: 16px;
 }
 .lmsace-reports-body .reports-block .info-block h2 {
     font-size: 22px;
     font-weight: 700;
     color: var(--lr-primary);
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 .lmsace-reports-body .reports-block .info-block .title-block {
     width: 46%;
@@ -359,8 +359,8 @@
 
 /* --- Enrol / Report Element --- */
 .lmsace-reports-body .reports-block .tab-content .report-element .enrol-block {
-    padding: 15px;
-    margin-bottom: 24px;
+    padding: 12px;
+    margin-bottom: 16px;
     border-radius: var(--lr-radius);
 }
 .lmsace-reports-body .reports-block .tab-content .report-element img {
@@ -478,7 +478,7 @@
 .lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .course-block,
 .lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block > .user-block {
     display: flex;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     justify-content: center;
 }
 .lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .user-detail .username {
@@ -555,8 +555,8 @@
 
 /* --- Course Report --- */
 .lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .info-count-block {
-    padding: 15px 10px;
-    margin-bottom: 24px;
+    padding: 12px 10px;
+    margin-bottom: 16px;
     border-radius: var(--lr-radius);
 }
 .lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .info-count-block ul {
@@ -578,7 +578,7 @@
 
 /* --- Course Module Grade Widget --- */
 .lmsace-reports-body .course-module-assignment-grade {
-    margin-top: 24px;
+    margin-top: 16px;
 }
 .lmsace-reports-body .course-module-assignment-grade,
 .lmsace-reports-body .course-module-quiz-grade {
@@ -610,7 +610,7 @@
 /* --- Teacher Report --- */
 .lmsace-reports-body .reports-block .tab-element .tab-content .teacher-report-block > .teacher-block {
     display: flex;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
     justify-content: center;
 }
 .lmsace-reports-body .reports-block .tab-element .tab-content .teacher-report-block > .teacher-block .bsearch {
@@ -891,7 +891,7 @@
         margin-bottom: 15px;
     }
     .lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .course-block {
-        margin-bottom: 24px;
+        margin-bottom: 16px;
     }
     .lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .info-count-block {
         border: 0;
