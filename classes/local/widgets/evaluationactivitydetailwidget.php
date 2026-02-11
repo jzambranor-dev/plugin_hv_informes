@@ -150,7 +150,7 @@ class evaluationactivitydetailwidget extends widgets_info {
 
         // Students who have NOT attempted.
         $namefields = \core_user\fields::for_name()->get_sql('u', false, '', '', false)->selects;
-        $sql = "SELECT u.id, u.email $namefields
+        $sql = "SELECT u.id, u.email, $namefields
             FROM {user} u
             JOIN {user_enrolments} ue ON ue.userid = u.id
             JOIN {enrol} e ON e.id = ue.enrolid AND e.courseid = :courseid
