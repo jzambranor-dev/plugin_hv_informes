@@ -59,7 +59,7 @@ class lmsace_reports implements renderable, templatable {
      * @return stdClass|array
      */
     public function export_for_template(renderer_base $output) {
-        global $CFG, $PAGE, $USER;
+        global $CFG, $DB, $PAGE, $USER;
 
         $data = new stdClass();
 
@@ -192,7 +192,6 @@ class lmsace_reports implements renderable, templatable {
             ];
 
             if ($data->evalteacher) {
-                global $DB;
                 $teacheruser = $DB->get_record('user', ['id' => $data->evalteacher]);
                 $teachername = $teacheruser ? fullname($teacheruser) : '';
                 $teacherurl = new \moodle_url('/report/lmsace_reports/index.php', [
@@ -207,7 +206,6 @@ class lmsace_reports implements renderable, templatable {
             }
 
             if ($data->evalcourse) {
-                global $DB;
                 $coursename = $DB->get_field('course', 'fullname', ['id' => $data->evalcourse]);
                 $courseurl = new \moodle_url('/report/lmsace_reports/index.php', [
                     'report' => 'evaluationreport',
