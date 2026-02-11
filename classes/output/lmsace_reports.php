@@ -145,6 +145,7 @@ class lmsace_reports implements renderable, templatable {
 
         // Teacher report data.
         $data->teacheraction = $output->teacheraction ?? report_helper::get_first_teacher();
+        $data->teachercategory = $output->teachercategory ?? 0;
         $data->teachers = report_helper::get_teachers($data->teacheraction);
         $data->enableteacherblock = !empty($data->teachers);
 
@@ -160,6 +161,25 @@ class lmsace_reports implements renderable, templatable {
                 $data->teacherform = $teacherform->render();
             } else {
                 $data->teacherform = '';
+            }
+
+            // Build category filter for teacher courses.
+            if ($data->teacheraction) {
+                $categories = report_helper::get_teacher_categories($data->teacheraction);
+                $data->teachercategories = [];
+                $data->teachercategories[] = [
+                    'value' => 0,
+                    'label' => get_string('allcategories', 'report_lmsace_reports'),
+                    'selected' => ($data->teachercategory == 0) ? 'selected' : '',
+                ];
+                foreach ($categories as $cat) {
+                    $data->teachercategories[] = [
+                        'value' => $cat->id,
+                        'label' => format_string($cat->name),
+                        'selected' => ($data->teachercategory == $cat->id) ? 'selected' : '',
+                    ];
+                }
+                $data->hasteachercategories = count($categories) > 0;
             }
         }
 

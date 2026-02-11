@@ -37,14 +37,19 @@ class stackteacherreportswidget extends widgets_info {
     /** @var int Teacher user ID. */
     protected $teacherid;
 
+    /** @var int Category filter ID. */
+    protected $categoryid;
+
     /**
      * Constructor.
      * @param int $teacherid
+     * @param int $categoryid
      */
-    public function __construct($teacherid) {
+    public function __construct($teacherid, $categoryid = 0) {
         global $DB;
         parent::__construct();
         $this->teacherid = $teacherid;
+        $this->categoryid = $categoryid;
         $this->user = $DB->get_record('user', ['id' => $teacherid]);
         $this->get_report_data();
     }
@@ -71,7 +76,7 @@ class stackteacherreportswidget extends widgets_info {
     private function get_report_data() {
         global $DB;
 
-        $teachercourses = report_helper::get_teacher_courses($this->teacherid);
+        $teachercourses = report_helper::get_teacher_courses($this->teacherid, $this->categoryid);
         $courseids = array_column((array) $teachercourses, 'courseid');
 
         $this->reportdata['teachername'] = $this->user ? fullname($this->user) : '';

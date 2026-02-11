@@ -68,13 +68,13 @@ class evaluationcourseswidget extends widgets_info {
     private function get_report_data() {
         global $CFG;
 
-        require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationcourses_table.php');
-        require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationcourses_table_filterset.php');
+        require_once($CFG->dirroot . '/report/lmsace_reports/classes/table/evaluationcourses_table.php');
+        require_once($CFG->dirroot . '/report/lmsace_reports/classes/table/evaluationcourses_table_filterset.php');
 
-        $table = new \report_lmsace_reports\local\table\evaluationcourses_table(
+        $table = new \report_lmsace_reports\table\evaluationcourses_table(
             'evaluation-courses-table', $this->teacherid
         );
-        $filterset = new \report_lmsace_reports\local\table\evaluationcourses_table_filterset(
+        $filterset = new \report_lmsace_reports\table\evaluationcourses_table_filterset(
             'evaluation-courses-filter'
         );
         $table->set_filterset($filterset);

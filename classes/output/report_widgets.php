@@ -100,8 +100,16 @@ class report_widgets {
                 }
             } else if ($widget->context == "teacher") {
                 $teacheraction = $output->teacheraction ?? 0;
+                $teachercategory = $output->teachercategory ?? 0;
                 if ($teacheraction && $DB->record_exists('user', ['id' => $teacheraction])) {
-                    $widgetinstance = new $classname($teacheraction);
+                    // Widgets with a $filter param as second argument need category as third.
+                    $chartwids = ['teachergradingoverviewwidget', 'teacherstudentperformancewidget',
+                        'teacheractivitycompletionwidget'];
+                    if (in_array($widget->instance, $chartwids)) {
+                        $widgetinstance = new $classname($teacheraction, '', $teachercategory);
+                    } else {
+                        $widgetinstance = new $classname($teacheraction, $teachercategory);
+                    }
                 }
             } else if ($widget->context == "evaluation") {
                 $evalteacher = $output->evalteacher ?? 0;

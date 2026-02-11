@@ -122,8 +122,7 @@ class evaluationcourses_table extends \table_sql implements dynamic_table {
             return;
         }
 
-        $roles = get_roles_with_capability("report/lmsace_reports:viewcoursereports");
-        $roleids = array_keys($roles);
+        $roleids = report_helper::get_teacher_roleids();
         if (empty($roleids)) {
             $this->rawdata = [];
             return;

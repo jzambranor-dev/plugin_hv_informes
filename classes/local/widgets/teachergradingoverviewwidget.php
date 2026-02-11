@@ -40,15 +40,20 @@ class teachergradingoverviewwidget extends widgets_info {
     /** @var int Teacher user ID. */
     protected $teacherid;
 
+    /** @var int Category filter ID. */
+    protected $categoryid;
+
     /**
      * Constructor.
      * @param int $teacherid
      * @param string $filter
+     * @param int $categoryid
      */
-    public function __construct($teacherid, $filter = '') {
+    public function __construct($teacherid, $filter = '', $categoryid = 0) {
         parent::__construct();
         $this->teacherid = $teacherid;
         $this->filter = $filter;
+        $this->categoryid = $categoryid;
         $this->prepare_chartdata();
     }
 
@@ -82,7 +87,7 @@ class teachergradingoverviewwidget extends widgets_info {
     private function prepare_chartdata() {
         global $DB;
         if (!$this->cache->get($this->get_cache_key())) {
-            $teachercourses = report_helper::get_teacher_courses($this->teacherid);
+            $teachercourses = report_helper::get_teacher_courses($this->teacherid, $this->categoryid);
             $courseids = array_column((array) $teachercourses, 'courseid');
             $labels = [];
             $values = [];
