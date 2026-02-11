@@ -40,14 +40,19 @@ class evaluationcourses_table extends \table_sql implements dynamic_table {
     /** @var int Teacher user ID. */
     protected $teacherid;
 
+    /** @var int Category ID for filtering. */
+    protected $categoryid;
+
     /**
      * Constructor.
      * @param string $uniqueid
      * @param int $teacherid
+     * @param int $categoryid
      */
-    public function __construct($uniqueid, $teacherid = 0) {
+    public function __construct($uniqueid, $teacherid = 0, $categoryid = 0) {
         parent::__construct($uniqueid);
         $this->teacherid = $teacherid;
+        $this->categoryid = $categoryid;
     }
 
     /**
@@ -141,6 +146,11 @@ class evaluationcourses_table extends \table_sql implements dynamic_table {
             JOIN {context} ctx ON ctx.instanceid = c.id AND ctx.contextlevel = :contextlevel
             JOIN {role_assignments} ra ON ra.contextid = ctx.id";
         $where = "ra.userid = :teacherid AND ra.roleid $rolesql";
+
+        if ($this->categoryid > 0) {
+            $where .= " AND c.category = :categoryid";
+            $params['categoryid'] = $this->categoryid;
+        }
 
         $this->set_sql($select, $from, $where, $params);
         parent::query_db($pagesize, false);

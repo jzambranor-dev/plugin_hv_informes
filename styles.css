@@ -668,41 +668,133 @@
     min-width: 160px;
 }
 
-/* Evaluation Detail Cards */
-.lmsace-reports-body .evaluation-report-block .evaluation-activitydetail-block .card {
+/* Evaluation Detail — Stats Bar */
+.eval-detail-stats-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.eval-detail-stat {
+    flex: 1;
+    min-width: 140px;
+    background: linear-gradient(135deg, var(--lr-primary) 0%, var(--lr-primary-light) 100%);
+    border-radius: var(--lr-radius);
+    padding: 16px;
+    text-align: center;
+    color: #fff;
+    box-shadow: var(--lr-shadow-sm);
+}
+.eval-detail-stat-success {
+    background: linear-gradient(135deg, var(--lr-success) 0%, #10b981 100%);
+}
+.eval-detail-stat-warning {
+    background: linear-gradient(135deg, var(--lr-warning) 0%, #f59e0b 100%);
+}
+.eval-detail-stat-info {
+    background: linear-gradient(135deg, var(--lr-accent) 0%, var(--lr-accent-light) 100%);
+}
+.eval-detail-stat-danger {
+    background: linear-gradient(135deg, var(--lr-danger) 0%, #ef4444 100%);
+}
+.eval-detail-stat i {
+    font-size: 20px;
+    display: block;
+    margin-bottom: 6px;
+    opacity: 0.8;
+}
+.eval-detail-stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    display: block;
+    line-height: 1.2;
+}
+.eval-detail-stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.85;
+    display: block;
+    margin-top: 2px;
+}
+
+/* Evaluation Detail — Cards */
+.eval-detail-card {
     border: 1px solid var(--lr-border);
     box-shadow: var(--lr-shadow-sm);
     margin-bottom: 16px;
     border-radius: var(--lr-radius);
     overflow: hidden;
+    height: 100%;
 }
-.lmsace-reports-body .evaluation-report-block .evaluation-activitydetail-block .card-title {
+.eval-detail-card .card-body {
+    padding: 20px;
+}
+.eval-detail-card .card-title {
     font-weight: 700;
     font-size: 14px;
     color: var(--lr-primary);
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--lr-border);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--lr-border);
     text-transform: uppercase;
     letter-spacing: 0.02em;
 }
-.lmsace-reports-body .evaluation-report-block .evaluation-activitydetail-block .table-sm td {
-    padding: 6px 10px;
-    font-size: 14px;
+.eval-detail-card .card-title i {
+    margin-right: 6px;
+    color: var(--lr-accent);
 }
-.lmsace-reports-body .evaluation-report-block .evaluation-activitydetail-block .table-sm td:first-child {
+
+/* Evaluation Detail — Info Grid */
+.eval-detail-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.eval-detail-info-item {
+    padding: 12px;
+    background: var(--lr-surface-alt);
+    border-radius: var(--lr-radius);
+    border-left: 3px solid var(--lr-accent);
+}
+.eval-detail-info-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     color: var(--lr-text-muted);
-    width: 40%;
-}
-.lmsace-reports-body .evaluation-report-block .evaluation-activitydetail-block .badge {
-    font-size: 13px;
     font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 20px;
+    margin-bottom: 4px;
 }
-.lmsace-reports-body .evaluation-report-block .evaluation-activitydetail-block .table-striped tbody tr:hover {
-    background-color: rgba(8, 145, 178, 0.06);
+.eval-detail-info-value {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--lr-text);
 }
+.eval-detail-grade {
+    color: var(--lr-accent);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* Evaluation Detail — Chart */
+.eval-chart-container {
+    max-width: 220px;
+    margin: 0 auto;
+    padding: 10px 0;
+}
+
+/* Evaluation Detail — Not Attempted Table */
+.eval-detail-table thead th {
+    background: var(--lr-surface-alt);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    color: var(--lr-primary);
+}
+
+/* Evaluation Detail — Heading badge */
 .lmsace-reports-body .evaluation-report-block .heading-block h5 .badge {
     font-size: 11px;
     vertical-align: middle;
@@ -802,6 +894,20 @@
     .lmsace-reports-body .evaluation-report-block .d-flex.flex-wrap.align-items-end select,
     .lmsace-reports-body .evaluation-report-block .d-flex.flex-wrap.align-items-end input[type="date"] {
         width: 100%;
+    }
+    .eval-detail-stats-bar {
+        gap: 8px;
+    }
+    .eval-detail-stat {
+        min-width: calc(50% - 4px);
+        flex: 0 0 calc(50% - 4px);
+        padding: 12px 8px;
+    }
+    .eval-detail-stat-value {
+        font-size: 20px;
+    }
+    .eval-detail-info-grid {
+        grid-template-columns: 1fr;
     }
     .report-lmsace-selector .form-inline,
     .report-lmsace-selector .form-inline #fitem_id_courseinfo,

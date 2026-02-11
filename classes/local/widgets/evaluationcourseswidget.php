@@ -36,13 +36,18 @@ class evaluationcourseswidget extends widgets_info {
     /** @var int Teacher user ID. */
     protected $teacherid;
 
+    /** @var int Category ID for filtering. */
+    protected $categoryid;
+
     /**
      * Constructor.
      * @param int $teacherid
+     * @param int $categoryid
      */
-    public function __construct($teacherid) {
+    public function __construct($teacherid, $categoryid = 0) {
         parent::__construct();
         $this->teacherid = $teacherid;
+        $this->categoryid = $categoryid;
         $this->get_report_data();
     }
 
@@ -72,7 +77,7 @@ class evaluationcourseswidget extends widgets_info {
         require_once($CFG->dirroot . '/report/lmsace_reports/classes/table/evaluationcourses_table_filterset.php');
 
         $table = new \report_lmsace_reports\table\evaluationcourses_table(
-            'evaluation-courses-table', $this->teacherid
+            'evaluation-courses-table', $this->teacherid, $this->categoryid
         );
         $filterset = new \report_lmsace_reports\table\evaluationcourses_table_filterset(
             'evaluation-courses-filter'

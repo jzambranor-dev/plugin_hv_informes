@@ -115,17 +115,18 @@ class report_widgets {
                 $evalteacher = $output->evalteacher ?? 0;
                 $evalcourse = $output->evalcourse ?? 0;
                 $evalcmid = $output->evalcmid ?? 0;
+                $evalcategory = $output->evalcategory ?? 0;
                 $evalmodtype = $output->evalmodtype ?? '';
                 $evalfrom = $output->evalfrom ?? 0;
                 $evalto = $output->evalto ?? 0;
 
                 if ($widget->instance == 'stackevaluationreportswidget') {
                     if ($evalteacher && $DB->record_exists('user', ['id' => $evalteacher])) {
-                        $widgetinstance = new $classname($evalteacher);
+                        $widgetinstance = new $classname($evalteacher, $evalcategory);
                     }
                 } else if ($widget->instance == 'evaluationcourseswidget') {
                     if ($evalteacher && !$evalcourse && $DB->record_exists('user', ['id' => $evalteacher])) {
-                        $widgetinstance = new $classname($evalteacher);
+                        $widgetinstance = new $classname($evalteacher, $evalcategory);
                     }
                 } else if ($widget->instance == 'evaluationactivitieswidget') {
                     if ($evalcourse && !$evalcmid && $DB->record_exists('course', ['id' => $evalcourse])) {

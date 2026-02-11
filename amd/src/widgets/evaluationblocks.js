@@ -87,6 +87,47 @@ define([], function() {
                     window.location.href = url.toString();
                 });
             }
+
+            // Category filter for evaluation courses list.
+            var catSelect = document.getElementById('eval-category-filter');
+            var catApplyBtn = document.getElementById('eval-category-apply');
+            var catClearBtn = document.getElementById('eval-category-clear');
+            var catContainer = catSelect ? catSelect.closest('[data-evalteacher]') : null;
+            var evalTeacherId = catContainer ? catContainer.getAttribute('data-evalteacher') : '';
+
+            if (catApplyBtn && catSelect) {
+                catApplyBtn.addEventListener('click', function() {
+                    var url = new URL(window.location.href);
+                    url.searchParams.set('report', 'evaluationreport');
+                    if (evalTeacherId) {
+                        url.searchParams.set('evalteacher', evalTeacherId);
+                    }
+                    // Remove course/activity params when filtering by category.
+                    url.searchParams.delete('evalcourse');
+                    url.searchParams.delete('evalcmid');
+                    var val = catSelect.value;
+                    if (val && val !== '0') {
+                        url.searchParams.set('evalcategory', val);
+                    } else {
+                        url.searchParams.delete('evalcategory');
+                    }
+                    window.location.href = url.toString();
+                });
+            }
+
+            if (catClearBtn && catSelect) {
+                catClearBtn.addEventListener('click', function() {
+                    var url = new URL(window.location.href);
+                    url.searchParams.set('report', 'evaluationreport');
+                    if (evalTeacherId) {
+                        url.searchParams.set('evalteacher', evalTeacherId);
+                    }
+                    url.searchParams.delete('evalcategory');
+                    url.searchParams.delete('evalcourse');
+                    url.searchParams.delete('evalcmid');
+                    window.location.href = url.toString();
+                });
+            }
         }
     };
 });

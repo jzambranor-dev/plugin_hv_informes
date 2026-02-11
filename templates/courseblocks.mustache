@@ -30,6 +30,28 @@
     <div class="course-report-block position-relative">
 
         {{^reportbase}}
+            {{#hascoursecategories}}
+            <div class="d-flex flex-wrap align-items-end gap-2 mb-3 p-2 border rounded bg-light">
+                <div>
+                    <label for="course-category-filter" class="form-label mb-0 small">
+                        {{#str}} filterbycategory, report_lmsace_reports {{/str}}
+                    </label>
+                    <select id="course-category-filter" class="form-select form-select-sm custom-select">
+                        {{#coursecategories}}
+                        <option value="{{value}}" {{selected}}>{{label}}</option>
+                        {{/coursecategories}}
+                    </select>
+                </div>
+                <div>
+                    <button id="course-category-apply" class="btn btn-primary btn-sm">
+                        {{#str}} applyfilter, report_lmsace_reports {{/str}}
+                    </button>
+                    <button id="course-category-clear" class="btn btn-secondary btn-sm">
+                        {{#str}} clearfilter, report_lmsace_reports {{/str}}
+                    </button>
+                </div>
+            </div>
+            {{/hascoursecategories}}
             <div class="course-block report-lmsace-selector">{{{courseform}}}</div>
         {{/reportbase}}
 

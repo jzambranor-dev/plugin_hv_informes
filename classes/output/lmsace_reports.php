@@ -114,12 +114,25 @@ class lmsace_reports implements renderable, templatable {
         // Chooser form.
         require_once($CFG->dirroot . '/report/lmsace_reports/form/chooser_form.php');
 
+        // Course category filter.
+        $data->coursecategory = $output->coursecategory ?? 0;
+
         if (has_capability("report/lmsace_reports:viewsitereports", \context_system::instance()) && $data->enablecourseblock) {
 
             if ($PAGE->context->contextlevel == CONTEXT_SYSTEM
                     && (empty($data->reportbase) || $output->report == 'coursereport')) {
                 // Course selectors form.
-                $courseform = new \course_selector_form(null, ['courseinfo' => $output->courseaction]);
+                $formdata = ['courseinfo' => $output->courseaction];
+                if ($data->coursecategory > 0) {
+                    // Filter courses by category.
+                    $catcourses = \core_course_category::get($data->coursecategory)->get_courses(['recursive' => true]);
+                    $filteredcourses = [];
+                    foreach ($catcourses as $c) {
+                        $filteredcourses[$c->id] = $c->get_formatted_name();
+                    }
+                    $formdata['courses'] = $filteredcourses;
+                }
+                $courseform = new \course_selector_form(null, $formdata);
                 if ($courseform->get_data()) {
                     $data->showcoursereport = true;
                 }
@@ -128,6 +141,32 @@ class lmsace_reports implements renderable, templatable {
             } else {
                 $data->courseform = '';
             }
+
+            // Build category dropdown data for course reports.
+            $allcats = \core_course_category::get(0)->get_children();
+            $data->coursecategories = [];
+            $data->coursecategories[] = [
+                'value' => 0,
+                'label' => get_string('allcategories', 'report_lmsace_reports'),
+                'selected' => ($data->coursecategory == 0) ? 'selected' : '',
+            ];
+            foreach ($allcats as $cat) {
+                $data->coursecategories[] = [
+                    'value' => $cat->id,
+                    'label' => format_string($cat->get_formatted_name()),
+                    'selected' => ($data->coursecategory == $cat->id) ? 'selected' : '',
+                ];
+                // Add subcategories.
+                $subcats = $cat->get_children();
+                foreach ($subcats as $subcat) {
+                    $data->coursecategories[] = [
+                        'value' => $subcat->id,
+                        'label' => '— ' . format_string($subcat->get_formatted_name()),
+                        'selected' => ($data->coursecategory == $subcat->id) ? 'selected' : '',
+                    ];
+                }
+            }
+            $data->hascoursecategories = count($allcats) > 0;
         }
 
         if ($PAGE->context->contextlevel == CONTEXT_SYSTEM
@@ -188,6 +227,7 @@ class lmsace_reports implements renderable, templatable {
         $data->evalteacher = $output->evalteacher ?? report_helper::get_first_teacher();
         $data->evalcourse = $output->evalcourse ?? 0;
         $data->evalcmid = $output->evalcmid ?? 0;
+        $data->evalcategory = $output->evalcategory ?? 0;
         $data->evalmodtype = $output->evalmodtype ?? '';
         $data->evalfrom = $output->evalfrom ?? 0;
         $data->evalto = $output->evalto ?? 0;
@@ -208,6 +248,25 @@ class lmsace_reports implements renderable, templatable {
                 }
                 $evalform->set_data(['evalteacher' => $data->evalteacher]);
                 $data->evalform = $evalform->render();
+            }
+
+            // Build category filter for evaluation courses.
+            if ($data->evalteacher && !$data->evalcourse) {
+                $evalcats = report_helper::get_teacher_categories($data->evalteacher);
+                $data->evalcategories = [];
+                $data->evalcategories[] = [
+                    'value' => 0,
+                    'label' => get_string('allcategories', 'report_lmsace_reports'),
+                    'selected' => ($data->evalcategory == 0) ? 'selected' : '',
+                ];
+                foreach ($evalcats as $cat) {
+                    $data->evalcategories[] = [
+                        'value' => $cat->id,
+                        'label' => format_string($cat->name),
+                        'selected' => ($data->evalcategory == $cat->id) ? 'selected' : '',
+                    ];
+                }
+                $data->hasevalcategories = count($evalcats) > 0;
             }
 
             // Build breadcrumb.
