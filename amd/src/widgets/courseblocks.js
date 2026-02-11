@@ -125,8 +125,41 @@ define([
 
     };
 
+    /**
+     * Set up course category filter apply/clear buttons.
+     */
+    var initCategoryFilter = function() {
+        var applyBtn = document.getElementById('course-category-apply');
+        var clearBtn = document.getElementById('course-category-clear');
+        var select = document.getElementById('course-category-filter');
+
+        if (applyBtn && select) {
+            applyBtn.addEventListener('click', function() {
+                var url = new URL(window.location.href);
+                url.searchParams.set('report', 'coursereport');
+                var val = select.value;
+                if (val && val !== '0') {
+                    url.searchParams.set('coursecategory', val);
+                } else {
+                    url.searchParams.delete('coursecategory');
+                }
+                window.location.href = url.toString();
+            });
+        }
+
+        if (clearBtn && select) {
+            clearBtn.addEventListener('click', function() {
+                var url = new URL(window.location.href);
+                url.searchParams.set('report', 'coursereport');
+                url.searchParams.delete('coursecategory');
+                window.location.href = url.toString();
+            });
+        }
+    };
+
     return {
         init: function (main) {
+            initCategoryFilter();
             loadCharts(main);
         }
     };

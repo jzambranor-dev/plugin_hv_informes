@@ -64,6 +64,20 @@ class renderer extends plugin_renderer_base {
     public $teacheraction;
 
     /**
+     * Teacher category filter.
+     *
+     * @var int
+     */
+    public $teachercategory;
+
+    /**
+     * Course category filter.
+     *
+     * @var int
+     */
+    public $coursecategory;
+
+    /**
      * Evaluation teacher ID.
      *
      * @var int
@@ -83,6 +97,13 @@ class renderer extends plugin_renderer_base {
      * @var int
      */
     public $evalcmid;
+
+    /**
+     * Evaluation category filter.
+     *
+     * @var int
+     */
+    public $evalcategory;
 
     /**
      * Evaluation module type filter.

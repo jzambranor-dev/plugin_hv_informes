@@ -266,3 +266,5 @@ $string['noevaluationteachers'] = 'No teachers found in this site';
 $string['enrolled'] = 'Enrolled';
 $string['coursecompletions'] = 'Completions';
 $string['activities'] = 'Activities';
+$string['allcategories'] = 'All categories';
+$string['filterbycategory'] = 'Filter by category';

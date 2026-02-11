@@ -48,11 +48,56 @@ define([
     }
 
     /**
+     * Set up category filter apply/clear buttons.
+     */
+    function initCategoryFilter() {
+        var applyBtn = document.getElementById('teacher-category-apply');
+        var clearBtn = document.getElementById('teacher-category-clear');
+        var select = document.getElementById('teacher-category-filter');
+        // Read the teacher ID from the data attribute on the filter container.
+        var filterContainer = select ? select.closest('[data-teacherid]') : null;
+        var teacherId = filterContainer ? filterContainer.getAttribute('data-teacherid') : '';
+
+        if (applyBtn && select) {
+            applyBtn.addEventListener('click', function() {
+                var url = new URL(window.location.href);
+                // Always ensure we stay on the teacher report tab.
+                url.searchParams.set('report', 'teacherreport');
+                if (teacherId) {
+                    url.searchParams.set('teacherinfo', teacherId);
+                }
+                var val = select.value;
+                if (val && val !== '0') {
+                    url.searchParams.set('teachercategory', val);
+                } else {
+                    url.searchParams.delete('teachercategory');
+                }
+                window.location.href = url.toString();
+            });
+        }
+
+        if (clearBtn && select) {
+            clearBtn.addEventListener('click', function() {
+                var url = new URL(window.location.href);
+                url.searchParams.set('report', 'teacherreport');
+                if (teacherId) {
+                    url.searchParams.set('teacherinfo', teacherId);
+                }
+                url.searchParams.delete('teachercategory');
+                window.location.href = url.toString();
+            });
+        }
+    }
+
+    /**
      * Initialize - set up lazy loading for teacher charts.
      *
      * @param {Object} main The main LMSACEReports instance.
      */
     function init(main) {
+        // Set up category filter buttons.
+        initCategoryFilter();
+
         // If teacher tab is already active/visible, initialize immediately.
         var teacherTab = document.getElementById('teacher-report');
         if (teacherTab && teacherTab.classList.contains('active')) {

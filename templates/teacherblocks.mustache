@@ -45,6 +45,30 @@
         </div>
         {{/reportbase}}
 
+        {{#hasteachercategories}}
+        <div class="d-flex flex-wrap align-items-end gap-2 mb-2 p-2 border rounded bg-light"
+             data-teacherid="{{teacheraction}}">
+            <div>
+                <label for="teacher-category-filter" class="form-label mb-0 small">
+                    {{#str}} filterbycategory, report_lmsace_reports {{/str}}
+                </label>
+                <select id="teacher-category-filter" class="form-select form-select-sm custom-select">
+                    {{#teachercategories}}
+                    <option value="{{value}}" {{selected}}>{{label}}</option>
+                    {{/teachercategories}}
+                </select>
+            </div>
+            <div>
+                <button id="teacher-category-apply" class="btn btn-primary btn-sm">
+                    {{#str}} applyfilter, report_lmsace_reports {{/str}}
+                </button>
+                <button id="teacher-category-clear" class="btn btn-secondary btn-sm">
+                    {{#str}} clearfilter, report_lmsace_reports {{/str}}
+                </button>
+            </div>
+        </div>
+        {{/hasteachercategories}}
+
         {{#stackteacherreports}}
         <div class="lmsace-reports count-block">
             <ul>

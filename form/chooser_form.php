@@ -38,7 +38,12 @@ class course_selector_form extends moodleform {
     public function definition() {
 
         $mform = $this->_form;
-        $mform->addElement('course', 'courseinfo', get_string('course'));
+        if (!empty($this->_customdata['courses'])) {
+            // When a category filter is active, use a regular select with filtered courses.
+            $mform->addElement('select', 'courseinfo', get_string('course'), $this->_customdata['courses']);
+        } else {
+            $mform->addElement('course', 'courseinfo', get_string('course'));
+        }
         $this->add_action_buttons(false, get_string('generatereport', 'report_lmsace_reports'));
 
         // Make the form inline.

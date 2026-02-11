@@ -37,13 +37,18 @@ class teachercoursessummarywidget extends widgets_info {
     /** @var int Teacher user ID. */
     protected $teacherid;
 
+    /** @var int Category filter ID. */
+    protected $categoryid;
+
     /**
      * Constructor.
      * @param int $teacherid
+     * @param int $categoryid
      */
-    public function __construct($teacherid) {
+    public function __construct($teacherid, $categoryid = 0) {
         parent::__construct();
         $this->teacherid = $teacherid;
+        $this->categoryid = $categoryid;
         $this->get_report_data();
     }
 
@@ -69,7 +74,7 @@ class teachercoursessummarywidget extends widgets_info {
     private function get_report_data() {
         global $OUTPUT;
 
-        $courses = report_helper::get_teacher_courses($this->teacherid);
+        $courses = report_helper::get_teacher_courses($this->teacherid, $this->categoryid);
         $data = [];
         $data['hascourses'] = !empty($courses);
         $data['courses'] = [];

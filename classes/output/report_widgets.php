@@ -100,24 +100,33 @@ class report_widgets {
                 }
             } else if ($widget->context == "teacher") {
                 $teacheraction = $output->teacheraction ?? 0;
+                $teachercategory = $output->teachercategory ?? 0;
                 if ($teacheraction && $DB->record_exists('user', ['id' => $teacheraction])) {
-                    $widgetinstance = new $classname($teacheraction);
+                    // Widgets with a $filter param as second argument need category as third.
+                    $chartwids = ['teachergradingoverviewwidget', 'teacherstudentperformancewidget',
+                        'teacheractivitycompletionwidget'];
+                    if (in_array($widget->instance, $chartwids)) {
+                        $widgetinstance = new $classname($teacheraction, '', $teachercategory);
+                    } else {
+                        $widgetinstance = new $classname($teacheraction, $teachercategory);
+                    }
                 }
             } else if ($widget->context == "evaluation") {
                 $evalteacher = $output->evalteacher ?? 0;
                 $evalcourse = $output->evalcourse ?? 0;
                 $evalcmid = $output->evalcmid ?? 0;
+                $evalcategory = $output->evalcategory ?? 0;
                 $evalmodtype = $output->evalmodtype ?? '';
                 $evalfrom = $output->evalfrom ?? 0;
                 $evalto = $output->evalto ?? 0;
 
                 if ($widget->instance == 'stackevaluationreportswidget') {
                     if ($evalteacher && $DB->record_exists('user', ['id' => $evalteacher])) {
-                        $widgetinstance = new $classname($evalteacher);
+                        $widgetinstance = new $classname($evalteacher, $evalcategory);
                     }
                 } else if ($widget->instance == 'evaluationcourseswidget') {
                     if ($evalteacher && !$evalcourse && $DB->record_exists('user', ['id' => $evalteacher])) {
-                        $widgetinstance = new $classname($evalteacher);
+                        $widgetinstance = new $classname($evalteacher, $evalcategory);
                     }
                 } else if ($widget->instance == 'evaluationactivitieswidget') {
                     if ($evalcourse && !$evalcmid && $DB->record_exists('course', ['id' => $evalcourse])) {

@@ -59,7 +59,7 @@ class lmsace_reports implements renderable, templatable {
      * @return stdClass|array
      */
     public function export_for_template(renderer_base $output) {
-        global $CFG, $PAGE, $USER;
+        global $CFG, $DB, $PAGE, $USER;
 
         $data = new stdClass();
 
@@ -114,11 +114,25 @@ class lmsace_reports implements renderable, templatable {
         // Chooser form.
         require_once($CFG->dirroot . '/report/lmsace_reports/form/chooser_form.php');
 
+        // Course category filter.
+        $data->coursecategory = $output->coursecategory ?? 0;
+
         if (has_capability("report/lmsace_reports:viewsitereports", \context_system::instance()) && $data->enablecourseblock) {
 
-            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM) {
+            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM
+                    && (empty($data->reportbase) || $output->report == 'coursereport')) {
                 // Course selectors form.
-                $courseform = new \course_selector_form(null, ['courseinfo' => $output->courseaction]);
+                $formdata = ['courseinfo' => $output->courseaction];
+                if ($data->coursecategory > 0) {
+                    // Filter courses by category.
+                    $catcourses = \core_course_category::get($data->coursecategory)->get_courses(['recursive' => true]);
+                    $filteredcourses = [];
+                    foreach ($catcourses as $c) {
+                        $filteredcourses[$c->id] = $c->get_formatted_name();
+                    }
+                    $formdata['courses'] = $filteredcourses;
+                }
+                $courseform = new \course_selector_form(null, $formdata);
                 if ($courseform->get_data()) {
                     $data->showcoursereport = true;
                 }
@@ -127,9 +141,36 @@ class lmsace_reports implements renderable, templatable {
             } else {
                 $data->courseform = '';
             }
+
+            // Build category dropdown data for course reports.
+            $allcats = \core_course_category::get(0)->get_children();
+            $data->coursecategories = [];
+            $data->coursecategories[] = [
+                'value' => 0,
+                'label' => get_string('allcategories', 'report_lmsace_reports'),
+                'selected' => ($data->coursecategory == 0) ? 'selected' : '',
+            ];
+            foreach ($allcats as $cat) {
+                $data->coursecategories[] = [
+                    'value' => $cat->id,
+                    'label' => format_string($cat->get_formatted_name()),
+                    'selected' => ($data->coursecategory == $cat->id) ? 'selected' : '',
+                ];
+                // Add subcategories.
+                $subcats = $cat->get_children();
+                foreach ($subcats as $subcat) {
+                    $data->coursecategories[] = [
+                        'value' => $subcat->id,
+                        'label' => '— ' . format_string($subcat->get_formatted_name()),
+                        'selected' => ($data->coursecategory == $subcat->id) ? 'selected' : '',
+                    ];
+                }
+            }
+            $data->hascoursecategories = count($allcats) > 0;
         }
 
-        if ($PAGE->context->contextlevel == CONTEXT_SYSTEM) {
+        if ($PAGE->context->contextlevel == CONTEXT_SYSTEM
+                && (empty($data->reportbase) || $output->report == 'userreport')) {
             // Users selectors form.
             $form = (new \user_selector_form(null, ['userinfo' => $output->useraction]));
             if ($form->get_data()) {
@@ -143,12 +184,14 @@ class lmsace_reports implements renderable, templatable {
 
         // Teacher report data.
         $data->teacheraction = $output->teacheraction ?? report_helper::get_first_teacher();
+        $data->teachercategory = $output->teachercategory ?? 0;
         $data->teachers = report_helper::get_teachers($data->teacheraction);
         $data->enableteacherblock = !empty($data->teachers);
 
         if (has_capability("report/lmsace_reports:viewteacherreports", \context_system::instance())
                 && $data->enableteacherblock) {
-            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM) {
+            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM
+                    && (empty($data->reportbase) || $output->report == 'teacherreport')) {
                 $teacherform = new \teacher_selector_form(null, ['teacherinfo' => $data->teacheraction]);
                 if ($teacherform->get_data()) {
                     $data->showteacherreport = true;
@@ -158,6 +201,25 @@ class lmsace_reports implements renderable, templatable {
             } else {
                 $data->teacherform = '';
             }
+
+            // Build category filter for teacher courses.
+            if ($data->teacheraction) {
+                $categories = report_helper::get_teacher_categories($data->teacheraction);
+                $data->teachercategories = [];
+                $data->teachercategories[] = [
+                    'value' => 0,
+                    'label' => get_string('allcategories', 'report_lmsace_reports'),
+                    'selected' => ($data->teachercategory == 0) ? 'selected' : '',
+                ];
+                foreach ($categories as $cat) {
+                    $data->teachercategories[] = [
+                        'value' => $cat->id,
+                        'label' => format_string($cat->name),
+                        'selected' => ($data->teachercategory == $cat->id) ? 'selected' : '',
+                    ];
+                }
+                $data->hasteachercategories = count($categories) > 0;
+            }
         }
 
         // Evaluation report data.
@@ -165,21 +227,46 @@ class lmsace_reports implements renderable, templatable {
         $data->evalteacher = $output->evalteacher ?? report_helper::get_first_teacher();
         $data->evalcourse = $output->evalcourse ?? 0;
         $data->evalcmid = $output->evalcmid ?? 0;
+        $data->evalcategory = $output->evalcategory ?? 0;
         $data->evalmodtype = $output->evalmodtype ?? '';
         $data->evalfrom = $output->evalfrom ?? 0;
         $data->evalto = $output->evalto ?? 0;
+        if ($data->evalfrom > 0) {
+            $data->evalfromdate = date('Y-m-d', $data->evalfrom);
+        }
+        if ($data->evalto > 0) {
+            $data->evaltodate = date('Y-m-d', $data->evalto);
+        }
 
         if (has_capability("report/lmsace_reports:viewevaluationreports", \context_system::instance())
                 && $data->enableevaluationblock) {
-            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM) {
+            // Only render the selector form when it will be shown (tab view, not single report view).
+            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM && empty($data->reportbase)) {
                 $evalform = new \evaluation_teacher_selector_form(null, ['evalteacher' => $data->evalteacher]);
                 if ($evalform->get_data()) {
                     $data->showevaluationreport = true;
                 }
                 $evalform->set_data(['evalteacher' => $data->evalteacher]);
                 $data->evalform = $evalform->render();
-            } else {
-                $data->evalform = '';
+            }
+
+            // Build category filter for evaluation courses.
+            if ($data->evalteacher && !$data->evalcourse) {
+                $evalcats = report_helper::get_teacher_categories($data->evalteacher);
+                $data->evalcategories = [];
+                $data->evalcategories[] = [
+                    'value' => 0,
+                    'label' => get_string('allcategories', 'report_lmsace_reports'),
+                    'selected' => ($data->evalcategory == 0) ? 'selected' : '',
+                ];
+                foreach ($evalcats as $cat) {
+                    $data->evalcategories[] = [
+                        'value' => $cat->id,
+                        'label' => format_string($cat->name),
+                        'selected' => ($data->evalcategory == $cat->id) ? 'selected' : '',
+                    ];
+                }
+                $data->hasevalcategories = count($evalcats) > 0;
             }
 
             // Build breadcrumb.
@@ -192,7 +279,6 @@ class lmsace_reports implements renderable, templatable {
             ];
 
             if ($data->evalteacher) {
-                global $DB;
                 $teacheruser = $DB->get_record('user', ['id' => $data->evalteacher]);
                 $teachername = $teacheruser ? fullname($teacheruser) : '';
                 $teacherurl = new \moodle_url('/report/lmsace_reports/index.php', [
@@ -207,7 +293,6 @@ class lmsace_reports implements renderable, templatable {
             }
 
             if ($data->evalcourse) {
-                global $DB;
                 $coursename = $DB->get_field('course', 'fullname', ['id' => $data->evalcourse]);
                 $courseurl = new \moodle_url('/report/lmsace_reports/index.php', [
                     'report' => 'evaluationreport',

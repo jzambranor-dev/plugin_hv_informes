@@ -83,13 +83,13 @@ class evaluationactivitieswidget extends widgets_info {
     private function get_report_data() {
         global $CFG;
 
-        require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationactivities_table.php');
-        require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationactivities_table_filterset.php');
+        require_once($CFG->dirroot . '/report/lmsace_reports/classes/table/evaluationactivities_table.php');
+        require_once($CFG->dirroot . '/report/lmsace_reports/classes/table/evaluationactivities_table_filterset.php');
 
-        $table = new \report_lmsace_reports\local\table\evaluationactivities_table(
+        $table = new \report_lmsace_reports\table\evaluationactivities_table(
             'evaluation-activities-table', $this->courseid, $this->modtype, $this->datefrom, $this->dateto
         );
-        $filterset = new \report_lmsace_reports\local\table\evaluationactivities_table_filterset(
+        $filterset = new \report_lmsace_reports\table\evaluationactivities_table_filterset(
             'evaluation-activities-filter'
         );
         $table->set_filterset($filterset);

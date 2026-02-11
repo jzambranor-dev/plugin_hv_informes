@@ -703,23 +703,66 @@ class report_helper {
      * @param int $userid Current user ID
      * @return array
      */
-    public static function get_teacher_courses($userid) {
+    public static function get_teacher_courses($userid, $categoryid = 0) {
         global $DB;
 
-        $roles = get_roles_with_capability("report/lmsace_reports:viewcoursereports");
-        $roleids = array_keys($roles);
+        $roleids = self::get_teacher_roleids();
 
         $params = ['userid' => $userid, 'contextlevel' => CONTEXT_COURSE];
         list($rolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED);
         $params = array_merge($params, $roleparams);
+
+        $categorywhere = '';
+        if ($categoryid > 0) {
+            $categorywhere = ' AND co.category = :categoryid';
+            $params['categoryid'] = $categoryid;
+        }
+
         $sql = "
             SELECT c.id, c.instanceid as courseid
             FROM {role_assignments} ra
             JOIN {context} c ON c.id = ra.contextid
-            WHERE c.contextlevel = :contextlevel AND ra.userid = :userid AND ra.roleid $rolesql";
+            JOIN {course} co ON co.id = c.instanceid
+            WHERE c.contextlevel = :contextlevel AND ra.userid = :userid AND ra.roleid $rolesql" . $categorywhere;
         $record = $DB->get_records_sql($sql, $params);
 
         return $record;
+    }
+
+    /**
+     * Get role IDs for the editingteacher archetype (course creators/teachers).
+     * @return array
+     */
+    public static function get_teacher_roleids() {
+        $roles = get_archetype_roles('editingteacher');
+        return array_keys($roles);
+    }
+
+    /**
+     * Get the course categories that contain courses for a given teacher.
+     * @param int $teacherid
+     * @return array
+     */
+    public static function get_teacher_categories($teacherid) {
+        global $DB;
+
+        $roleids = self::get_teacher_roleids();
+        if (empty($roleids)) {
+            return [];
+        }
+
+        list($rolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED);
+        $params = ['userid' => $teacherid, 'contextlevel' => CONTEXT_COURSE];
+        $params = array_merge($params, $roleparams);
+
+        $sql = "SELECT DISTINCT cc.id, cc.name
+            FROM {role_assignments} ra
+            JOIN {context} ctx ON ctx.id = ra.contextid
+            JOIN {course} co ON co.id = ctx.instanceid
+            JOIN {course_categories} cc ON cc.id = co.category
+            WHERE ctx.contextlevel = :contextlevel AND ra.userid = :userid AND ra.roleid $rolesql
+            ORDER BY cc.name";
+        return $DB->get_records_sql($sql, $params);
     }
 
     /**
@@ -804,8 +847,7 @@ class report_helper {
      */
     public static function get_first_teacher() {
         global $DB;
-        $roles = get_roles_with_capability("report/lmsace_reports:viewcoursereports");
-        $roleids = array_keys($roles);
+        $roleids = self::get_teacher_roleids();
         if (empty($roleids)) {
             return 0;
         }
@@ -828,8 +870,7 @@ class report_helper {
      */
     public static function get_teachers($selectid = 0) {
         global $DB;
-        $roles = get_roles_with_capability("report/lmsace_reports:viewcoursereports");
-        $roleids = array_keys($roles);
+        $roleids = self::get_teacher_roleids();
         if (empty($roleids)) {
             return [];
         }
