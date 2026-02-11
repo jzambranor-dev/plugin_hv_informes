@@ -1,0 +1,140 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_lmsace_reports/lmsace_reports.
+
+    Template for the lmsace_reports.
+
+    Example context (json):
+    {
+
+    }
+}}
+
+
+<div class="reports-block">
+    {{#widgets}}
+    <input type="hidden" id="page-context" name="contextid" value="{{contextid}}">
+    <div class="tab-element">
+      {{^reportbase}}
+        <div class="report-tabs">
+
+          <div class="nav-item refresh-button">
+            <a href="{{{purgeurl}}}" title="{{#str}} refershreport, report_lmsace_reports{{/str}}" class="btn btn-primary"> <i class="fa fa-refresh"> </i>
+              {{#str}} reload, report_lmsace_reports {{/str}}
+            </a>
+          </div>
+
+          <ul class="nav nav-tabs" id="lmsace-reports-tab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link {{#showsitereport}} active {{/showsitereport}}" id="home-tab"
+                  {{datatabtoggle}} {{datatargetsitereport}} role="tab" aria-controls="site-report" aria-selected="true">
+                {{#str}} sitereports, report_lmsace_reports {{/str}}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {{#showcoursereport}} active {{/showcoursereport}}" id="profile-tab"
+                  {{datatabtoggle}} {{datatargetcoursereport}} role="tab" aria-controls="course-report" aria-selected="false">
+                {{#str}} coursereports, report_lmsace_reports {{/str}}
+              </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {{#showuserreport}} active {{/showuserreport}}" id="user-tab"
+                  {{datatabtoggle}} {{datatargetuserreport}} role="tab" aria-controls="user-report" aria-selected="false">
+                {{#str}} userreports, report_lmsace_reports {{/str}}
+                </a>
+            </li>
+
+            {{#enableteacherblock}}
+            <li class="nav-item">
+                <a class="nav-link {{#showteacherreport}} active {{/showteacherreport}}" id="teacher-tab"
+                  {{datatabtoggle}} {{datatargetteacherreport}} role="tab" aria-controls="teacher-report" aria-selected="false">
+                {{#str}} teacherreports, report_lmsace_reports {{/str}}
+                </a>
+            </li>
+            {{/enableteacherblock}}
+
+                {{#enableevaluationblock}}
+                <li class="nav-item">
+                    <a class="nav-link {{#showevaluationreport}} active {{/showevaluationreport}}" id="evaluation-tab"
+                        {{datatabtoggle}} {{datatargetevaluationreport}} role="tab"
+                        aria-controls="evaluation-report" aria-selected="false">
+                        {{#str}} evaluationreports, report_lmsace_reports {{/str}}
+                    </a>
+                </li>
+                {{/enableevaluationblock}}
+          </ul>
+        </div>
+      {{/reportbase}}
+
+      {{^reportbase}}
+      	<div class="tab-content" id="lmsace-reports-tab-content">
+
+      		<div class="tab-pane fade {{#showsitereport}} show active {{/showsitereport}}" id="site-report" role="tabpanel" aria-labelledby="home-report">
+      			{{> report_lmsace_reports/siteblocks}}
+      		</div>
+
+      		<div class="tab-pane fade {{#showcoursereport}} show active {{/showcoursereport}}" id="course-report" role="tabpanel" aria-labelledby="course-report">
+      			 {{> report_lmsace_reports/courseblocks}}
+      		</div>
+
+            <div class="tab-pane fade {{#showuserreport}} show active {{/showuserreport}}" id="user-report" role="tabpanel" aria-labelledby="user-report">
+                {{> report_lmsace_reports/userblocks}}
+      		</div>
+
+            {{#enableteacherblock}}
+            <div class="tab-pane fade {{#showteacherreport}} show active {{/showteacherreport}}" id="teacher-report" role="tabpanel" aria-labelledby="teacher-report">
+                {{> report_lmsace_reports/teacherblocks}}
+            </div>
+            {{/enableteacherblock}}
+
+                {{#enableevaluationblock}}
+                <div class="tab-pane fade {{#showevaluationreport}} show active {{/showevaluationreport}}"
+                    id="evaluation-report" role="tabpanel" aria-labelledby="evaluation-tab">
+                    {{> report_lmsace_reports/evaluationblocks}}
+                </div>
+                {{/enableevaluationblock}}
+      	</div>
+      {{/reportbase}}
+
+      {{#reportbase}}
+      <div class="tab-content" id="lmsace-reports-tab-content">
+          {{#sitereport}}
+            {{> report_lmsace_reports/siteblocks}}
+          {{/sitereport}}
+
+          {{#coursereport}}
+            {{> report_lmsace_reports/courseblocks}}
+          {{/coursereport}}
+
+          {{#userreport}}
+            {{> report_lmsace_reports/userblocks}}
+          {{/userreport}}
+
+          {{#teacherreport}}
+            {{> report_lmsace_reports/teacherblocks}}
+          {{/teacherreport}}
+
+                {{#evaluationreport}}
+                    {{> report_lmsace_reports/evaluationblocks}}
+                {{/evaluationreport}}
+      </div>
+      {{/reportbase}}
+    </div>
+    {{/widgets}}
+</div>

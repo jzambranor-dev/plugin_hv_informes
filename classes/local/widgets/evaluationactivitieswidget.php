@@ -1,0 +1,110 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Evaluation activities table widget.
+ *
+ * @package    report_lmsace_reports
+ * @copyright  2023 LMSACE <https://lmsace.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+namespace report_lmsace_reports\local\widgets;
+
+use report_lmsace_reports\output\widgets_info;
+
+/**
+ * Evaluation activities table widget rendering a dynamic table of course activities.
+ */
+class evaluationactivitieswidget extends widgets_info {
+
+    /** @var string Widget context. */
+    public $context = "evaluation";
+
+    /** @var int Course ID. */
+    protected $courseid;
+
+    /** @var string Module type filter. */
+    protected $modtype;
+
+    /** @var int Date from filter (timestamp). */
+    protected $datefrom;
+
+    /** @var int Date to filter (timestamp). */
+    protected $dateto;
+
+    /**
+     * Constructor.
+     * @param int $courseid
+     * @param string $modtype
+     * @param int $datefrom
+     * @param int $dateto
+     */
+    public function __construct($courseid, $modtype = '', $datefrom = 0, $dateto = 0) {
+        parent::__construct();
+        $this->courseid = $courseid;
+        $this->modtype = $modtype;
+        $this->datefrom = $datefrom;
+        $this->dateto = $dateto;
+        $this->get_report_data();
+    }
+
+    /**
+     * Get chart type.
+     * @return null
+     */
+    public function get_charttype() {
+        return null;
+    }
+
+    /**
+     * Report is chart or not.
+     * @return bool
+     */
+    public function is_chart() {
+        return false;
+    }
+
+    /**
+     * Prepare report data.
+     */
+    private function get_report_data() {
+        global $CFG;
+
+        require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationactivities_table.php');
+        require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationactivities_table_filterset.php');
+
+        $table = new \report_lmsace_reports\local\table\evaluationactivities_table(
+            'evaluation-activities-table', $this->courseid, $this->modtype, $this->datefrom, $this->dateto
+        );
+        $filterset = new \report_lmsace_reports\local\table\evaluationactivities_table_filterset(
+            'evaluation-activities-filter'
+        );
+        $table->set_filterset($filterset);
+
+        ob_start();
+        $table->out(20, true);
+        $this->reportdata = ob_get_contents();
+        ob_end_clean();
+    }
+
+    /**
+     * Get data.
+     * @return string
+     */
+    public function get_data() {
+        return $this->reportdata;
+    }
+}

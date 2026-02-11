@@ -1,0 +1,351 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_lmsace_reports/siteblocks.
+
+    Template for the site reports.
+
+    Example context (json):
+    {
+
+    }
+}}
+
+{{#nositereports}}
+    <p class="no-site-reports alert alert-info"> {{#str}} nositereports, report_lmsace_reports {{/str}} </p>
+{{/nositereports}}
+
+{{#stacksitereports}}
+<div class="lmsace-reports count-block">
+    <ul>
+        <li><a href="#"><i class="fa fa-users"></i> <span><b>{{users}}</b> {{#str}}users, core {{/str}}</span></a></li>
+        <li><a href="#"><i class="fa fa-book"></i> <span><b>{{courses}}</b> {{#str}}courses, core {{/str}}</span></a></li>
+        <li><a href="#"><i class="fa fa-sign-in"></i> <span><b>{{enrolments}}</b>  {{#str}}enrolment, report_lmsace_reports {{/str}} </span></a></li>
+        <li><a href="#"><i class="fa fa-certificate"></i> <span><b>{{completions}}</b> {{#str}}completions, report_lmsace_reports{{/str}}</span></a></li>
+        <li><a href="#"><i class="fa fa-cubes"></i> <span><b>{{modules}}</b> {{#str}} modules, report_lmsace_reports {{/str}}</span></a></li>
+    </ul>
+</div>
+{{/stacksitereports}}
+
+
+<div class="row">
+    {{#overallsiteinfo}}
+
+     <div class="col-md-6">
+        <div class="site-overall-reports block-report">
+            <div class="main-panel">
+                <div class="header-panel">
+                    <div class="heading-block">
+                        <h5> {{#str}} siteactivities, report_lmsace_reports{{/str}}</h5>
+                    </div>
+                    <div class="filter-block">
+                        <div class="dropdown show">
+                            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="daterangefiltermenu" {{datatoggle}} aria-haspopup="true" aria-expanded="false">{{#str}} overall, report_lmsace_reports {{/str}}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" href="#" value="today">{{#str}} today, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="week">{{#str}} lastweek, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="month">{{#str}} lastmonth, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="year">{{#str}} lastyear, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="all">{{#str}} overall, report_lmsace_reports {{/str}}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="loadiconElement"></div>
+                <div class="body-panel">
+                    <div id="site-info-reports">
+                        {{{overallsiteinfo}}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/overallsiteinfo}}
+
+
+    {{#sitestateinfo}}
+
+     <div class="col-md-6">
+        <div class="site-state-reports block-report">
+            <div class="main-panel">
+                <div class="header-panel">
+                    <div class="heading-block">
+                        <h5> {{#str}} sitestateinfowidget, report_lmsace_reports{{/str}}</h5>
+                    </div>
+                </div>
+                <div class="loadiconElement"></div>
+                <div class="body-panel">
+                    <div id="site-info-reports">
+                        {{{sitestateinfo}}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/sitestateinfo}}
+
+    {{#siteusers}}
+        <!-- Users registration report -->
+        <div class="col-md-6">
+            <div class="user-info-block block-report">
+                <div class="main-panel">
+                    <div class="header-panel">
+                        <div class="heading-block">
+                            <h5> {{#str}} siteuserswidget, report_lmsace_reports {{/str}}</h5>
+                        </div>
+                        <div class="filter-block">
+                            <div class="dropdown show">
+                                <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="daterangefiltermenu" {{datatoggle}} aria-haspopup="true" aria-expanded="false">{{#str}} overall, report_lmsace_reports {{/str}}
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item" href="#" value="today">{{#str}} today, report_lmsace_reports {{/str}}</a>
+                                    <a class="dropdown-item" href="#" value="week">{{#str}} lastweek, report_lmsace_reports {{/str}}</a>
+                                    <a class="dropdown-item" href="#" value="month">{{#str}} lastmonth, report_lmsace_reports {{/str}}</a>
+                                    <a class="dropdown-item" href="#" value="year">{{#str}} lastyear, report_lmsace_reports {{/str}}</a>
+                                    <a class="dropdown-item active" href="#" value="all">{{#str}} overall, report_lmsace_reports {{/str}}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="loadiconElement"></div>
+
+                    <div class="body-panel">
+                        <canvas id="user-info-chart" width="100" height="100"></canvas>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    {{/siteusers}}
+
+    {{#cohortsinfo}}
+    <!-- Cohorts information report -->
+     <div class="col-md-6">
+        <div class="cohorts-info block-report">
+            <div class="main-panel">
+                <div class="header-panel">
+                    <div class="heading-block">
+                        <h5> {{#str}} sitecohortsinfowidget, report_lmsace_reports {{/str}} </h5>
+                    </div>
+                </div>
+                {{#noresult}}
+                <p class="noresult"> {{#str}} nodatatodisplay, report_lmsace_reports {{/str}} </p>
+                {{/noresult}}
+
+                <div class="body-panel {{#noresult}} hide {{/noresult}}">
+                    <canvas id="cohorts-info-chart" width="100" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/cohortsinfo}}
+
+    {{#siteresourceofcourses}}
+    <div class="col-md-6">
+        <div class="site-course-activity block-report">
+            <div class="main-panel">
+                <div class="header-panel">
+                    <div class="heading-block">
+                        <h5> {{#str}} enrolementstatus, report_lmsace_reports{{/str}}</h5>
+                    </div>
+                </div>
+                <div class="body-panel">
+                    <canvas id="course-activity-chart" width="100" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/siteresourceofcourses}}
+
+    {{#enrolcompletionmonth}}
+    <!-- <div class="col-md-6">
+        <div class="enrol-completion-month-block block-report">
+            <div class="main-panel">
+                <div class="header-panel">
+                    <div class="heading-block">
+                        <h5> {{#str}} enrolmentcompletion_month, report_lmsace_reports{{/str}}</h5>
+                    </div>
+                    <div class="filter-block">
+                        <div class="dropdown show">
+                            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="daterangefiltermenu"{{datatoggle}} aria-haspopup="true" aria-expanded="false">{{currentmonth}}</a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                {{#lastmonthsinfo}}
+                                    <a class="dropdown-item" href="#" value="{{month}}">{{month}}</a>
+                                {{/lastmonthsinfo}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="loadiconElement"></div>
+                <div class="body-panel">
+                    <canvas id="enrolment-completion-month-chart"  width="100" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    {{/enrolcompletionmonth}}
+
+    {{#enrolmethodusers}}
+     <div class="col-md-6">
+        <div class="enroll-method-users block-report">
+            <div class="main-panel">
+                <div class="header-panel">
+                    <div class="heading-block">
+                        <h5> {{#str}} enrolmentmethod, report_lmsace_reports{{/str}}</h5>
+                    </div>
+                </div>
+                <div class="body-panel">
+                    <canvas id="enroll-method-chart" width="100" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/enrolmethodusers}}
+
+    {{#topcourseenrolment}}
+    <div class="col-md-6">
+        <div class="topcourse-enrollment-reports block-report">
+            <div class="main-panel">
+                <div class="header-panel">
+                    <div class="heading-block">
+                        <h5> {{#str}} strtopcourseenrolment, report_lmsace_reports{{/str}}</h5>
+                    </div>
+                    <div class="filter-block">
+                        <div class="dropdown show">
+                            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="daterangefiltermenu"{{datatoggle}} aria-haspopup="true" aria-expanded="false">{{#str}} overall, report_lmsace_reports {{/str}}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" href="#" value="today">{{#str}} today, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="week">{{#str}} lastweek, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="month">{{#str}} lastmonth, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="year">{{#str}} lastyear, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="all">{{#str}} overall, report_lmsace_reports {{/str}}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="loadiconElement"></div>
+                <div class="body-panel">
+                    <div id="topcourse-enrollment-block">
+                        {{#topcourseenrolment}}
+                            {{{topcourseenrolment}}}
+                        {{/topcourseenrolment}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/topcourseenrolment}}
+
+    {{#topcoursecompletion}}
+    <div class="col-md-6">
+        <div class="topcourse-coursecompletion-reports block-report">
+            <div class="main-panel">
+                <div class="header-panel">
+                    <div class="heading-block">
+                       <h5> {{#str}} strtopcoursecompletion, report_lmsace_reports{{/str}}</h5>
+                    </div>
+                    <div class="filter-block">
+                        <div class="dropdown show">
+                            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="daterangefiltermenu"{{datatoggle}} aria-haspopup="true" aria-expanded="false">{{#str}} overall, report_lmsace_reports {{/str}}</a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" href="#" value="today">{{#str}} today, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="week">{{#str}} lastweek, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="month">{{#str}} lastmonth, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="year">{{#str}} lastyear, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="all">{{#str}} overall, report_lmsace_reports {{/str}}</a>
+                            </div>
+                        </div>
+                   </div>
+                </div>
+                <div class="loadiconElement"></div>
+                <div class="body-panel">
+                    <div id="topcourse-coursecompletion-block">
+                       {{{topcoursecompletion}}}
+                    </div>
+               </div>
+           </div>
+       </div>
+    </div>
+    {{/topcoursecompletion}}
+
+
+    {{#siteactiveusers}}
+    <!--
+    <div class="col-md-12">
+        <div class="site-activeusers-block block-report">
+            <div class="main-panel">
+                <div class="header-panel">
+                    <div class="heading-block">
+                        <h5> {{#str}} stractiveusers, report_lmsace_reports{{/str}}</h5>
+                    </div>
+                    <div class="filter-block">
+                        <div class="dropdown show">
+                            <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="daterangefiltermenu"{{datatoggle}} aria-haspopup="true" aria-expanded="false">{{#str}} lastyear, report_lmsace_reports {{/str}}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item" href="#" value="week">{{#str}} lastweek, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="month">{{#str}} lastmonth, report_lmsace_reports {{/str}}</a>
+                                <a class="dropdown-item" href="#" value="year">{{#str}} lastyear, report_lmsace_reports {{/str}}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="loadiconElement"></div>
+                <div class="body-panel">
+                    <canvas id="site-activeusers-chart" width="100" height="100" data-uservisitslabel="{{#str}} uservisits, report_lmsace_reports {{/str}}"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+    {{/siteactiveusers}}
+
+    {{#sitevisits}}
+        <div class="col-md-12">
+            <div class="site-visits-block block-report">
+                <div class="main-panel">
+                    <div class="header-panel">
+                        <div class="heading-block">
+                            <h5> {{#str}} sitevisitswidget, report_lmsace_reports{{/str}}</h5>
+                        </div>
+                        <div class="filter-block">
+                            <div class="dropdown show">
+                                <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="daterangefiltermenu"{{datatoggle}} aria-haspopup="true" aria-expanded="false">{{#str}} lastyear, report_lmsace_reports {{/str}}
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item" href="#" value="week">{{#str}} lastweek, report_lmsace_reports {{/str}}</a>
+                                    <a class="dropdown-item" href="#" value="month">{{#str}} lastmonth, report_lmsace_reports {{/str}}</a>
+                                    <a class="dropdown-item" href="#" value="year">{{#str}} lastyear, report_lmsace_reports {{/str}}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="loadiconElement"></div>
+                    <div class="body-panel">
+                        <canvas id="site-visits-chart" width="100" height="100"
+                            data-sitevisits="{{#str}} sitevisits, report_lmsace_reports {{/str}}"
+                            data-coursevisits="{{#str}} coursevisits, report_lmsace_reports {{/str}}"
+                            data-modulevisits="{{#str}} modulevisits, report_lmsace_reports {{/str}}"
+                        ></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{/sitevisits}}
+</div>

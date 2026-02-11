@@ -1,0 +1,302 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_lmsace_reports/userblocks.
+
+    Template for the Top course enrollment widgets.
+
+    Example context (json):
+    {
+
+    }
+}}
+
+{{#enableuserblock}}
+
+    <div class="user-report-block position-relative">
+        {{#users}}
+            {{#selected}}
+                <input type="hidden" name="actionuser" id="actionuser" value="{{id}}">
+            {{/selected}}
+        {{/users}}
+
+        {{^reportbase}}
+        <div class="user-block report-lmsace-selector">
+            {{{userform}}}
+        </div>
+        {{/reportbase}}
+
+        {{#nouserreports}}
+            <p class="no-user-reports alert alert-info"> {{#str}} nouserreports, report_lmsace_reports {{/str}} </p>
+        {{/nouserreports}}
+
+        {{#reportbase}}
+        <div class="nav-item refresh-button position-absolute">
+            <a href="{{{purgeurl}}}" data-toggle="tooltip" title="{{#str}} reload, report_lmsace_reports {{/str}}"
+                class="btn btn-primary"> <i class="fa fa-refresh"> </i>
+                {{#str}} reload, report_lmsace_reports {{/str}}
+            </a>
+        </div>
+        {{/reportbase}}
+
+        {{#stackuserreports}}
+        <div class="lmsace-reports count-block">
+            <ul>
+                <li><a href="#"><i class="fa fa-book"></i> <span> {{courses}} {{#str}}courses{{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-check-circle-o"></i> <span> {{completed}} {{#str}} coursecompletion, report_lmsace_reports{{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-certificate"></i> <span> {{badges}} {{#str}} badges {{/str}}</span></a></li>
+                {{#showpoints}}
+                    <li><a href="#"><i class="fa fa-star"></i> <span> {{points}} {{#str}} points, report_lmsace_reports{{/str}}</span></a></li>
+                {{/showpoints}}
+                <li><a href="#"><i class="fa fa-file-text-o"></i>  <span> {{assignsubmission}} {{#str}} assignsubmission, report_lmsace_reports {{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-file"></i>  <span> {{quiz_attempts}} {{#str}} quizattempts, report_lmsace_reports {{/str}}</span></a></li>
+            </ul>
+        </div>
+        {{/stackuserreports}}
+
+        <div class="row">
+            {{#stackuserreports}}
+                <div class="col-md-6">
+                    <div class="user-detail block-report">
+                        <div class="username">
+                            {{{userimage}}}
+
+                            <div class="user-block">
+                                <span> {{username}}</span>
+                                {{#roles}}
+                                <div class="user-roles">
+                                    <span> {{{name}}} </span>
+                                </div>
+                                {{/roles}}
+
+                                <div class="email">
+                                    {{email}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="user-data">
+                            <div class="access-data">
+
+                                <div class="time-created">
+                                    <label> <b>{{#str}} timecreated, report_lmsace_reports {{/str}}</b> </label>
+                                    <span class="timecreated">
+                                        {{timecreated}}
+                                    </span>
+                                </div>
+
+                                <div class="first-login">
+                                    <label> <b>{{#str}} firstaccess, report_lmsace_reports {{/str}}</b> </label>
+                                    <span class="firstaccess">
+                                        {{firstaccess}}
+                                    </span>
+                                </div>
+
+                                <div class="last-login">
+                                    <label> <b>{{#str}} lastaccess, report_lmsace_reports {{/str}}</b> </label>
+                                    <span class="lastaccess">
+                                        {{lastlogin}}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/stackuserreports}}
+
+            {{#usermyactivities}}
+                <div class="col-md-6">
+                    <div class="user-myactivities-block block-report">
+                        <div class="main-panel">
+                            <div class="header-panel">
+                                <div class="heading-block">
+                                    <h5> {{#str}} strmyactivites, report_lmsace_reports{{/str}}</h5>
+                                </div>
+                            </div>
+                            <div class="loadiconElement"></div>
+                            <div class="body-panel">
+                                <div class="user-myactivities-reports">
+                                    {{{usermyactivities}}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/usermyactivities}}
+
+            {{#usermyquizzes}}
+                <div class="col-md-6">
+                    <div class="user-myquizzes-block block-report">
+                        <div class="main-panel">
+                            <div class="header-panel">
+                                <div class="heading-block">
+                                    <h5> {{#str}} strmyquizzes, report_lmsace_reports{{/str}}</h5>
+                                </div>
+                            </div>
+                            <div class="loadiconElement"></div>
+                            <div class="body-panel">
+                                <div class="user-myquizzes-reports">
+                                    {{{usermyquizzes}}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/usermyquizzes}}
+
+            {{#usermyassignments}}
+                <div class="col-md-6">
+                    <div class="user-myassignments-block block-report">
+                        <div class="main-panel">
+                            <div class="header-panel">
+                                <div class="heading-block">
+                                    <h5> {{#str}} strmyassignments, report_lmsace_reports{{/str}}</h5>
+                                </div>
+                            </div>
+                            <div class="loadiconElement"></div>
+                            <div class="body-panel">
+                                <div class="user-myassignments-reports">
+                                    {{{usermyassignments}}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/usermyassignments}}
+
+            {{#usergroupcohorts}}
+                <div class="col-md-6">
+                    <div class="user-cohort-group-block block-report">
+                        <div class="main-panel">
+                            <div class="header-panel">
+                                <div class="heading-block">
+                                    <h5> {{#str}} cohortgroups, report_lmsace_reports{{/str}}</h5>
+                                </div>
+                                <div class="filter-block">
+                                    <div class="dropdown show">
+                                        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="daterangefiltermenu"{{datatoggle}} aria-haspopup="true" aria-expanded="false">{{#str}} overall, report_lmsace_reports {{/str}}
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                            <a class="dropdown-item" href="#" value="week">{{#str}} lastweek, report_lmsace_reports {{/str}}</a>
+                                            <a class="dropdown-item" href="#" value="month">{{#str}} lastmonth, report_lmsace_reports {{/str}}</a>
+                                            <a class="dropdown-item" href="#" value="year">{{#str}} lastyear, report_lmsace_reports {{/str}}</a>
+                                            <a class="dropdown-item" href="#" value="all">{{#str}} overall, report_lmsace_reports {{/str}}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="loadiconElement"></div>
+                            <div class="body-panel">
+                                <canvas id="user-cohort-group-chart"  width="100" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/usergroupcohorts}}
+
+            {{#userscore}}
+                <div class="col-md-6">
+                    <div class="user-score-block block-report">
+                        <div class="main-panel">
+                            <div class="header-panel">
+                                <div class="heading-block">
+                                    <h5> {{#str}} usergrade, report_lmsace_reports{{/str}}</h5>
+                                </div>
+                            </div>
+                            <div class="body-panel">
+                                <canvas id="user-score-chart"  width="100" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/userscore}}
+
+            {{#userlogins}}
+                <div class="col-md-12">
+                    <div class="user-login-block block-report">
+                        <div class="main-panel">
+                            <div class="header-panel">
+                                <div class="heading-block">
+                                    <h5> {{#str}} userlogins, report_lmsace_reports{{/str}}</h5>
+                                </div>
+                                <div class="filter-block">
+                                    <div class="dropdown show">
+                                        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="daterangefiltermenu"{{datatoggle}} aria-haspopup="true" aria-expanded="false">{{#str}} lastyear, report_lmsace_reports {{/str}}
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                            <a class="dropdown-item" href="#" value="week">{{#str}} lastweek, report_lmsace_reports {{/str}}</a>
+                                            <a class="dropdown-item" href="#" value="month">{{#str}} lastmonth, report_lmsace_reports {{/str}}</a>
+                                            <a class="dropdown-item" href="#" value="year">{{#str}} lastyear, report_lmsace_reports {{/str}}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="loadiconElement"></div>
+                            <div class="body-panel">
+                                <canvas id="user-login-chart"  width="100" height="400"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/userlogins}}
+
+            {{#mostvisitcourse}}
+                <div class="col-md-12">
+                    <div class="user-visits-course-block block-report">
+                        <div class="main-panel">
+                            <div class="header-panel">
+                                <div class="heading-block">
+                                    <h5> {{#str}} mostvisitcourse, report_lmsace_reports{{/str}}</h5>
+                                </div>
+                                <div class="filter-block">
+                                    <div class="dropdown show">
+                                        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="daterangefiltermenu"{{datatoggle}} aria-haspopup="true" aria-expanded="false">{{#str}} overall, report_lmsace_reports {{/str}}
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                            <a class="dropdown-item" href="#" value="week">{{#str}} lastweek, report_lmsace_reports {{/str}}</a>
+                                            <a class="dropdown-item" href="#" value="month">{{#str}} lastmonth, report_lmsace_reports {{/str}}</a>
+                                            <a class="dropdown-item" href="#" value="year">{{#str}} lastyear, report_lmsace_reports {{/str}}</a>
+                                            <a class="dropdown-item" href="#" value="all">{{#str}} overall, report_lmsace_reports {{/str}}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="loadiconElement"></div>
+                            <div class="body-panel">
+                                <canvas id="user-visits-course-chart"  width="100" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/mostvisitcourse}}
+        </div>
+    </div>
+{{/enableuserblock}}
+
+{{^enableuserblock}}
+    {{#isforadmin}}
+        <div class="no-users-block">
+            <div class="alert alert-info"> {{#str}} noadminreports, report_lmsace_reports {{/str}}</div>
+        </div>
+    {{/isforadmin}}
+    {{^isforadmin}}
+        <div class="no-users-block">
+            <div class="alert alert-info">    {{#str}} nousers, report_lmsace_reports {{/str}}</div>
+        </div>
+    {{/isforadmin}}
+{{/enableuserblock}}
+
+

@@ -1,0 +1,237 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_lmsace_reports/evaluationblocks
+
+    Template for the evaluation reports tab.
+
+    Example context (json):
+    {
+    }
+}}
+
+{{#enableevaluationblock}}
+
+    <div class="evaluation-report-block position-relative">
+
+        {{^reportbase}}
+            <div class="evaluation-block report-lmsace-selector">{{{evalform}}}</div>
+        {{/reportbase}}
+
+        {{#noevaluationreports}}
+            <p class="no-evaluation-reports alert alert-info">{{#str}} noevaluationreports, report_lmsace_reports {{/str}}</p>
+        {{/noevaluationreports}}
+
+        {{#reportbase}}
+        <div class="nav-item refresh-button position-absolute">
+            <a href="{{{purgeurl}}}" data-toggle="tooltip" title="{{#str}} reload, report_lmsace_reports {{/str}}"
+                class="btn btn-primary"> <i class="fa fa-refresh"> </i>
+                {{#str}} reload, report_lmsace_reports {{/str}}
+            </a>
+        </div>
+        {{/reportbase}}
+
+        {{! Breadcrumb navigation }}
+        {{#hasevalbreadcrumb}}
+        <nav aria-label="breadcrumb" class="mt-3 mb-3">
+            <ol class="breadcrumb">
+                {{#evalbreadcrumb}}
+                <li class="breadcrumb-item {{#active}}active{{/active}}">
+                    {{#active}}{{label}}{{/active}}
+                    {{^active}}<a href="{{{url}}}">{{label}}</a>{{/active}}
+                </li>
+                {{/evalbreadcrumb}}
+            </ol>
+        </nav>
+        {{/hasevalbreadcrumb}}
+
+        {{! Step 1: Stack stats (shown when teacher is selected) }}
+        {{#stackevaluationreports}}
+        <div class="lmsace-reports count-block">
+            <ul>
+                <li><a href="#"><i class="fa fa-users"></i> <span><b>{{totalstudents}}</b> {{#str}} totalstudents, report_lmsace_reports {{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-book"></i> <span><b>{{totalcourses}}</b> {{#str}} courses {{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-check-circle-o"></i> <span><b>{{avgcompletionrate}}%</b> {{#str}} avgcompletionrate, report_lmsace_reports {{/str}}</span></a></li>
+                <li><a href="#"><i class="fa fa-cubes"></i> <span><b>{{totalactivities}}</b> {{#str}} totalactivities, report_lmsace_reports {{/str}}</span></a></li>
+            </ul>
+        </div>
+        {{/stackevaluationreports}}
+
+        <div class="row">
+
+            {{! Step 2: Courses list (when teacher selected, no course selected) }}
+            {{#evaluationcourses}}
+            <div class="col-md-12">
+                <div class="evaluation-courses-block block-report">
+                    <div class="main-panel">
+                        <div class="header-panel">
+                            <div class="heading-block">
+                                <h5>{{#str}} evaluationcourses, report_lmsace_reports {{/str}}</h5>
+                            </div>
+                        </div>
+                        <div class="body-panel">
+                            {{{evaluationcourses}}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/evaluationcourses}}
+
+            {{! Step 3: Activities list (when course selected, no activity selected) }}
+            {{#evaluationactivities}}
+            <div class="col-md-12">
+                <div class="evaluation-activities-block block-report">
+                    <div class="main-panel">
+                        <div class="header-panel">
+                            <div class="heading-block">
+                                <h5>{{#str}} activities, report_lmsace_reports {{/str}}</h5>
+                            </div>
+                        </div>
+
+                        {{! Course summary bar }}
+                        {{#coursesummarydata}}
+                        <div class="alert alert-info d-flex flex-wrap gap-3 mb-3">
+                            <span><strong>{{#str}} totalenrolled, report_lmsace_reports {{/str}}:</strong> {{totalenrolled}}</span>
+                            <span><strong>{{#str}} totalcompleted, report_lmsace_reports {{/str}}:</strong> {{totalcompleted}}</span>
+                        </div>
+                        {{/coursesummarydata}}
+
+                        {{! Filters bar }}
+                        <div class="d-flex flex-wrap align-items-end gap-2 mb-3 p-2 border rounded bg-light">
+                            <div>
+                                <label for="eval-modtype-filter" class="form-label mb-0 small">{{#str}} filterbyactivitytype, report_lmsace_reports {{/str}}</label>
+                                <select id="eval-modtype-filter" class="form-select form-select-sm custom-select">
+                                    {{#modtypes}}
+                                    <option value="{{value}}" {{selected}}>{{label}}</option>
+                                    {{/modtypes}}
+                                </select>
+                            </div>
+                            <div>
+                                <label for="eval-datefrom" class="form-label mb-0 small">{{#str}} datefrom, report_lmsace_reports {{/str}}</label>
+                                <input type="date" id="eval-datefrom" class="form-control form-control-sm"
+                                    {{#evalfrom}}value="{{evalfromdate}}"{{/evalfrom}}>
+                            </div>
+                            <div>
+                                <label for="eval-dateto" class="form-label mb-0 small">{{#str}} dateto, report_lmsace_reports {{/str}}</label>
+                                <input type="date" id="eval-dateto" class="form-control form-control-sm"
+                                    {{#evalto}}value="{{evaltodate}}"{{/evalto}}>
+                            </div>
+                            <div>
+                                <button id="eval-apply-filter" class="btn btn-primary btn-sm">{{#str}} applyfilter, report_lmsace_reports {{/str}}</button>
+                                <button id="eval-clear-filter" class="btn btn-secondary btn-sm">{{#str}} clearfilter, report_lmsace_reports {{/str}}</button>
+                            </div>
+                        </div>
+
+                        <div class="body-panel">
+                            {{{evaluationactivities}}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/evaluationactivities}}
+
+            {{! Step 4: Activity detail (when activity selected) }}
+            {{#evaluationactivitydetail}}
+            <div class="col-md-12">
+                <div class="evaluation-activitydetail-block block-report">
+                    <div class="main-panel">
+                        <div class="header-panel">
+                            <div class="heading-block">
+                                <h5>{{activityname}} <span class="badge bg-secondary badge-secondary">{{activitytype}}</span></h5>
+                            </div>
+                        </div>
+                        <div class="body-panel">
+
+                            {{! Activity info cards }}
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{#str}} activitydetail, report_lmsace_reports {{/str}}</h6>
+                                            <table class="table table-sm table-borderless">
+                                                <tr><td><strong>{{#str}} startdate, report_lmsace_reports {{/str}}</strong></td><td>{{#startdate}}{{startdate}}{{/startdate}}{{^startdate}}{{#str}} notavailable, report_lmsace_reports {{/str}}{{/startdate}}</td></tr>
+                                                <tr><td><strong>{{#str}} enddate, report_lmsace_reports {{/str}}</strong></td><td>{{#enddate}}{{enddate}}{{/enddate}}{{^enddate}}{{#str}} notavailable, report_lmsace_reports {{/str}}{{/enddate}}</td></tr>
+                                                <tr><td><strong>{{#str}} averagetime, report_lmsace_reports {{/str}}</strong></td><td>{{avgtime}}</td></tr>
+                                                <tr><td><strong>{{#str}} averagegrade, report_lmsace_reports {{/str}}</strong></td><td>{{avggrade}}%</td></tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{#str}} passfailchart, report_lmsace_reports {{/str}}</h6>
+                                            <canvas id="evaluation-passfail-chart" width="100" height="100"
+                                                data-passed="{{passed}}" data-failed="{{failed}}" data-notcompleted="{{notcompleted}}"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{! Summary stats }}
+                            <div class="d-flex flex-wrap gap-3 mb-4">
+                                <span class="badge bg-primary badge-primary p-2">{{#str}} enrolled, report_lmsace_reports {{/str}}: {{enrolled}}</span>
+                                <span class="badge bg-success badge-success p-2">{{#str}} completedcount, report_lmsace_reports {{/str}}: {{completed}}</span>
+                                <span class="badge bg-warning badge-warning p-2">{{#str}} notcompletedcount, report_lmsace_reports {{/str}}: {{notcompleted}}</span>
+                                <span class="badge bg-success badge-success p-2">{{#str}} passedcount, report_lmsace_reports {{/str}}: {{passed}}</span>
+                                <span class="badge bg-danger badge-danger p-2">{{#str}} failedcount, report_lmsace_reports {{/str}}: {{failed}}</span>
+                            </div>
+
+                            {{! Students who have not attempted }}
+                            {{#hasnotattempted}}
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{#str}} studentsnotattempted, report_lmsace_reports {{/str}} ({{notattemptedcount}})</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>{{#str}} name {{/str}}</th>
+                                                    <th>{{#str}} email {{/str}}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {{#notattempted}}
+                                                <tr>
+                                                    <td>{{rownum}}</td>
+                                                    <td>{{fullname}}</td>
+                                                    <td>{{email}}</td>
+                                                </tr>
+                                                {{/notattempted}}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/hasnotattempted}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{/evaluationactivitydetail}}
+
+        </div>
+    </div>
+
+{{/enableevaluationblock}}
+
+{{^enableevaluationblock}}
+    <div class="no-evaluation-block">
+        <div class="alert alert-info">{{#str}} noevaluationteachers, report_lmsace_reports {{/str}}</div>
+    </div>
+{{/enableevaluationblock}}

@@ -1,0 +1,55 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_lmsace_reports/topenrollment_info.
+
+    Template for the Top course enrollment widgets.
+
+    Example context (json):
+    {
+        "noresult" : "1",
+        "fullname": "Demo course",
+        "enrolments" : "10"
+    }
+}}
+
+
+<div class="table-block">
+    {{#noresult}}
+    <p class="noresult"> {{#str}} nodatatodisplay, report_lmsace_reports {{/str}} </p>
+    {{/noresult}}
+
+    {{^noresult}}
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">{{#str}} coursename, report_lmsace_reports {{/str}}</th>
+                <th scope="col">{{#str}} strenrolments, report_lmsace_reports {{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#.}}
+            <tr>
+                <td>{{fullname}}</td>
+                <td>{{enrolments}}</td>
+            </tr>
+            {{/.}}
+        </tbody>
+    </table>
+    {{/noresult}}
+
+</div>

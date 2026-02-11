@@ -1,0 +1,44 @@
+
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_lmsace_reports/topenrollment_info.
+
+    Template for the User activities widgets.
+
+    Example context (json):
+    {
+        "completions" : "10",
+        "activities": "10",
+        "dues" : "10"
+    }
+}}
+
+<div class="activities-block">
+    <span><i class="fa fa-tasks"></i> <b>{{#str}} stractivities, report_lmsace_reports{{/str}}:</b></span>
+    <span><b>{{activities}}</b></span>
+</div>
+
+<div class="completions-block">
+    <span><i class="fa fa-check-circle-o"></i> <b>{{#str}} completions, report_lmsace_reports{{/str}}:</b></span>
+    <span><b>{{completions}}</b></span>
+</div>
+
+<div class="overdue-block">
+    <span><i class="fa fa-clock-o"></i> <b>{{#str}} stroverdues, report_lmsace_reports{{/str}}:</b></span>
+    <span><b>{{dues}}</b></span>
+</div>

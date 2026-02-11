@@ -1,0 +1,493 @@
+/* Reports block */
+.lmsace-reports-body .navbar.navbar-expand-lg .navbar-collapse {
+    display: none !important; /* stylelint-disable-line declaration-no-important */
+}
+#page-local-lmsace_reports-index #page #page-content #region-main {
+    padding: 0;
+    border: 0;
+    overflow: visible;
+}
+.lmsace-reports-body .reports-block {
+    margin-top: 25px;
+}
+.lmsace-reports-body .reports-block .info-block {
+    padding: 30px;
+    margin-bottom: 40px;
+}
+.lmsace-reports-body .reports-block .info-block h2 {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.lmsace-reports-body .reports-block .info-block .title-block {
+    width: 46%;
+    display: inline-block;
+    vertical-align: middle;
+}
+.lmsace-reports-body .reports-block .info-block .right-block {
+    width: 53%;
+    display: inline-block;
+}
+.lmsace-reports-body .reports-block .info-block .right-block .progress {
+    width: 61%;
+    display: inline-block;
+    margin-right: 10px;
+}
+.lmsace-reports-body .reports-block .info-block .right-block .btn-block {
+    width: auto;
+    display: inline-block;
+}
+.lmsace-reports-body .reports-block .info-block .right-block .btn-block a {
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 5px;
+    padding: 0 15px;
+    display: inline-block;
+}
+.lmsace-reports-body .reports-block .nav-tabs {
+    text-align: right;
+    display: block;
+}
+.lmsace-reports-body .reports-block h3 {
+    font-size: 30px;
+    font-weight: bold;
+    float: left;
+}
+.lmsace-reports-body .reports-block .tab-element > h3 {
+    float: none;
+}
+.lmsace-reports-body .reports-block .nav-tabs .nav-item {
+    display: inline-block;
+}
+.lmsace-reports-body .reports-block .nav-tabs .nav-item .nav-link {
+    font-size: 18px;
+    font-weight: bold;
+    background: none;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 15px;
+}
+.lmsace-reports-body .reports-block .nav-tabs .nav-item .nav-link.active {
+    margin-bottom: -1px;
+}
+.lmsace-reports-body .reports-block .nav-tabs .nav-item .nav-link.active,
+.lmsace-reports-body .reports-block .nav-tabs .nav-link.active:not(:disabled):not(.disabled):active,
+.lmsace-reports-body .reports-block .nav-tabs .nav-link.active:not(:disabled):not(.disabled).active,
+.lmsace-reports-body .reports-block .show > .nav-tabs .nav-link.active.dropdown-toggle,
+.lmsace-reports-body .reports-block .nav-pills .nav-link.active:not(:disabled):not(.disabled):active,
+.lmsace-reports-body .reports-block .nav-pills .nav-link.active:not(:disabled):not(.disabled).active,
+.lmsace-reports-body .reports-block .show > .nav-pills .nav-link.active.dropdown-toggle,
+.lmsace-reports-body .reports-block .nav-tabs .nav-link.active:not(:disabled):not(.disabled):active:focus,
+.lmsace-reports-body .reports-block .nav-tabs .nav-link.active:not(:disabled):not(.disabled).active:focus,
+.lmsace-reports-body .reports-block .show > .nav-tabs .nav-link.active.dropdown-toggle:focus,
+.lmsace-reports-body .reports-block .nav-pills .nav-link.active:not(:disabled):not(.disabled):active:focus,
+.lmsace-reports-body .reports-block .nav-pills .nav-link.active:not(:disabled):not(.disabled).active:focus,
+.lmsace-reports-body .reports-block .show > .nav-pills .nav-link.active.dropdown-toggle:focus {
+    border-bottom-color: #999;
+    background: none;
+    box-shadow: none;
+}
+.lmsace-reports-body .reports-block .tab-content {
+    margin-top: 40px;
+    clear: both;
+}
+.lmsace-reports-body .reports-block .lmsace-reports.count-block {
+    background-color: #e9edf4;
+    padding: 30px 20px;
+    border-radius: 5px;
+}
+.lmsace-reports-body .reports-block .tab-content .row .col-md-6,
+.lmsace-reports-body .reports-block .tab-content .row .col-md-12 {
+    margin-bottom: 30px;
+}
+.lmsace-reports-body .reports-block .tab-content .row .block-report {
+    height: 100%;
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #ebf0f9;
+    box-shadow: 0 13px 37px rgba(92, 107, 121, 0.1);
+}
+.lmsace-reports-body .reports-block .tab-content .row .col-md-6 .main-panel {
+    height: 100%;
+}
+.lmsace-reports-body .reports-block .tab-content .high-score-course-block {
+    padding: 15px;
+    border-radius: 5px;
+}
+.lmsace-reports-body .reports-block .tab-content .header-panel {
+    margin-bottom: 20px;
+}
+.lmsace-reports-body .reports-block .tab-content .heading-block {
+    margin-bottom: 0;
+    display: inline-block;
+    vertical-align: middle;
+}
+.lmsace-reports-body .reports-block .tab-content .filter-block {
+    float: right;
+}
+.lmsace-reports-body .reports-block .tab-content .filter-block .dropdown .dropdown-menu {
+    left: auto !important; /* stylelint-disable-line declaration-no-important */
+    right: 0;
+}
+.lmsace-reports-body .reports-block .tab-content .filter-block a {
+    font-size: 14px;
+    border-color: transparent;
+}
+.lmsace-reports-body .reports-block .tab-content .filter-block a.dropdown-toggle {
+    color: #333;
+    background: none;
+}
+.lmsace-reports-body .reports-block .tab-content .heading-block h5 {
+    font-size: 18px;
+    /* text-transform: capitalize; */
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 0;
+}
+.lmsace-reports-body .reports-block .tab-content .heading-block .filter-block {
+    float: right;
+}
+.lmsace-reports-body .reports-block .tab-content .heading-block .filter-block .dropdown a {
+    background: none;
+    border: 0;
+}
+.lmsace-reports-body .reports-block .tab-content .heading-block .filter-block .dropdown .dropdown-menu {
+    left: auto !important; /* stylelint-disable-line declaration-no-important */
+    right: 0;
+}
+.lmsace-reports-body .reports-block .tab-content .report-element .enrol-block {
+    padding: 15px;
+    margin-bottom: 30px;
+    border-radius: 5px;
+}
+.lmsace-reports-body .reports-block .tab-content .report-element img {
+    width: 100%;
+    height: auto;
+}
+.lmsace-reports.count-block {
+    margin-bottom: 50px;
+}
+.lmsace-reports.count-block ul {
+    padding-left: 0;
+    display: flex;
+    margin: 0;
+}
+.lmsace-reports.count-block ul li {
+    width: 100%;
+    text-align: center;
+    margin-right: 20px;
+    list-style: none;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+}
+.lmsace-reports-body .reports-block .lmsace-reports.count-block li a {
+    color: inherit;
+}
+.lmsace-reports.count-block ul li:last-child {
+    margin-right: 0;
+}
+.lmsace-reports.count-block ul li a,
+.lmsace-reports.count-block ul li span {
+    font-size: 26px;
+    text-decoration: none;
+}
+.lmsace-reports.count-block ul li span:hover {
+    color: #333;
+}
+
+.lmsace-reports.count-block ul li i {
+    font-size: 20px;
+    /* display: block; */
+    margin-bottom: 10px;
+    background: rgb(251 7 7 / 70%);
+    color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+}
+.lmsace-reports.count-block ul li a span {
+    font-size: 17px;
+    text-transform: capitalize;
+    display: block;
+    font-weight: 500;
+    color: #595858;
+}
+
+.lmsace-reports.count-block ul li a span b {
+    display: block;
+    color: #141414;
+    font-size: 22px;
+}
+
+/*User report*/
+
+.lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .course-block,
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block > .user-block {
+    display: flex;
+    margin-bottom: 50px;
+    justify-content: center;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .user-detail .username {
+    margin-bottom: 15px;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .user-detail .username a {
+    margin-right: 5px;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .user-detail .username .user-block {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .course-block .bsearch,
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .user-block .bsearch {
+    max-width: 560px;
+    text-align: left;
+    display: inline-block;
+    vertical-align: middle;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .course-block .bsearch form select,
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .user-block .bsearch form select {
+    max-width: 450px;
+    height: 40px;
+    color: #999;
+    border-color: #ccc;
+    border-radius: 3px;
+    background: none;
+    padding: 0 5px;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .course-block .bsearch form button,
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .user-block .bsearch form button {
+    height: 40px;
+    vertical-align: top;
+    margin-left: 10px;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .course-block .bsearch form input[type="text"],
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .user-block .bsearch form input[type="text"] {
+    max-width: 360px;
+    width: 100%;
+    border-radius: 5px;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .course-block .bsearch form input[type="submit"],
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .user-block .bsearch form input[type="submit"] {
+    max-width: 150px;
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+}
+
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .row .col-md-6 .body-panel > div > div {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .row .col-md-6 .body-panel > div > div span {
+    font-size: 16px;
+    color: #333;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .row .col-md-6 .body-panel > div > div span b {
+    font-weight: 500;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .user-report-block .row .col-md-6 .body-panel > div > div i {
+    margin-right: 5px;
+}
+.lmsace-reports-body .reports-block .tab-element
+.tab-content .user-report-block .row .col-md-6 .body-panel > div > div span:first-child {
+    color: #999;
+    margin-right: 5px;
+}
+/*Course report*/
+.lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .info-count-block {
+    padding: 15px 10px;
+    margin-bottom: 50px;
+    border-radius: 5px;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .info-count-block ul {
+    padding-left: 0;
+    display: flex;
+    margin: 0;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .info-count-block ul li {
+    width: 100%;
+    text-align: center;
+    list-style: none;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .info-count-block ul li:last-child {
+    border: 0;
+}
+.lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .info-count-block ul li span {
+    display: block;
+}
+
+@media (max-width: 767px) {
+    .lmsace-reports-body .reports-block .nav-tabs {
+        background: none;
+    }
+    .lmsace-reports-body .reports-block .lmsace-reports.count-block ul {
+        text-align: center;
+        display: block;
+        margin-bottom: 0;
+    }
+    .lmsace-reports-body .reports-block .lmsace-reports.count-block ul li {
+        width: auto;
+        display: inline-block;
+        margin-left: 30px;
+        margin-bottom: 30px;
+    }
+    .lmsace-reports-body .reports-block .tab-content .active-user-block .table-block .table {
+        margin-bottom: 0;
+    }
+    .lmsace-reports-body .reports-block .tab-content .active-user-block .table-block .table tr:last-child td {
+        padding-bottom: 0;
+    }
+    .lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .course-block span {
+        margin-bottom: 15px;
+        display: inline-block;
+    }
+    .lmsace-reports-body .reports-block .tab-element .tab-content
+    .course-report-block .course-block .bsearch form input[type="text"] {
+        margin-bottom: 15px;
+    }
+    .lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .course-block {
+        margin-bottom: 30px;
+    }
+    .lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .info-count-block {
+        border: 0;
+    }
+    .lmsace-reports-body .reports-block .tab-content .heading-block h5 {
+        margin-bottom: 0;
+    }
+    .lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .info-count-block ul {
+        text-align: center;
+        display: block;
+    }
+    .lmsace-reports-body .reports-block .tab-element .tab-content .course-report-block .info-count-block ul li {
+        width: auto;
+        padding: 15px;
+        display: inline-block;
+        border-radius: 3px;
+        margin-bottom: 20px;
+    }
+}
+
+.report-lmsace-selector .form-inline,
+.report-lmsace-selector .form-inline #fitem_id_courseinfo,
+.report-lmsace-selector .form-inline #fitem_id_userinfo {
+    align-items: flex-end;
+    width: 65%;
+}
+
+.report-lmsace-selector .form-inline #id_userinfo_label,
+.report-lmsace-selector .form-inline #id_courseinfo_label {
+    padding-bottom: 10px;
+}
+
+.lmsace-reports-body #site-info-reports tbody tr td:nth-child(2) {
+    font-weight: 600;
+}
+
+.lmsace-reports-body p.noresult {
+    text-align: center;
+    margin-top: 15%;
+    margin-bottom: 15%;
+}
+
+.lmsace-reports-body .nav-item.refresh-button {
+    float: left;
+}
+
+.lmsace-reports.count-block ul li:nth-child(6) i {
+    background: rgba(27, 58, 95, 0.7);
+}
+.lmsace-reports.count-block ul li:nth-child(7) i {
+    background: rgba(48, 190, 207, 0.7);
+}
+.lmsace-reports.count-block ul li:nth-child(4) i {
+    background: rgba(239, 77, 97, 0.7);
+}
+.lmsace-reports.count-block ul li:nth-child(5) i {
+    background: rgba(251, 178, 24, 0.7);
+}
+.lmsace-reports.count-block ul li:nth-child(8) i {
+    background: rgba(165, 165, 165, 0.7);
+}
+.lmsace-reports.count-block ul li:nth-child(3) i {
+    background: rgba(12, 203, 150, 0.7);
+}
+.lmsace-reports.count-block ul li:nth-child(2) i {
+    background: rgba(153, 102, 255, 0.7);
+}
+.lmsace-reports.count-block ul li:nth-child(1) i {
+    background: rgba(57, 155, 226, 0.7);
+}
+
+/* Course module grade */
+/* Move the assignment section downwards */
+.lmsace-reports-body .course-module-assignment-grade {
+    margin-top: 30px;
+}
+/* Padding for both assignment and quiz */
+.lmsace-reports-body .course-module-assignment-grade,
+.lmsace-reports-body .course-module-quiz-grade {
+    padding: 10px;
+    margin-top: 0;
+}
+.lmsace-reports-body .course-module-assignment-grade > div:nth-child(1),
+.lmsace-reports-body .course-module-quiz-grade > div:nth-child(1) {
+    margin-left: 0;
+    color: #000;
+    font-size: 1.1em;
+    margin-bottom: 19px;
+}
+.lmsace-reports-body .course-module-assignment-grade > div,
+.lmsace-reports-body .course-module-quiz-grade > div {
+    margin-bottom: 10px;
+    color: #666;
+    margin-left: 25px;
+}
+.lmsace-reports-body .course-module-assignment-grade > div:nth-child(1) span i,
+.lmsace-reports-body .course-module-quiz-grade > div:nth-child(1) span i {
+    margin-right: 5px;
+}
+
+.lmsace-reports-body .nav-item.refresh-button.position-absolute {
+    top: -50px;
+    right: 0;
+}
+
+/* Teacher report */
+.lmsace-reports-body .reports-block .tab-element .tab-content .teacher-report-block > .teacher-block {
+    display: flex;
+    margin-bottom: 50px;
+    justify-content: center;
+}
+
+.lmsace-reports-body .reports-block .tab-element .tab-content .teacher-report-block > .teacher-block .bsearch {
+    max-width: 560px;
+    text-align: left;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.report-lmsace-selector .form-inline #fitem_id_teacherinfo {
+    align-items: flex-end;
+    width: 65%;
+}
+
+.report-lmsace-selector .form-inline #id_teacherinfo_label {
+    padding-bottom: 10px;
+}
+
+.teacher-courses-summary-block .table th,
+.teacher-courses-summary-block .table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+.teacher-courses-summary-block .table thead th {
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+}

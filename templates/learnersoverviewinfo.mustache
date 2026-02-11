@@ -1,0 +1,55 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template report_lmsace_reports/learnersoverviewinfo.
+
+    Template for the learners overview widget.
+
+    Example context (json):
+    {
+
+    }
+}}
+
+<div class="table-block">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">{{#str}}name, report_lmsace_reports{{/str}}</th>
+                <th scope="col">{{#str}}email, report_lmsace_reports{{/str}}</th>
+                <th scope="col">{{#str}}gradecourseprogress, report_lmsace_reports{{/str}}</th>
+                <th scope="col">{{#str}}totalcourseprogress, report_lmsace_reports{{/str}}</th>
+                <th scope="col">{{#str}}completioncourses, report_lmsace_reports{{/str}}</th>
+                <th scope="col">{{#str}}accountcreated, report_lmsace_reports{{/str}}</th>
+                <th scope="col">{{#str}}lastlogin, report_lmsace_reports{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#.}}
+            <tr>
+                <td>{{user}}</td>
+                <td>{{email}}</td>
+                <td>{{score}}%</td>
+                <td>{{overallcourseprogress}}%</td>
+                <td>{{completedcourses}}</td>
+                <td>{{#userdate}} {{usercreation}} {{/userdate}}</td>
+                <td>{{#userdate}} {{lastaccess}} {{/userdate}}</td>
+            </tr>
+            {{/.}}
+        </tbody>
+    </table>
+</div>

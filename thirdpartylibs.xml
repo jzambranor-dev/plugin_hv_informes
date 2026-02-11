@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>amd/src/chartjs-plugin-datalabels.js</location>
+        <name>Chart js datalabels</name>
+        <version>v2.2.0</version>
+        <license>MIT</license>
+        <licenseversion>2.0</licenseversion>
+    </library>
+</libraries>
