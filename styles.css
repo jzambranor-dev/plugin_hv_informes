@@ -491,3 +491,65 @@
     font-weight: 600;
     border-bottom: 2px solid #dee2e6;
 }
+
+/* Evaluation report */
+.lmsace-reports-body .evaluation-report-block .breadcrumb {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 10px 15px;
+}
+
+.lmsace-reports-body .evaluation-report-block .evaluation-courses-block .table th,
+.lmsace-reports-body .evaluation-report-block .evaluation-courses-block .table td,
+.lmsace-reports-body .evaluation-report-block .evaluation-activities-block .table th,
+.lmsace-reports-body .evaluation-report-block .evaluation-activities-block .table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+}
+
+.lmsace-reports-body .evaluation-report-block .evaluation-courses-block .table thead th,
+.lmsace-reports-body .evaluation-report-block .evaluation-activities-block .table thead th {
+    font-weight: 600;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.lmsace-reports-body .evaluation-report-block .evaluation-activitydetail-block .card {
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    margin-bottom: 15px;
+}
+
+.lmsace-reports-body .evaluation-report-block .evaluation-activitydetail-block .card-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.lmsace-reports-body .evaluation-report-block .evaluation-activitydetail-block .table-sm td {
+    padding: 6px 10px;
+}
+
+.lmsace-reports-body .evaluation-report-block .evaluation-activitydetail-block .badge {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.lmsace-reports-body .evaluation-report-block #eval-modtype-filter {
+    min-width: 160px;
+}
+
+.lmsace-reports-body .evaluation-report-block .d-flex.flex-wrap.align-items-end {
+    background: #f8f9fa;
+}
+
+.lmsace-reports-body .evaluation-report-block .evaluation-activitydetail-block .table-striped tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+.lmsace-reports-body .evaluation-report-block .heading-block h5 .badge {
+    font-size: 12px;
+    vertical-align: middle;
+    font-weight: 500;
+}

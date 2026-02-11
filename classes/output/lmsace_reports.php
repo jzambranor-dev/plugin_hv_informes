@@ -116,7 +116,8 @@ class lmsace_reports implements renderable, templatable {
 
         if (has_capability("report/lmsace_reports:viewsitereports", \context_system::instance()) && $data->enablecourseblock) {
 
-            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM) {
+            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM
+                    && (empty($data->reportbase) || $output->report == 'coursereport')) {
                 // Course selectors form.
                 $courseform = new \course_selector_form(null, ['courseinfo' => $output->courseaction]);
                 if ($courseform->get_data()) {
@@ -129,7 +130,8 @@ class lmsace_reports implements renderable, templatable {
             }
         }
 
-        if ($PAGE->context->contextlevel == CONTEXT_SYSTEM) {
+        if ($PAGE->context->contextlevel == CONTEXT_SYSTEM
+                && (empty($data->reportbase) || $output->report == 'userreport')) {
             // Users selectors form.
             $form = (new \user_selector_form(null, ['userinfo' => $output->useraction]));
             if ($form->get_data()) {
@@ -148,7 +150,8 @@ class lmsace_reports implements renderable, templatable {
 
         if (has_capability("report/lmsace_reports:viewteacherreports", \context_system::instance())
                 && $data->enableteacherblock) {
-            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM) {
+            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM
+                    && (empty($data->reportbase) || $output->report == 'teacherreport')) {
                 $teacherform = new \teacher_selector_form(null, ['teacherinfo' => $data->teacheraction]);
                 if ($teacherform->get_data()) {
                     $data->showteacherreport = true;
@@ -168,18 +171,23 @@ class lmsace_reports implements renderable, templatable {
         $data->evalmodtype = $output->evalmodtype ?? '';
         $data->evalfrom = $output->evalfrom ?? 0;
         $data->evalto = $output->evalto ?? 0;
+        if ($data->evalfrom > 0) {
+            $data->evalfromdate = date('Y-m-d', $data->evalfrom);
+        }
+        if ($data->evalto > 0) {
+            $data->evaltodate = date('Y-m-d', $data->evalto);
+        }
 
         if (has_capability("report/lmsace_reports:viewevaluationreports", \context_system::instance())
                 && $data->enableevaluationblock) {
-            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM) {
+            // Only render the selector form when it will be shown (tab view, not single report view).
+            if ($PAGE->context->contextlevel == CONTEXT_SYSTEM && empty($data->reportbase)) {
                 $evalform = new \evaluation_teacher_selector_form(null, ['evalteacher' => $data->evalteacher]);
                 if ($evalform->get_data()) {
                     $data->showevaluationreport = true;
                 }
                 $evalform->set_data(['evalteacher' => $data->evalteacher]);
                 $data->evalform = $evalform->render();
-            } else {
-                $data->evalform = '';
             }
 
             // Build breadcrumb.
