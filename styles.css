@@ -29,13 +29,31 @@
 .lmsace-reports-body .navbar.navbar-expand-lg .navbar-collapse {
     display: none !important; /* stylelint-disable-line declaration-no-important */
 }
+#page-report-lmsace_reports-index #page #page-content #region-main,
 #page-local-lmsace_reports-index #page #page-content #region-main {
     padding: 0;
     border: 0;
     overflow: visible;
 }
+.lmsace-reports-body #region-main {
+    padding: 0;
+    border: 0;
+    overflow: visible;
+}
+.lmsace-reports-body #region-main-box,
+.lmsace-reports-body [role="main"] {
+    padding: 0;
+}
+.lmsace-reports-body #page-content .container-fluid,
+.lmsace-reports-body #page-content .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+.lmsace-reports-body #region-main .card-body {
+    padding: 10px;
+}
 .lmsace-reports-body .reports-block {
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 /* --- Tab Navigation --- */
@@ -107,23 +125,23 @@
 
 /* --- Tab Content --- */
 .lmsace-reports-body .reports-block .tab-content {
-    margin-top: 24px;
+    margin-top: 16px;
     clear: both;
 }
 .lmsace-reports-body .reports-block .tab-content .row .col-md-6,
 .lmsace-reports-body .reports-block .tab-content .row .col-md-12 {
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 /* --- Stat Cards (Count Blocks) --- */
 .lmsace-reports-body .reports-block .lmsace-reports.count-block {
     background: linear-gradient(135deg, var(--lr-primary) 0%, var(--lr-primary-light) 100%);
-    padding: 24px 16px;
+    padding: 16px 12px;
     border-radius: var(--lr-radius-lg);
     box-shadow: var(--lr-shadow);
 }
 .lmsace-reports.count-block {
-    margin-bottom: 28px;
+    margin-bottom: 16px;
 }
 .lmsace-reports.count-block ul {
     padding-left: 0;
@@ -195,12 +213,18 @@
 /* --- Widget Cards (Block Report) --- */
 .lmsace-reports-body .reports-block .tab-content .row .block-report {
     height: 100%;
-    padding: 20px;
+    padding: 16px;
     border-radius: var(--lr-radius);
     border: 1px solid var(--lr-border);
     background: var(--lr-surface);
     box-shadow: var(--lr-shadow-sm);
     transition: box-shadow 0.2s;
+}
+/* Full-width blocks don't need card wrapper padding */
+.lmsace-reports-body .evaluation-activitydetail-block.block-report,
+.lmsace-reports-body .evaluation-courses-block.block-report,
+.lmsace-reports-body .evaluation-activities-block.block-report {
+    padding: 12px 16px;
 }
 .lmsace-reports-body .reports-block .tab-content .row .block-report:hover {
     box-shadow: var(--lr-shadow);
@@ -215,8 +239,8 @@
 
 /* --- Header & Filter Panels --- */
 .lmsace-reports-body .reports-block .tab-content .header-panel {
-    margin-bottom: 16px;
-    padding-bottom: 12px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
     border-bottom: 1px solid var(--lr-border);
     display: flex;
     align-items: center;
@@ -605,13 +629,14 @@
     border-bottom: 2px solid var(--lr-border-strong);
 }
 
-/* --- Filter Bars (Teacher / Evaluation) --- */
+/* --- Filter Bars (Teacher / Evaluation / Course) --- */
 .lmsace-reports-body .evaluation-report-block .d-flex.flex-wrap.align-items-end,
-.lmsace-reports-body .teacher-report-block .d-flex.flex-wrap.align-items-end {
+.lmsace-reports-body .teacher-report-block .d-flex.flex-wrap.align-items-end,
+.lmsace-reports-body .course-report-block .d-flex.flex-wrap.align-items-end {
     background: var(--lr-surface-alt);
     border: 1px solid var(--lr-border);
     border-radius: var(--lr-radius);
-    padding: 12px 16px;
+    padding: 10px 14px;
 }
 .lmsace-reports-body .evaluation-report-block .d-flex.flex-wrap.align-items-end label,
 .lmsace-reports-body .teacher-report-block .d-flex.flex-wrap.align-items-end label {
@@ -641,8 +666,9 @@
     background-color: var(--lr-surface-alt);
     border: 1px solid var(--lr-border);
     border-radius: var(--lr-radius);
-    padding: 10px 16px;
-    font-size: 14px;
+    padding: 8px 14px;
+    font-size: 13px;
+    margin-bottom: 10px;
 }
 .lmsace-reports-body .evaluation-report-block .breadcrumb-item a {
     color: var(--lr-accent);
@@ -671,15 +697,15 @@
 /* Evaluation Detail — Stats Bar */
 .eval-detail-stats-bar {
     display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 8px;
+    flex-wrap: nowrap;
 }
 .eval-detail-stat {
     flex: 1;
-    min-width: 140px;
+    min-width: 0;
     background: linear-gradient(135deg, var(--lr-primary) 0%, var(--lr-primary-light) 100%);
     border-radius: var(--lr-radius);
-    padding: 16px;
+    padding: 12px 8px;
     text-align: center;
     color: #fff;
     box-shadow: var(--lr-shadow-sm);
@@ -697,21 +723,21 @@
     background: linear-gradient(135deg, var(--lr-danger) 0%, #ef4444 100%);
 }
 .eval-detail-stat i {
-    font-size: 20px;
+    font-size: 16px;
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     opacity: 0.8;
 }
 .eval-detail-stat-value {
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 700;
     display: block;
     line-height: 1.2;
 }
 .eval-detail-stat-label {
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     opacity: 0.85;
     display: block;
     margin-top: 2px;
@@ -721,20 +747,20 @@
 .eval-detail-card {
     border: 1px solid var(--lr-border);
     box-shadow: var(--lr-shadow-sm);
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     border-radius: var(--lr-radius);
     overflow: hidden;
     height: 100%;
 }
 .eval-detail-card .card-body {
-    padding: 20px;
+    padding: 14px;
 }
 .eval-detail-card .card-title {
     font-weight: 700;
-    font-size: 14px;
+    font-size: 13px;
     color: var(--lr-primary);
-    margin-bottom: 16px;
-    padding-bottom: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
     border-bottom: 2px solid var(--lr-border);
     text-transform: uppercase;
     letter-spacing: 0.02em;
@@ -748,40 +774,40 @@
 .eval-detail-info-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 10px;
 }
 .eval-detail-info-item {
-    padding: 12px;
+    padding: 10px;
     background: var(--lr-surface-alt);
     border-radius: var(--lr-radius);
     border-left: 3px solid var(--lr-accent);
 }
 .eval-detail-info-label {
     display: block;
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--lr-text-muted);
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 .eval-detail-info-value {
     display: block;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--lr-text);
 }
 .eval-detail-grade {
     color: var(--lr-accent);
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
 }
 
 /* Evaluation Detail — Chart */
 .eval-chart-container {
-    max-width: 220px;
+    max-width: 180px;
     margin: 0 auto;
-    padding: 10px 0;
+    padding: 0;
 }
 
 /* Evaluation Detail — Not Attempted Table */
@@ -809,8 +835,9 @@
     color: #fff;
     border: none;
     border-radius: var(--lr-radius);
-    padding: 14px 20px;
-    font-size: 15px;
+    padding: 10px 16px;
+    font-size: 14px;
+    margin-bottom: 10px;
 }
 .lmsace-reports-body .evaluation-report-block .alert-info.d-flex strong {
     color: rgba(255, 255, 255, 0.8);

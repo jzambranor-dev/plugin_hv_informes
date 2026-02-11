@@ -47,7 +47,7 @@
 
         {{! Breadcrumb navigation }}
         {{#hasevalbreadcrumb}}
-        <nav aria-label="breadcrumb" class="mt-3 mb-3">
+        <nav aria-label="breadcrumb" class="mt-2 mb-2">
             <ol class="breadcrumb">
                 {{#evalbreadcrumb}}
                 <li class="breadcrumb-item {{#active}}active{{/active}}">
@@ -182,7 +182,7 @@
                         <div class="body-panel">
 
                             {{! Summary stats bar }}
-                            <div class="eval-detail-stats-bar mb-4">
+                            <div class="eval-detail-stats-bar mb-2">
                                 <div class="eval-detail-stat">
                                     <i class="fa fa-users"></i>
                                     <span class="eval-detail-stat-value">{{enrolled}}</span>
@@ -211,8 +211,8 @@
                             </div>
 
                             {{! Activity info cards }}
-                            <div class="row mb-4">
-                                <div class="col-md-7">
+                            <div class="row mb-2">
+                                <div class="col-md-8 col-lg-8 mb-2">
                                     <div class="card eval-detail-card">
                                         <div class="card-body">
                                             <h6 class="card-title"><i class="fa fa-info-circle"></i> {{#str}} activitydetail, report_lmsace_reports {{/str}}</h6>
@@ -237,12 +237,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-5">
+                                <div class="col-md-4 col-lg-4 mb-2">
                                     <div class="card eval-detail-card">
                                         <div class="card-body text-center">
                                             <h6 class="card-title"><i class="fa fa-pie-chart"></i> {{#str}} passfailchart, report_lmsace_reports {{/str}}</h6>
                                             <div class="eval-chart-container">
-                                                <canvas id="evaluation-passfail-chart" width="200" height="200"
+                                                <canvas id="evaluation-passfail-chart" width="160" height="160"
                                                     data-passed="{{passed}}" data-failed="{{failed}}" data-notcompleted="{{notcompleted}}"></canvas>
                                             </div>
                                         </div>
