@@ -135,18 +135,43 @@ class evaluationactivitydetailwidget extends widgets_info {
             $notcompleted = 0;
         }
 
-        // Average grade.
-        $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 100) as avggrade
-            FROM {grade_grades} gg
-            JOIN {grade_items} gi ON gi.id = gg.itemid
-            WHERE gi.itemtype = 'mod' AND gi.itemmodule = :modulename AND gi.iteminstance = :instanceid
-            AND gi.courseid = :courseid AND gg.finalgrade IS NOT NULL AND gi.grademax > 0";
-        $graderesult = $DB->get_record_sql($sql, [
-            'modulename' => $module->name,
-            'instanceid' => $cm->instance,
-            'courseid' => $this->courseid,
-        ]);
-        $avggrade = ($graderesult && $graderesult->avggrade !== null) ? round($graderesult->avggrade, 1) : 0;
+        // Average grade: try module-specific tables first, then fall back to gradebook.
+        $avggrade = 0;
+        if ($module->name === 'quiz') {
+            $sql = "SELECT AVG(qg.grade / q.grade * 100) as avggrade
+                FROM {quiz_grades} qg
+                JOIN {quiz} q ON q.id = qg.quiz
+                WHERE qg.quiz = :quizid AND q.grade > 0";
+            $graderesult = $DB->get_record_sql($sql, ['quizid' => $cm->instance]);
+            if ($graderesult && $graderesult->avggrade !== null) {
+                $avggrade = round($graderesult->avggrade, 1);
+            }
+        } else if ($module->name === 'assign') {
+            $sql = "SELECT AVG(ag.grade / a.grade * 100) as avggrade
+                FROM {assign_grades} ag
+                JOIN {assign} a ON a.id = ag.assignment
+                WHERE ag.assignment = :assignid AND ag.grade >= 0 AND a.grade > 0";
+            $graderesult = $DB->get_record_sql($sql, ['assignid' => $cm->instance]);
+            if ($graderesult && $graderesult->avggrade !== null) {
+                $avggrade = round($graderesult->avggrade, 1);
+            }
+        }
+        // Fallback to gradebook if module-specific query returned 0.
+        if ($avggrade == 0) {
+            $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 100) as avggrade
+                FROM {grade_grades} gg
+                JOIN {grade_items} gi ON gi.id = gg.itemid
+                WHERE gi.itemtype = 'mod' AND gi.itemmodule = :modulename AND gi.iteminstance = :instanceid
+                AND gi.courseid = :courseid AND gg.finalgrade IS NOT NULL AND gi.grademax > 0";
+            $graderesult = $DB->get_record_sql($sql, [
+                'modulename' => $module->name,
+                'instanceid' => $cm->instance,
+                'courseid' => $this->courseid,
+            ]);
+            if ($graderesult && $graderesult->avggrade !== null) {
+                $avggrade = round($graderesult->avggrade, 1);
+            }
+        }
 
         // Students who have NOT attempted.
         $sql = "SELECT u.id, u.email, u.firstname, u.lastname,
