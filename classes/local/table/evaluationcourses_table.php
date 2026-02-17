@@ -26,16 +26,13 @@ namespace report_lmsace_reports\local\table;
 
 defined('MOODLE_INTERNAL') || die('No direct access');
 
-use core_table\dynamic as dynamic_table;
-use report_lmsace_reports\report_helper;
-
 require_once($CFG->dirroot.'/lib/tablelib.php');
 require_once($CFG->dirroot. '/report/lmsace_reports/lib.php');
 
 /**
  * List of evaluation courses table.
  */
-class evaluationcourses_table extends \table_sql implements dynamic_table {
+class evaluationcourses_table extends \table_sql {
 
     /** @var int Teacher user ID. */
     protected $teacherid;
