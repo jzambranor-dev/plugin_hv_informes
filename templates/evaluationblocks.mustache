@@ -111,7 +111,7 @@
                         {{/coursesummarydata}}
 
                         {{! Filters bar }}
-                        <div class="d-flex flex-wrap align-items-end gap-2 mb-3 p-2 border rounded bg-light">
+                        <form id="eval-filter-form" class="d-flex flex-wrap align-items-end gap-2 mb-3 p-2 border rounded bg-light" onsubmit="return false;">
                             <div>
                                 <label for="eval-modtype-filter" class="form-label mb-0 small">{{#str}} filterbyactivitytype, report_lmsace_reports {{/str}}</label>
                                 <select id="eval-modtype-filter" class="form-select form-select-sm custom-select">
@@ -131,10 +131,10 @@
                                     {{#evalto}}value="{{evaltodate}}"{{/evalto}}>
                             </div>
                             <div>
-                                <button id="eval-apply-filter" class="btn btn-primary btn-sm">{{#str}} applyfilter, report_lmsace_reports {{/str}}</button>
-                                <button id="eval-clear-filter" class="btn btn-secondary btn-sm">{{#str}} clearfilter, report_lmsace_reports {{/str}}</button>
+                                <button type="button" id="eval-apply-filter" class="btn btn-primary btn-sm">{{#str}} applyfilter, report_lmsace_reports {{/str}}</button>
+                                <button type="button" id="eval-clear-filter" class="btn btn-secondary btn-sm">{{#str}} clearfilter, report_lmsace_reports {{/str}}</button>
                             </div>
-                        </div>
+                        </form>
 
                         <div class="body-panel">
                             {{{evaluationactivities}}}

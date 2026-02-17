@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace report_lmsace_reports\local\table;
+namespace report_lmsace_reports\table;
 
 defined('MOODLE_INTERNAL') || die('No direct access');
 
@@ -198,7 +198,6 @@ class evaluationcourses_table extends \table_sql {
      */
     public function col_withoutevaluations($row) {
         global $DB;
-        // Count enrolled students with NO completion records for any activity in this course.
         $enrolled = \report_lmsace_reports\widgets::get_course_progress_status($row->id, true);
 
         $sql = "SELECT COUNT(DISTINCT cmc.userid)
@@ -217,7 +216,6 @@ class evaluationcourses_table extends \table_sql {
      * @return int
      */
     public function col_certificates($row) {
-        // Certificates = course completions count.
         return \report_lmsace_reports\widgets::get_course_completion_users($row->id, [], true);
     }
 }
