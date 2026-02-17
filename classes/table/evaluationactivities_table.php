@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace report_lmsace_reports\local\table;
+namespace report_lmsace_reports\table;
 
 defined('MOODLE_INTERNAL') || die('No direct access');
 
@@ -162,12 +162,10 @@ class evaluationactivities_table extends \table_sql {
      */
     public function col_activityname($row) {
         global $DB, $PAGE;
-        // Get the activity name from its module table.
         $name = $DB->get_field($row->modulename, 'name', ['id' => $row->instance]);
         if (!$name) {
             $name = get_string('notavailable', 'report_lmsace_reports');
         }
-        // Link to detail view.
         $currentparams = $PAGE->url->params();
         $url = new \moodle_url('/report/lmsace_reports/index.php', [
             'report' => 'evaluationreport',
