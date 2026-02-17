@@ -207,7 +207,11 @@ class report_helper {
             $groupby = 86400;
         }
 
-        $timestart = strtotime("-1". $filter);
+        if ($filter == 'today') {
+            $timestart = strtotime('today');
+        } else {
+            $timestart = strtotime('-1 ' . $filter);
+        }
         $timeend = time();
         $usersql = '';
         $userparams = [];
@@ -324,9 +328,12 @@ class report_helper {
         if (!$filter) {
             $filter = $default;
         }
-        // Check the over all config.
         if ($filter != 'all') {
-            $duration['timestart'] = strtotime('-1'.$filter);
+            if ($filter == 'today') {
+                $duration['timestart'] = strtotime('today');
+            } else {
+                $duration['timestart'] = strtotime('-1 ' . $filter);
+            }
             $duration['timeend'] = time();
         }
         return $duration;

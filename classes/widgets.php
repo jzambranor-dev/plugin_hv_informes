@@ -209,7 +209,6 @@ class widgets {
         $duration = report_helper::get_duration_info($filter, 'all');
         $durationparams = [];
         if (!empty($duration)) {
-            $timestart = strtotime("-1 $filter");
             $filterduration = 'AND ue.timecreated > :timestart';
             $durationparams = ['timestart' => $duration['timestart']];
         }
@@ -247,7 +246,7 @@ class widgets {
         $durationsql = '';
         if ($duration) {
             $durationsql = ' AND timecompleted > :timestart';
-            $params['timestart'] = $timestart;
+            $params['timestart'] = $duration['timestart'];
         }
         $completionsql = "SELECT count(*) FROM {course_completions} WHERE course = :course
             AND timecompleted IS NOT NULL $durationsql";
