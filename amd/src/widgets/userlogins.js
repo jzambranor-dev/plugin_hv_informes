@@ -43,10 +43,14 @@ define(['jquery', 'core/ajax', 'core/loadingicon', 'core/chartjs', 'report_lmsac
             var userid = userlogins.userid;
             showloginChart(main, label, datavalue);
 
-            $(".user-login-block .dropdown-menu a").click(function () {
+            $(".user-login-block .dropdown-menu a").click(function (e) {
+                e.preventDefault();
                 var selText = $(this).text();
-                var filter = $(this).attr("value");
-                $(this).parents('.dropdown').find('#daterangefiltermenu').html(selText + ' <span class="caret"></span>');
+                var filter = $(this).attr("data-value");
+                $(this).closest('.dropdown-menu').find('.dropdown-item').removeClass('active');
+                $(this).addClass('active');
+                $(this).parents('.dropdown').find('.lmsace-filter-btn').html(
+                    '<i class="fa fa-filter"></i> ' + selText);
                 getUserloginRecords(filter, userid);
             });
 
