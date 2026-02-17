@@ -201,17 +201,6 @@
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
     padding: 6px 0;
     min-width: 160px;
-    animation: lmsace-dropdown-fade 0.15s ease-out;
-}
-@keyframes lmsace-dropdown-fade {
-    from {
-        opacity: 0;
-        transform: translateY(-4px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 .lmsace-reports-body .filter-block .dropdown-menu .dropdown-item {
     font-size: 13px;
