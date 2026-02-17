@@ -149,7 +149,8 @@ class evaluationactivitydetailwidget extends widgets_info {
         $avggrade = ($graderesult && $graderesult->avggrade !== null) ? round($graderesult->avggrade, 1) : 0;
 
         // Students who have NOT attempted.
-        $sql = "SELECT u.id, u.firstname, u.lastname, u.email
+        $sql = "SELECT u.id, u.email, u.firstname, u.lastname,
+                u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename
             FROM {user} u
             JOIN {user_enrolments} ue ON ue.userid = u.id
             JOIN {enrol} e ON e.id = ue.enrolid AND e.courseid = :courseid
