@@ -613,6 +613,164 @@
     border-bottom: 2px solid #dee2e6;
 }
 
+/* ==============================================
+   Evaluation Activity Detail
+   ============================================== */
+.evaluation-activitydetail-block .main-panel {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+.evaluation-activitydetail-block .header-panel {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 18px 24px;
+}
+.evaluation-activitydetail-block .header-panel h5 {
+    color: #fff;
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.15rem;
+}
+.evaluation-activitydetail-block .header-panel .badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 10px;
+    vertical-align: middle;
+    background: rgba(255,255,255,0.18) !important;
+    color: #fff;
+    border-radius: 6px;
+}
+.evaluation-activitydetail-block .body-panel {
+    padding: 24px;
+}
+
+/* Info card */
+.evaluation-activitydetail-block .card {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+    height: 100%;
+    transition: box-shadow 0.2s ease;
+}
+.evaluation-activitydetail-block .card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+.evaluation-activitydetail-block .card-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #1a1a2e;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+}
+.evaluation-activitydetail-block .table-borderless td {
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    color: #495057;
+}
+.evaluation-activitydetail-block .table-borderless td strong {
+    color: #1a1a2e;
+    font-weight: 600;
+}
+
+/* Summary stat badges */
+.evaluation-activitydetail-block .d-flex.flex-wrap .badge {
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Not attempted table */
+.evaluation-activitydetail-block .table-striped thead th {
+    background: #f0f4f8;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    padding: 10px 12px;
+}
+.evaluation-activitydetail-block .table-striped tbody td {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+/* Stat cards */
+.evaluation-activitydetail-block .stat-card {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+}
+.evaluation-activitydetail-block .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+.evaluation-activitydetail-block .stat-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+.evaluation-activitydetail-block .stat-icon.bg-primary-light {
+    background: rgba(57, 155, 226, 0.15);
+    color: #399be2;
+}
+.evaluation-activitydetail-block .stat-icon.bg-success-light {
+    background: rgba(40, 167, 69, 0.15);
+    color: #28a745;
+}
+.evaluation-activitydetail-block .stat-icon.bg-warning-light {
+    background: rgba(255, 193, 7, 0.15);
+    color: #d39e00;
+}
+.evaluation-activitydetail-block .stat-icon.bg-green-light {
+    background: rgba(12, 203, 150, 0.15);
+    color: #0ccb96;
+}
+.evaluation-activitydetail-block .stat-icon.bg-danger-light {
+    background: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+}
+.evaluation-activitydetail-block .stat-icon.bg-info-light {
+    background: rgba(23, 162, 184, 0.15);
+    color: #17a2b8;
+}
+.evaluation-activitydetail-block .stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    line-height: 1.2;
+}
+.evaluation-activitydetail-block .stat-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* Chart container */
+.evaluation-activitydetail-block #evaluation-passfail-chart {
+    max-width: 220px;
+    margin: 0 auto;
+}
+
 /* Loading icon overlay */
 .lmsace-reports-body .loadiconElement {
     min-height: 0;
