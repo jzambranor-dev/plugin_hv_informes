@@ -123,7 +123,8 @@ class lmsace_reports implements renderable, templatable {
                     $data->showcoursereport = true;
                 }
                 $courseform->set_data(['courseinfo' => $output->courseaction]);
-                $data->courseform = $courseform->render();
+                // Only render when the form will be in the DOM (not in reportbase mode).
+                $data->courseform = empty($data->reportbase) ? $courseform->render() : '';
             } else {
                 $data->courseform = '';
             }
@@ -136,7 +137,8 @@ class lmsace_reports implements renderable, templatable {
                 $data->showuserreport = true;
             }
             $form->set_data(['userinfo' => $output->useraction]);
-            $data->userform = $form->render();
+            // Only render when the form will be in the DOM (not in reportbase mode).
+            $data->userform = empty($data->reportbase) ? $form->render() : '';
         } else {
             $data->userform = '';
         }
@@ -154,7 +156,8 @@ class lmsace_reports implements renderable, templatable {
                     $data->showteacherreport = true;
                 }
                 $teacherform->set_data(['teacherinfo' => $data->teacheraction]);
-                $data->teacherform = $teacherform->render();
+                // Only render when the form will be in the DOM (not in reportbase mode).
+                $data->teacherform = empty($data->reportbase) ? $teacherform->render() : '';
             } else {
                 $data->teacherform = '';
             }
@@ -168,6 +171,13 @@ class lmsace_reports implements renderable, templatable {
         $data->evalmodtype = $output->evalmodtype ?? '';
         $data->evalfrom = $output->evalfrom ?? 0;
         $data->evalto = $output->evalto ?? 0;
+        // Convert timestamps to date strings for HTML date inputs.
+        if ($data->evalfrom) {
+            $data->evalfromdate = date('Y-m-d', $data->evalfrom);
+        }
+        if ($data->evalto) {
+            $data->evaltodate = date('Y-m-d', $data->evalto);
+        }
 
         if (has_capability("report/lmsace_reports:viewevaluationreports", \context_system::instance())
                 && $data->enableevaluationblock) {
@@ -177,7 +187,8 @@ class lmsace_reports implements renderable, templatable {
                     $data->showevaluationreport = true;
                 }
                 $evalform->set_data(['evalteacher' => $data->evalteacher]);
-                $data->evalform = $evalform->render();
+                // Only render when the form will be in the DOM (not in reportbase mode).
+                $data->evalform = empty($data->reportbase) ? $evalform->render() : '';
             } else {
                 $data->evalform = '';
             }

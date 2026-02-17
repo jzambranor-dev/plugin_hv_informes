@@ -74,6 +74,23 @@ if ($report == 'coursereport') {
 } else if ($report == 'evaluationreport') {
     $context = context_system::instance();
     require_capability("report/lmsace_reports:viewevaluationreports", $context);
+    // Add evaluation params to page URL so table pagination/sorting preserves filters.
+    $pageurl->param('evalteacher', $evalteacher);
+    if ($evalcourse) {
+        $pageurl->param('evalcourse', $evalcourse);
+    }
+    if ($evalcmid) {
+        $pageurl->param('evalcmid', $evalcmid);
+    }
+    if ($evalmodtype !== '') {
+        $pageurl->param('evalmodtype', $evalmodtype);
+    }
+    if ($evalfrom) {
+        $pageurl->param('evalfrom', $evalfrom);
+    }
+    if ($evalto) {
+        $pageurl->param('evalto', $evalto);
+    }
 } else {
     $context = context_system::instance();
     require_capability("report/lmsace_reports:viewsitereports", $context);
