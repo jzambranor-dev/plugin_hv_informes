@@ -91,10 +91,11 @@ class report_helper {
      * @param bool $getusers
      */
     public static function get_users($selectid = 0, $getusers = false) {
-        global $CFG, $OUTPUT, $PAGE;
+        global $DB, $OUTPUT, $PAGE;
         $data = [];
         $context = \context_system::instance();
-        $users = get_users_listing();
+        $users = $DB->get_records('user', ['deleted' => 0, 'suspended' => 0, 'confirmed' => 1],
+            'lastname ASC, firstname ASC', 'id, firstname, lastname, email');
         if (!empty($users)) {
             foreach ($users as $user) {
 

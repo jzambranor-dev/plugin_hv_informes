@@ -31,6 +31,7 @@ $userid = optional_param('userinfo', 0, PARAM_INT);
 $action = optional_param('purge', 'all', PARAM_ALPHA);
 
 require_login();
+require_sesskey();
 
 $PAGE->set_url(new moodle_url('/report/lmsace_reports/index.php'));
 

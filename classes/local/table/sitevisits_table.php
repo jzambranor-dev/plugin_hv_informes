@@ -38,6 +38,13 @@ require_once($CFG->dirroot.'/lib/tablelib.php');
 class sitevisits_table extends \table_sql implements dynamic_table {
 
     /**
+     * Duration filter value.
+     *
+     * @var string
+     */
+    public $filter = '';
+
+    /**
      * Define table field definitions and filter data
      *
      * @param int $pagesize

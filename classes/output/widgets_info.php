@@ -40,6 +40,13 @@ abstract class widgets_info {
     public $students;
 
     /**
+     * Report context type (site, course, user, teacher, evaluation).
+     *
+     * @var string
+     */
+    public $context;
+
+    /**
      * @var string $filter
      */
     public $filter;

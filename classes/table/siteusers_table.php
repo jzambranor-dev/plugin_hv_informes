@@ -41,6 +41,13 @@ require_once($CFG->dirroot. '/report/lmsace_reports/lib.php');
 class siteusers_table extends \table_sql implements dynamic_table {
 
     /**
+     * Duration filter value.
+     *
+     * @var string
+     */
+    public $filter = '';
+
+    /**
      * Define table field definitions and filter data
      *
      * @param int $pagesize

@@ -77,7 +77,7 @@ class stacksitereportswidget extends widgets_info {
      */
     private function get_report_block() {
         global $DB;
-        $this->reportdata['users'] = count(get_users_listing());
+        $this->reportdata['users'] = $DB->count_records('user', ['deleted' => 0, 'suspended' => 0, 'confirmed' => 1]);
         $this->reportdata['courses'] = count(report_helper::get_course());
         $this->reportdata['enrolments'] = $DB->count_records('user_enrolments');
         $completionsql = 'SELECT count(DISTINCT(cp.id))

@@ -82,8 +82,11 @@ if ($report == 'coursereport') {
     require_capability("report/lmsace_reports:viewsitereports", $context);
 }
 
-list($context, $course, $cm) = get_context_info_array($context->id);
-require_login($course, false, $cm);
+// Re-validate login for course context (sets up $COURSE and navigation).
+if ($context instanceof context_course) {
+    $course = get_course($context->instanceid);
+    require_login($course, false);
+}
 
 if ($report) {
     $pageurl->param('report', $report);
