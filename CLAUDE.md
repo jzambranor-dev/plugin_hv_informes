@@ -4,10 +4,10 @@
 
 **Paquete:** `report_lmsace_reports`
 **Tipo:** Plugin de reportes para Moodle (se instala en `report/lmsace_reports`)
-**Version:** v1.1 (codigo de version `2025060203`)
+**Version:** v5.1.1 (codigo de version `2026032001`)
 **Licencia:** GNU GPL v3
-**Moodle soportado:** 4.04 (404) hasta 5.0 (500)
-**PHP soportado:** 7.4, 8.0, 8.2
+**Moodle soportado:** 4.04 (404) hasta 5.1.1+ (501)
+**PHP soportado:** 7.4, 8.0, 8.2, 8.4
 
 Este es un plugin integral de analitica y reportes para Moodle LMS. Proporciona widgets de dashboard configurables para reportes a nivel de sitio, curso, usuario, profesor y evaluacion. El plugin es de **solo lectura** — no crea tablas de base de datos propias, solo consulta las tablas estandar de Moodle.
 
@@ -134,10 +134,12 @@ El workflow de GitHub Actions (`.github/workflows/moodle-ci.yml`) se ejecuta en 
 
 | PHP | Rama de Moodle | Base de Datos |
 |---|---|---|
-| 8.2 | MOODLE_403_STABLE | PostgreSQL 13 |
-| 8.0 | MOODLE_402_STABLE | MariaDB 10 |
-| 8.0 | MOODLE_401_STABLE | PostgreSQL 13 |
-| 7.4 | MOODLE_400_STABLE | MariaDB 10 |
+| 8.4 | MOODLE_501_STABLE | PostgreSQL 15 |
+| 8.2 | MOODLE_501_STABLE | MariaDB 10.6 |
+| 8.2 | MOODLE_403_STABLE | PostgreSQL 15 |
+| 8.0 | MOODLE_402_STABLE | MariaDB 10.6 |
+| 8.0 | MOODLE_401_STABLE | PostgreSQL 15 |
+| 7.4 | MOODLE_400_STABLE | MariaDB 10.6 |
 
 ### Verificaciones de CI (en orden)
 
