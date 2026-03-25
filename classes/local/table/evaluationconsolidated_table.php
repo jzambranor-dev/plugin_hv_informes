@@ -75,7 +75,10 @@ class evaluationconsolidated_table extends \table_sql {
         $this->define_columns($columns);
         $this->define_headers($headers);
         $this->collapsible(false);
-        $this->sortable(true, 'teachername', SORT_ASC);
+        $this->sortable(true, 'lastname', SORT_ASC);
+        $this->no_sorting('teachername');
+        $this->no_sorting('activityname');
+        $this->no_sorting('activitytype');
         $this->no_sorting('enrolled');
         $this->no_sorting('completed');
         $this->no_sorting('notcompleted');
