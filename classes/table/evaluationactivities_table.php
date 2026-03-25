@@ -286,7 +286,7 @@ class evaluationactivities_table extends \table_sql {
      */
     public function col_averagegrade($row) {
         global $DB;
-        $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 100) as avggrade
+        $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 10) as avggrade
             FROM {grade_grades} gg
             JOIN {grade_items} gi ON gi.id = gg.itemid
             WHERE gi.itemtype = 'mod' AND gi.itemmodule = :modulename AND gi.iteminstance = :instanceid
@@ -297,6 +297,6 @@ class evaluationactivities_table extends \table_sql {
             'courseid' => $row->course,
         ]);
         $avg = ($result && $result->avggrade !== null) ? round($result->avggrade, 1) : 0;
-        return $avg . '%';
+        return $avg . '/10';
     }
 }

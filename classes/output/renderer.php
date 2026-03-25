@@ -106,6 +106,13 @@ class renderer extends plugin_renderer_base {
     public $evalto;
 
     /**
+     * Evaluation month filter timestamp.
+     *
+     * @var int
+     */
+    public $evalmonth;
+
+    /**
      * Defer to template.
      *
      * @param lmsace_reports $genesisreports

@@ -111,7 +111,12 @@ class report_widgets {
                 $evalfrom = $output->evalfrom ?? 0;
                 $evalto = $output->evalto ?? 0;
 
-                if ($widget->instance == 'stackevaluationreportswidget') {
+                if ($widget->instance == 'evaluationconsolidatedwidget') {
+                    if (!$evalteacher) {
+                        $evalmonth = $output->evalmonth ?? 0;
+                        $widgetinstance = new $classname($evalmonth);
+                    }
+                } else if ($widget->instance == 'stackevaluationreportswidget') {
                     if ($evalteacher && $DB->record_exists('user', ['id' => $evalteacher])) {
                         $widgetinstance = new $classname($evalteacher);
                     }

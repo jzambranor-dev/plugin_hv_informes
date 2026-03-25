@@ -595,6 +595,12 @@ class report_helper {
                 'visible' => true,
             ],
             // Evaluation widgets.
+            'evaluationconsolidated' => [
+                'instance' => 'evaluationconsolidatedwidget',
+                'context' => 'evaluation',
+                'sort' => $sort++,
+                'visible' => true,
+            ],
             'stackevaluationreports' => [
                 'instance' => 'stackevaluationreportswidget',
                 'context' => 'evaluation',

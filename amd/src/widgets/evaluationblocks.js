@@ -44,6 +44,37 @@ define([], function() {
                 }
             }
 
+            // Initialize consolidated month filter.
+            var monthApplyBtn = document.getElementById('eval-month-apply');
+            var monthClearBtn = document.getElementById('eval-month-clear');
+
+            if (monthApplyBtn) {
+                monthApplyBtn.addEventListener('click', function() {
+                    var url = new URL(window.location.href);
+                    var monthSelect = document.getElementById('eval-month-filter');
+                    if (monthSelect && monthSelect.value && monthSelect.value !== '0') {
+                        url.searchParams.set('evalmonth', monthSelect.value);
+                    } else {
+                        url.searchParams.delete('evalmonth');
+                    }
+                    url.searchParams.set('evalteacher', '0');
+                    url.searchParams.delete('evalcourse');
+                    url.searchParams.delete('evalcmid');
+                    window.location.href = url.toString();
+                });
+            }
+
+            if (monthClearBtn) {
+                monthClearBtn.addEventListener('click', function() {
+                    var url = new URL(window.location.href);
+                    url.searchParams.delete('evalmonth');
+                    url.searchParams.set('evalteacher', '0');
+                    url.searchParams.delete('evalcourse');
+                    url.searchParams.delete('evalcmid');
+                    window.location.href = url.toString();
+                });
+            }
+
             // Initialize evaluation filters.
             var modtypeFilter = document.getElementById('eval-modtype-filter');
             var applyBtn = document.getElementById('eval-apply-filter');

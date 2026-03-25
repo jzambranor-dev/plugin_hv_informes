@@ -165,12 +165,13 @@ class lmsace_reports implements renderable, templatable {
 
         // Evaluation report data.
         $data->enableevaluationblock = $data->enableteacherblock;
-        $data->evalteacher = $output->evalteacher ?? report_helper::get_first_teacher();
+        $data->evalteacher = $output->evalteacher ?? 0;
         $data->evalcourse = $output->evalcourse ?? 0;
         $data->evalcmid = $output->evalcmid ?? 0;
         $data->evalmodtype = $output->evalmodtype ?? '';
         $data->evalfrom = $output->evalfrom ?? 0;
         $data->evalto = $output->evalto ?? 0;
+        $data->evalmonth = $output->evalmonth ?? 0;
         // Convert timestamps to date strings for HTML date inputs.
         if ($data->evalfrom) {
             $data->evalfromdate = date('Y-m-d', $data->evalfrom);
@@ -269,6 +270,26 @@ class lmsace_reports implements renderable, templatable {
             }
 
             $data->hasevalbreadcrumb = count($data->evalbreadcrumb) > 1;
+
+            // Build month filter options for consolidated view.
+            if (empty($data->evalteacher)) {
+                $data->evalmonthfilter = [];
+                $data->evalmonthfilter[] = [
+                    'value' => 0,
+                    'label' => get_string('allmonths', 'report_lmsace_reports'),
+                    'selected' => empty($data->evalmonth) ? 'selected' : '',
+                ];
+                // Generate last 12 months.
+                for ($i = 0; $i < 12; $i++) {
+                    $ts = strtotime("-$i months", strtotime(date('Y-m-01')));
+                    $data->evalmonthfilter[] = [
+                        'value' => $ts,
+                        'label' => userdate($ts, '%B %Y'),
+                        'selected' => ($data->evalmonth == $ts) ? 'selected' : '',
+                    ];
+                }
+                $data->showconsolidated = true;
+            }
         }
 
         // Moodle 5.0 uses Bootstrap 5, so we need to set the correct data attribute for tab toggling.

@@ -120,6 +120,7 @@ define("REPORT_LMSACE_REPORTS_TEACHERGRADINGOVERVIEW", "teachergradingoverview")
 // Teacher report - Teacher activity completion.
 define("REPORT_LMSACE_REPORTS_TEACHERACTIVITYCOMPLETION", "teacheractivitycompletion");
 
+define("REPORT_LMSACE_REPORTS_EVALUATIONCONSOLIDATED", "evaluationconsolidated");
 define("REPORT_LMSACE_REPORTS_EVALUATIONSTATE", "stackevaluationreports");
 define("REPORT_LMSACE_REPORTS_EVALUATIONCOURSES", "evaluationcourses");
 define("REPORT_LMSACE_REPORTS_EVALUATIONACTIVITIES", "evaluationactivities");

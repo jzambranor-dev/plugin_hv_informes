@@ -216,6 +216,11 @@ $string['noteachers'] = 'No teachers found in this site';
 $string['enrolled'] = 'Enrolled';
 $string['activities'] = 'Activities';
 $string['totalactivities'] = 'Total activities';
+$string['evaluationconsolidatedwidget'] = 'Consolidated evaluation report';
+$string['consolidatedreport'] = 'Consolidated evaluation report';
+$string['filterbymonth'] = 'Filter by month';
+$string['allmonths'] = 'All months';
+$string['notevaluated'] = 'Not evaluated';
 
 // Evaluation reports strings.
 $string['evaluationreports'] = 'Evaluations';

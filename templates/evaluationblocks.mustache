@@ -71,6 +71,46 @@
         </div>
         {{/stackevaluationreports}}
 
+        {{! Step 0: Consolidated view (no teacher selected) }}
+        {{#showconsolidated}}
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <div class="evaluation-consolidated-block block-report">
+                    <div class="main-panel">
+                        <div class="header-panel">
+                            <div class="heading-block">
+                                <h5>{{#str}} consolidatedreport, report_lmsace_reports {{/str}}</h5>
+                            </div>
+                        </div>
+                        <form id="eval-month-filter-form" class="d-flex flex-wrap align-items-end gap-2 mb-3 p-2 border rounded bg-light" onsubmit="return false;">
+                            <div>
+                                <label for="eval-month-filter" class="form-label mb-0 small">
+                                    {{#str}} filterbymonth, report_lmsace_reports {{/str}}
+                                </label>
+                                <select id="eval-month-filter" class="form-select form-select-sm custom-select">
+                                    {{#evalmonthfilter}}
+                                    <option value="{{value}}" {{selected}}>{{label}}</option>
+                                    {{/evalmonthfilter}}
+                                </select>
+                            </div>
+                            <div>
+                                <button type="button" id="eval-month-apply" class="btn btn-primary btn-sm">
+                                    {{#str}} applyfilter, report_lmsace_reports {{/str}}
+                                </button>
+                                <button type="button" id="eval-month-clear" class="btn btn-secondary btn-sm">
+                                    {{#str}} clearfilter, report_lmsace_reports {{/str}}
+                                </button>
+                            </div>
+                        </form>
+                        <div class="body-panel">
+                            {{{evaluationconsolidated}}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/showconsolidated}}
+
         <div class="row">
 
             {{! Step 2: Courses list (when teacher selected, no course selected) }}
@@ -196,7 +236,7 @@
                                 <div class="col-6 col-sm-4 col-lg-2 mb-3">
                                     <div class="stat-card text-center p-3">
                                         <div class="stat-icon bg-info-light"><i class="fa fa-bar-chart"></i></div>
-                                        <div class="stat-value">{{avggrade}}%</div>
+                                        <div class="stat-value">{{avggrade}}/10</div>
                                         <div class="stat-label">{{#str}} averagegrade, report_lmsace_reports {{/str}}</div>
                                     </div>
                                 </div>
@@ -223,7 +263,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td><strong>{{#str}} averagegrade, report_lmsace_reports {{/str}}</strong></td>
-                                                    <td><strong style="color: #0c6;">{{avggrade}}%</strong></td>
+                                                    <td><strong style="color: #0c6;">{{avggrade}}/10</strong></td>
                                                 </tr>
                                             </table>
                                         </div>

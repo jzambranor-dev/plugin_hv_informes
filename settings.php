@@ -115,6 +115,7 @@ unset($choices);
 
 // Evaluation report widgets.
 $choices = [
+    REPORT_LMSACE_REPORTS_EVALUATIONCONSOLIDATED => get_string('evaluationconsolidatedwidget', 'report_lmsace_reports'),
     REPORT_LMSACE_REPORTS_EVALUATIONSTATE => get_string('evaluationstatewidget', 'report_lmsace_reports'),
     REPORT_LMSACE_REPORTS_EVALUATIONCOURSES => get_string('evaluationcourseswidget', 'report_lmsace_reports'),
     REPORT_LMSACE_REPORTS_EVALUATIONACTIVITIES => get_string('evaluationactivitieswidget', 'report_lmsace_reports'),

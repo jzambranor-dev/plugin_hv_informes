@@ -138,7 +138,7 @@ class evaluationactivitydetailwidget extends widgets_info {
         // Average grade: try module-specific tables first, then fall back to gradebook.
         $avggrade = 0;
         if ($module->name === 'quiz') {
-            $sql = "SELECT AVG(qg.grade / q.grade * 100) as avggrade
+            $sql = "SELECT AVG(qg.grade / q.grade * 10) as avggrade
                 FROM {quiz_grades} qg
                 JOIN {quiz} q ON q.id = qg.quiz
                 WHERE qg.quiz = :quizid AND q.grade > 0";
@@ -147,7 +147,7 @@ class evaluationactivitydetailwidget extends widgets_info {
                 $avggrade = round($graderesult->avggrade, 1);
             }
         } else if ($module->name === 'assign') {
-            $sql = "SELECT AVG(ag.grade / a.grade * 100) as avggrade
+            $sql = "SELECT AVG(ag.grade / a.grade * 10) as avggrade
                 FROM {assign_grades} ag
                 JOIN {assign} a ON a.id = ag.assignment
                 WHERE ag.assignment = :assignid AND ag.grade >= 0 AND a.grade > 0";
@@ -158,7 +158,7 @@ class evaluationactivitydetailwidget extends widgets_info {
         }
         // Fallback to gradebook if module-specific query returned 0.
         if ($avggrade == 0) {
-            $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 100) as avggrade
+            $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 10) as avggrade
                 FROM {grade_grades} gg
                 JOIN {grade_items} gi ON gi.id = gg.itemid
                 WHERE gi.itemtype = 'mod' AND gi.itemmodule = :modulename AND gi.iteminstance = :instanceid
