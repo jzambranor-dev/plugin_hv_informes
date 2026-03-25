@@ -37,7 +37,7 @@ class evaluationconsolidated_table extends \table_sql {
     /** @var int Month filter timestamp (first day of month). */
     protected $evalmonth;
 
-    /** @var int Category ID filter. */
+    /** @var string Comma-separated category IDs filter. */
     protected $evalcategory;
 
     /** @var string Module type filter. */
@@ -47,10 +47,10 @@ class evaluationconsolidated_table extends \table_sql {
      * Constructor.
      * @param string $uniqueid
      * @param int $evalmonth Timestamp of first day of month to filter, 0 for all.
-     * @param int $evalcategory Category ID to filter, 0 for all.
+     * @param string $evalcategory Comma-separated category IDs to filter, empty for all.
      * @param string $evalconmodtype Module type to filter, empty for all.
      */
-    public function __construct($uniqueid, $evalmonth = 0, $evalcategory = 0, $evalconmodtype = '') {
+    public function __construct($uniqueid, $evalmonth = 0, $evalcategory = '', $evalconmodtype = '') {
         parent::__construct($uniqueid);
         $this->evalmonth = $evalmonth;
         $this->evalcategory = $evalcategory;
@@ -171,10 +171,30 @@ class evaluationconsolidated_table extends \table_sql {
             JOIN {modules} m ON m.id = cm.module";
         $where = "ra.roleid $rolesql";
 
-        // Filter by subcategory.
+        // Filter by categories (including all descendant subcategories).
         if (!empty($this->evalcategory)) {
-            $where .= " AND c.category = :categoryid";
-            $params['categoryid'] = $this->evalcategory;
+            $selectedids = array_map('intval', explode(',', $this->evalcategory));
+            $selectedids = array_filter($selectedids);
+            if (!empty($selectedids)) {
+                // Expand selected categories to include all descendants via path matching.
+                $allcats = $DB->get_records('course_categories', null, '', 'id, path');
+                $matchids = [];
+                foreach ($allcats as $cat) {
+                    foreach ($selectedids as $sid) {
+                        if (preg_match('#/' . $sid . '(/|$)#', $cat->path)) {
+                            $matchids[$cat->id] = true;
+                            break;
+                        }
+                    }
+                }
+                if (!empty($matchids)) {
+                    list($catsql, $catparams) = $DB->get_in_or_equal(
+                        array_keys($matchids), SQL_PARAMS_NAMED, 'cat'
+                    );
+                    $where .= " AND c.category $catsql";
+                    $params = array_merge($params, $catparams);
+                }
+            }
         }
 
         // Filter by module type.

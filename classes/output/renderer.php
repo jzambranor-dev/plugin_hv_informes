@@ -113,9 +113,9 @@ class renderer extends plugin_renderer_base {
     public $evalmonth;
 
     /**
-     * Evaluation category filter.
+     * Evaluation category filter (comma-separated IDs).
      *
-     * @var int
+     * @var string
      */
     public $evalcategory;
 

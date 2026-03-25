@@ -62,10 +62,15 @@ define([], function() {
                     } else {
                         url.searchParams.delete('evalmonth');
                     }
-                    if (categorySelect && categorySelect.value && categorySelect.value !== '0') {
-                        url.searchParams.set('evalcategory', categorySelect.value);
-                    } else {
-                        url.searchParams.delete('evalcategory');
+                    if (categorySelect) {
+                        var selectedCats = Array.from(categorySelect.selectedOptions).map(function(o) {
+                            return o.value;
+                        });
+                        if (selectedCats.length > 0) {
+                            url.searchParams.set('evalcategory', selectedCats.join(','));
+                        } else {
+                            url.searchParams.delete('evalcategory');
+                        }
                     }
                     if (modtypeSelect && modtypeSelect.value) {
                         url.searchParams.set('evalconmodtype', modtypeSelect.value);

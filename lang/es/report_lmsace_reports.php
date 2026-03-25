@@ -221,8 +221,9 @@ $string['consolidatedreport'] = 'Informe consolidado de evaluación';
 $string['filterbymonth'] = 'Filtrar por mes';
 $string['allmonths'] = 'Todos los meses';
 $string['notevaluated'] = 'Sin evaluar';
-$string['filterbycategory'] = 'Subcategoría';
-$string['allcategories'] = 'Todas las subcategorías';
+$string['filterbycategory'] = 'Categorías';
+$string['allcategories'] = 'Todas las categorías';
+$string['holdctrlmultiselect'] = 'Mantén Ctrl para seleccionar varias';
 
 // Evaluation reports strings.
 $string['evaluationreports'] = 'Evaluaciones';

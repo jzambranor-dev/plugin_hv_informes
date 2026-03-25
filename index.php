@@ -40,7 +40,9 @@ $teacheraction = optional_param('teacherinfo', $defaultteacher, PARAM_INT);
 $report = optional_param('report', '', PARAM_TEXT);
 $evalteacher = optional_param('evalteacher', 0, PARAM_INT);
 $evalmonth = optional_param('evalmonth', 0, PARAM_INT);
-$evalcategory = optional_param('evalcategory', 0, PARAM_INT);
+$evalcategory = optional_param('evalcategory', '', PARAM_TEXT);
+// Sanitise: only allow digits and commas.
+$evalcategory = preg_replace('/[^0-9,]/', '', $evalcategory);
 $evalconmodtype = optional_param('evalconmodtype', '', PARAM_TEXT);
 $evalcourse = optional_param('evalcourse', 0, PARAM_INT);
 $evalcmid = optional_param('evalcmid', 0, PARAM_INT);
@@ -82,7 +84,7 @@ if ($report == 'coursereport') {
     if ($evalmonth) {
         $pageurl->param('evalmonth', $evalmonth);
     }
-    if ($evalcategory) {
+    if ($evalcategory !== '') {
         $pageurl->param('evalcategory', $evalcategory);
     }
     if ($evalconmodtype !== '') {

@@ -172,7 +172,7 @@ class lmsace_reports implements renderable, templatable {
         $data->evalfrom = $output->evalfrom ?? 0;
         $data->evalto = $output->evalto ?? 0;
         $data->evalmonth = $output->evalmonth ?? 0;
-        $data->evalcategory = $output->evalcategory ?? 0;
+        $data->evalcategory = $output->evalcategory ?? '';
         $data->evalconmodtype = $output->evalconmodtype ?? '';
         // Convert timestamps to date strings for HTML date inputs.
         if ($data->evalfrom) {
@@ -291,26 +291,47 @@ class lmsace_reports implements renderable, templatable {
                     ];
                 }
 
-                // Build subcategory filter options.
-                $allcategories = $DB->get_records_sql(
-                    "SELECT DISTINCT cc.id, cc.name
+                // Build hierarchical category filter options.
+                // Get all categories that have courses with teacher role assignments.
+                $catswithcourses = $DB->get_records_sql(
+                    "SELECT DISTINCT cc.id
                      FROM {course_categories} cc
                      JOIN {course} c ON c.category = cc.id
                      JOIN {context} ctx ON ctx.instanceid = c.id AND ctx.contextlevel = " . CONTEXT_COURSE . "
-                     JOIN {role_assignments} ra ON ra.contextid = ctx.id
-                     ORDER BY cc.name"
+                     JOIN {role_assignments} ra ON ra.contextid = ctx.id"
                 );
+                $catidswithcourses = array_keys($catswithcourses);
+
+                // Get full category tree and mark which ones have courses or have children with courses.
+                $allcats = $DB->get_records('course_categories', null, 'sortorder', 'id, name, parent, depth, path');
+                // Build set of IDs that should appear: categories with courses + all their ancestors.
+                $visibleids = [];
+                foreach ($catidswithcourses as $cid) {
+                    if (isset($allcats[$cid])) {
+                        $pathids = explode('/', trim($allcats[$cid]->path, '/'));
+                        foreach ($pathids as $pid) {
+                            $visibleids[(int)$pid] = true;
+                        }
+                    }
+                }
+
+                // Parse selected category IDs.
+                $selectedcatids = [];
+                if (!empty($data->evalcategory)) {
+                    $selectedcatids = array_map('intval', explode(',', $data->evalcategory));
+                    $selectedcatids = array_flip($selectedcatids);
+                }
+
                 $data->evalcategoryfilter = [];
-                $data->evalcategoryfilter[] = [
-                    'value' => 0,
-                    'label' => get_string('allcategories', 'report_lmsace_reports'),
-                    'selected' => empty($data->evalcategory) ? 'selected' : '',
-                ];
-                foreach ($allcategories as $cat) {
+                foreach ($allcats as $cat) {
+                    if (!isset($visibleids[$cat->id])) {
+                        continue;
+                    }
+                    $indent = str_repeat('— ', max(0, $cat->depth - 1));
                     $data->evalcategoryfilter[] = [
                         'value' => $cat->id,
-                        'label' => format_string($cat->name),
-                        'selected' => ($data->evalcategory == $cat->id) ? 'selected' : '',
+                        'label' => $indent . format_string($cat->name),
+                        'selected' => isset($selectedcatids[$cat->id]) ? 'selected' : '',
                     ];
                 }
 
