@@ -783,6 +783,31 @@
     margin: 0 auto;
 }
 
+/* Category accordion filter */
+.eval-cat-accordion {
+    max-height: 250px;
+    overflow-y: auto;
+    border: 1px solid #e0e5ec;
+    border-radius: 8px;
+    padding: 4px;
+    background: #fff;
+}
+.eval-cat-accordion .accordion-item {
+    border: none;
+    background: transparent;
+}
+.eval-cat-accordion .form-check {
+    min-height: auto;
+    margin-bottom: 1px;
+}
+.eval-cat-accordion .form-check-label {
+    cursor: pointer;
+    user-select: none;
+}
+.eval-cat-accordion .form-check-input {
+    cursor: pointer;
+}
+
 /* Loading icon overlay */
 .lmsace-reports-body .loadiconElement {
     min-height: 0;

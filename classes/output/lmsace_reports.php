@@ -291,8 +291,7 @@ class lmsace_reports implements renderable, templatable {
                     ];
                 }
 
-                // Build hierarchical category filter options.
-                // Get all categories that have courses with teacher role assignments.
+                // Build accordion category filter (parent categories with child checkboxes).
                 $catswithcourses = $DB->get_records_sql(
                     "SELECT DISTINCT cc.id
                      FROM {course_categories} cc
@@ -300,40 +299,84 @@ class lmsace_reports implements renderable, templatable {
                      JOIN {context} ctx ON ctx.instanceid = c.id AND ctx.contextlevel = " . CONTEXT_COURSE . "
                      JOIN {role_assignments} ra ON ra.contextid = ctx.id"
                 );
-                $catidswithcourses = array_keys($catswithcourses);
+                $catidswithcourses = array_flip(array_keys($catswithcourses));
 
-                // Get full category tree and mark which ones have courses or have children with courses.
                 $allcats = $DB->get_records('course_categories', null, 'sortorder', 'id, name, parent, depth, path');
-                // Build set of IDs that should appear: categories with courses + all their ancestors.
-                $visibleids = [];
-                foreach ($catidswithcourses as $cid) {
-                    if (isset($allcats[$cid])) {
-                        $pathids = explode('/', trim($allcats[$cid]->path, '/'));
-                        foreach ($pathids as $pid) {
-                            $visibleids[(int)$pid] = true;
-                        }
-                    }
-                }
 
                 // Parse selected category IDs.
                 $selectedcatids = [];
                 if (!empty($data->evalcategory)) {
-                    $selectedcatids = array_map('intval', explode(',', $data->evalcategory));
-                    $selectedcatids = array_flip($selectedcatids);
+                    $selectedcatids = array_flip(array_map('intval', explode(',', $data->evalcategory)));
                 }
 
-                $data->evalcategoryfilter = [];
+                // Build tree: top-level parents with their children (recursive flattened).
+                $toplevel = [];
+                $childrenof = [];
                 foreach ($allcats as $cat) {
-                    if (!isset($visibleids[$cat->id])) {
+                    if ($cat->parent == 0) {
+                        $toplevel[$cat->id] = $cat;
+                    } else {
+                        $childrenof[$cat->parent][] = $cat;
+                    }
+                }
+
+                // Recursive function to collect all descendants.
+                $getdescendants = function($parentid) use (&$getdescendants, $childrenof, $catidswithcourses, $selectedcatids) {
+                    $result = [];
+                    if (!empty($childrenof[$parentid])) {
+                        foreach ($childrenof[$parentid] as $child) {
+                            $hascourses = isset($catidswithcourses[$child->id]);
+                            $grandchildren = $getdescendants($child->id);
+                            // Show this child if it has courses or has descendants with courses.
+                            if ($hascourses || !empty($grandchildren)) {
+                                $checked = isset($selectedcatids[$child->id]) ? 'checked' : '';
+                                $indent = max(0, $child->depth - 2);
+                                $result[] = [
+                                    'id' => $child->id,
+                                    'name' => format_string($child->name),
+                                    'checked' => $checked,
+                                    'indent' => $indent * 20,
+                                ];
+                                $result = array_merge($result, $grandchildren);
+                            }
+                        }
+                    }
+                    return $result;
+                };
+
+                $data->evalcategoryaccordion = [];
+                $idx = 0;
+                foreach ($toplevel as $parent) {
+                    $children = $getdescendants($parent->id);
+                    $parenthascourses = isset($catidswithcourses[$parent->id]);
+                    if (!$parenthascourses && empty($children)) {
                         continue;
                     }
-                    $indent = str_repeat('— ', max(0, $cat->depth - 1));
-                    $data->evalcategoryfilter[] = [
-                        'value' => $cat->id,
-                        'label' => $indent . format_string($cat->name),
-                        'selected' => isset($selectedcatids[$cat->id]) ? 'selected' : '',
+                    $parentchecked = isset($selectedcatids[$parent->id]) ? 'checked' : '';
+                    // Check if any child is selected to auto-expand.
+                    $hasselected = !empty($parentchecked);
+                    if (!$hasselected) {
+                        foreach ($children as $ch) {
+                            if (!empty($ch['checked'])) {
+                                $hasselected = true;
+                                break;
+                            }
+                        }
+                    }
+                    $data->evalcategoryaccordion[] = [
+                        'parentid' => $parent->id,
+                        'parentname' => format_string($parent->name),
+                        'parentchecked' => $parentchecked,
+                        'children' => $children,
+                        'haschildren' => !empty($children),
+                        'expanded' => $hasselected ? 'true' : 'false',
+                        'showclass' => $hasselected ? 'show' : '',
+                        'collapsedclass' => $hasselected ? '' : 'collapsed',
+                        'idx' => $idx,
                     ];
+                    $idx++;
                 }
+                $data->hascategoryaccordion = !empty($data->evalcategoryaccordion);
 
                 // Build module type filter options.
                 $allmods = $DB->get_records_sql(

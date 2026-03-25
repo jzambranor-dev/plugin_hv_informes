@@ -44,6 +44,39 @@ define([], function() {
                 }
             }
 
+            // Category accordion: parent checkbox toggles all children.
+            var parentCheckboxes = document.querySelectorAll('.eval-cat-parent');
+            parentCheckboxes.forEach(function(parentCb) {
+                parentCb.addEventListener('change', function() {
+                    var parentId = parentCb.value;
+                    var children = document.querySelectorAll('.eval-cat-child[data-parentid="' + parentId + '"]');
+                    children.forEach(function(child) {
+                        child.checked = parentCb.checked;
+                    });
+                });
+            });
+
+            // Accordion arrow rotation on expand/collapse.
+            var accordionLinks = document.querySelectorAll('.eval-cat-accordion [data-toggle="collapse"], ' +
+                '.eval-cat-accordion [data-bs-toggle="collapse"]');
+            accordionLinks.forEach(function(link) {
+                var target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    var observer = new MutationObserver(function() {
+                        var arrow = link.querySelector('.eval-cat-arrow');
+                        if (arrow) {
+                            arrow.style.transform = target.classList.contains('show') ? 'rotate(90deg)' : '';
+                        }
+                    });
+                    observer.observe(target, {attributes: true, attributeFilter: ['class']});
+                    // Set initial state.
+                    var arrow = link.querySelector('.eval-cat-arrow');
+                    if (arrow && target.classList.contains('show')) {
+                        arrow.style.transform = 'rotate(90deg)';
+                    }
+                }
+            });
+
             // Initialize consolidated month filter.
             var monthApplyBtn = document.getElementById('eval-month-apply');
             var monthClearBtn = document.getElementById('eval-month-clear');
@@ -51,10 +84,8 @@ define([], function() {
             if (monthApplyBtn) {
                 monthApplyBtn.addEventListener('click', function() {
                     var url = new URL(window.location.href);
-                    // Ensure report param is always present.
                     url.searchParams.set('report', 'evaluationreport');
                     var monthSelect = document.getElementById('eval-month-filter');
-                    var categorySelect = document.getElementById('eval-category-filter');
                     var modtypeSelect = document.getElementById('eval-conmodtype-filter');
 
                     if (monthSelect && monthSelect.value && monthSelect.value !== '0') {
@@ -62,16 +93,18 @@ define([], function() {
                     } else {
                         url.searchParams.delete('evalmonth');
                     }
-                    if (categorySelect) {
-                        var selectedCats = Array.from(categorySelect.selectedOptions).map(function(o) {
-                            return o.value;
-                        });
-                        if (selectedCats.length > 0) {
-                            url.searchParams.set('evalcategory', selectedCats.join(','));
-                        } else {
-                            url.searchParams.delete('evalcategory');
-                        }
+
+                    // Collect checked category checkboxes.
+                    var checkedCats = document.querySelectorAll('.eval-cat-checkbox:checked');
+                    var catIds = Array.from(checkedCats).map(function(cb) {
+                        return cb.value;
+                    });
+                    if (catIds.length > 0) {
+                        url.searchParams.set('evalcategory', catIds.join(','));
+                    } else {
+                        url.searchParams.delete('evalcategory');
                     }
+
                     if (modtypeSelect && modtypeSelect.value) {
                         url.searchParams.set('evalconmodtype', modtypeSelect.value);
                     } else {
@@ -88,6 +121,10 @@ define([], function() {
                 monthClearBtn.addEventListener('click', function() {
                     var url = new URL(window.location.href);
                     url.searchParams.set('report', 'evaluationreport');
+                    // Uncheck all category checkboxes.
+                    document.querySelectorAll('.eval-cat-checkbox:checked').forEach(function(cb) {
+                        cb.checked = false;
+                    });
                     url.searchParams.delete('evalmonth');
                     url.searchParams.delete('evalcategory');
                     url.searchParams.delete('evalconmodtype');
