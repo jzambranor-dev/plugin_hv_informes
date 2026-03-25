@@ -105,7 +105,7 @@ class learnersoverviewwidget extends widgets_info {
             $timeend = time();
             $sql = "SELECT gg.id AS itemid, u.id AS userid, u.username AS user,
                 u.timecreated AS usercreation, u.lastaccess,
-                ROUND((sum(gg.finalgrade) / sum(gg.rawgrademax)) * 100) AS score,
+                ROUND((sum(gg.finalgrade) / sum(gg.rawgrademax)) * 10, 1) AS score,
                 (SELECT count(*) FROM {course_completions} cp WHERE cp.userid = u.id AND timecompleted IS NOT NULL)
                     AS completedcourses
                 FROM {grade_items} gt

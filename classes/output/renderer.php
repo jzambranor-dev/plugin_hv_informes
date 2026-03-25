@@ -113,6 +113,20 @@ class renderer extends plugin_renderer_base {
     public $evalmonth;
 
     /**
+     * Evaluation category filter.
+     *
+     * @var int
+     */
+    public $evalcategory;
+
+    /**
+     * Evaluation consolidated module type filter.
+     *
+     * @var string
+     */
+    public $evalconmodtype;
+
+    /**
      * Defer to template.
      *
      * @param lmsace_reports $genesisreports

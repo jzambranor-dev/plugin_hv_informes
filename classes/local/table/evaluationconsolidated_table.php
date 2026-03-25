@@ -37,14 +37,24 @@ class evaluationconsolidated_table extends \table_sql {
     /** @var int Month filter timestamp (first day of month). */
     protected $evalmonth;
 
+    /** @var int Category ID filter. */
+    protected $evalcategory;
+
+    /** @var string Module type filter. */
+    protected $evalconmodtype;
+
     /**
      * Constructor.
      * @param string $uniqueid
      * @param int $evalmonth Timestamp of first day of month to filter, 0 for all.
+     * @param int $evalcategory Category ID to filter, 0 for all.
+     * @param string $evalconmodtype Module type to filter, empty for all.
      */
-    public function __construct($uniqueid, $evalmonth = 0) {
+    public function __construct($uniqueid, $evalmonth = 0, $evalcategory = 0, $evalconmodtype = '') {
         parent::__construct($uniqueid);
         $this->evalmonth = $evalmonth;
+        $this->evalcategory = $evalcategory;
+        $this->evalconmodtype = $evalconmodtype;
     }
 
     /**
@@ -57,11 +67,12 @@ class evaluationconsolidated_table extends \table_sql {
      */
     public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
         $columns = [
-            'teachername', 'coursename', 'activityname', 'activitytype',
+            'teachername', 'categoryname', 'coursename', 'activityname', 'activitytype',
             'enrolled', 'completed', 'notcompleted', 'passed', 'failed', 'averagegrade',
         ];
         $headers = [
             get_string('teacher', 'report_lmsace_reports'),
+            get_string('category', 'report_lmsace_reports'),
             get_string('coursename', 'report_lmsace_reports'),
             get_string('activityname', 'report_lmsace_reports'),
             get_string('activitytype', 'report_lmsace_reports'),
@@ -77,6 +88,7 @@ class evaluationconsolidated_table extends \table_sql {
         $this->collapsible(false);
         $this->sortable(true, 'lastname', SORT_ASC);
         $this->no_sorting('teachername');
+        $this->no_sorting('categoryname');
         $this->no_sorting('activityname');
         $this->no_sorting('activitytype');
         $this->no_sorting('enrolled');
@@ -148,15 +160,28 @@ class evaluationconsolidated_table extends \table_sql {
             ra.userid AS teacherid,
             u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic,
             u.middlename, u.alternatename,
-            c.id AS courseid, c.fullname AS coursename,
+            c.id AS courseid, c.fullname AS coursename, cc.name AS categoryname,
             cm.id AS cmid, cm.instance AS cminstance, m.name AS modulename";
         $from = "{role_assignments} ra
             JOIN {context} ctx ON ctx.id = ra.contextid AND ctx.contextlevel = :contextlevel
             JOIN {course} c ON c.id = ctx.instanceid
+            JOIN {course_categories} cc ON cc.id = c.category
             JOIN {user} u ON u.id = ra.userid AND u.deleted = 0
             JOIN {course_modules} cm ON cm.course = c.id AND cm.deletioninprogress = 0
             JOIN {modules} m ON m.id = cm.module";
         $where = "ra.roleid $rolesql";
+
+        // Filter by subcategory.
+        if (!empty($this->evalcategory)) {
+            $where .= " AND c.category = :categoryid";
+            $params['categoryid'] = $this->evalcategory;
+        }
+
+        // Filter by module type.
+        if (!empty($this->evalconmodtype)) {
+            $where .= " AND m.name = :modtype";
+            $params['modtype'] = $this->evalconmodtype;
+        }
 
         $this->set_sql($select, $from, $where, $params);
         parent::query_db($pagesize, false);
@@ -179,6 +204,16 @@ class evaluationconsolidated_table extends \table_sql {
             'evalteacher' => $row->teacherid,
         ]);
         return \html_writer::link($url, $fullname);
+    }
+
+    /**
+     * Generate the categoryname column.
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function col_categoryname($row) {
+        return format_string($row->categoryname);
     }
 
     /**

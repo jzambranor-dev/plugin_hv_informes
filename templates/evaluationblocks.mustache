@@ -94,6 +94,26 @@
                                 </select>
                             </div>
                             <div>
+                                <label for="eval-category-filter" class="form-label mb-0 small">
+                                    {{#str}} filterbycategory, report_lmsace_reports {{/str}}
+                                </label>
+                                <select id="eval-category-filter" class="form-select form-select-sm custom-select">
+                                    {{#evalcategoryfilter}}
+                                    <option value="{{value}}" {{selected}}>{{label}}</option>
+                                    {{/evalcategoryfilter}}
+                                </select>
+                            </div>
+                            <div>
+                                <label for="eval-conmodtype-filter" class="form-label mb-0 small">
+                                    {{#str}} filterbyactivitytype, report_lmsace_reports {{/str}}
+                                </label>
+                                <select id="eval-conmodtype-filter" class="form-select form-select-sm custom-select">
+                                    {{#evalconmodtypefilter}}
+                                    <option value="{{value}}" {{selected}}>{{label}}</option>
+                                    {{/evalconmodtypefilter}}
+                                </select>
+                            </div>
+                            <div>
                                 <button type="button" id="eval-month-apply" class="btn btn-primary btn-sm">
                                     {{#str}} applyfilter, report_lmsace_reports {{/str}}
                                 </button>

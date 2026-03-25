@@ -172,6 +172,8 @@ class lmsace_reports implements renderable, templatable {
         $data->evalfrom = $output->evalfrom ?? 0;
         $data->evalto = $output->evalto ?? 0;
         $data->evalmonth = $output->evalmonth ?? 0;
+        $data->evalcategory = $output->evalcategory ?? 0;
+        $data->evalconmodtype = $output->evalconmodtype ?? '';
         // Convert timestamps to date strings for HTML date inputs.
         if ($data->evalfrom) {
             $data->evalfromdate = date('Y-m-d', $data->evalfrom);
@@ -289,10 +291,53 @@ class lmsace_reports implements renderable, templatable {
                     ];
                 }
 
+                // Build subcategory filter options.
+                $allcategories = $DB->get_records_sql(
+                    "SELECT DISTINCT cc.id, cc.name
+                     FROM {course_categories} cc
+                     JOIN {course} c ON c.category = cc.id
+                     JOIN {context} ctx ON ctx.instanceid = c.id AND ctx.contextlevel = " . CONTEXT_COURSE . "
+                     JOIN {role_assignments} ra ON ra.contextid = ctx.id
+                     ORDER BY cc.name"
+                );
+                $data->evalcategoryfilter = [];
+                $data->evalcategoryfilter[] = [
+                    'value' => 0,
+                    'label' => get_string('allcategories', 'report_lmsace_reports'),
+                    'selected' => empty($data->evalcategory) ? 'selected' : '',
+                ];
+                foreach ($allcategories as $cat) {
+                    $data->evalcategoryfilter[] = [
+                        'value' => $cat->id,
+                        'label' => format_string($cat->name),
+                        'selected' => ($data->evalcategory == $cat->id) ? 'selected' : '',
+                    ];
+                }
+
+                // Build module type filter options.
+                $allmods = $DB->get_records_sql(
+                    "SELECT DISTINCT m.name FROM {modules} m
+                     JOIN {course_modules} cm ON cm.module = m.id AND cm.deletioninprogress = 0
+                     ORDER BY m.name"
+                );
+                $data->evalconmodtypefilter = [];
+                $data->evalconmodtypefilter[] = [
+                    'value' => '',
+                    'label' => get_string('alltypes', 'report_lmsace_reports'),
+                    'selected' => empty($data->evalconmodtype) ? 'selected' : '',
+                ];
+                foreach ($allmods as $mod) {
+                    $data->evalconmodtypefilter[] = [
+                        'value' => $mod->name,
+                        'label' => get_string('modulename', $mod->name),
+                        'selected' => ($data->evalconmodtype === $mod->name) ? 'selected' : '',
+                    ];
+                }
+
                 // Render the consolidated table directly (bypasses widget visibility settings).
                 require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationconsolidated_table.php');
                 $contable = new \report_lmsace_reports\local\table\evaluationconsolidated_table(
-                    'evaluation-consolidated-table', $data->evalmonth
+                    'evaluation-consolidated-table', $data->evalmonth, $data->evalcategory, $data->evalconmodtype
                 );
                 ob_start();
                 $contable->out(20, true);

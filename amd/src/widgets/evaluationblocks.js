@@ -52,12 +52,25 @@ define([], function() {
                 monthApplyBtn.addEventListener('click', function() {
                     var url = new URL(window.location.href);
                     var monthSelect = document.getElementById('eval-month-filter');
+                    var categorySelect = document.getElementById('eval-category-filter');
+                    var modtypeSelect = document.getElementById('eval-conmodtype-filter');
+
                     if (monthSelect && monthSelect.value && monthSelect.value !== '0') {
                         url.searchParams.set('evalmonth', monthSelect.value);
                     } else {
                         url.searchParams.delete('evalmonth');
                     }
-                    url.searchParams.set('evalteacher', '0');
+                    if (categorySelect && categorySelect.value && categorySelect.value !== '0') {
+                        url.searchParams.set('evalcategory', categorySelect.value);
+                    } else {
+                        url.searchParams.delete('evalcategory');
+                    }
+                    if (modtypeSelect && modtypeSelect.value) {
+                        url.searchParams.set('evalconmodtype', modtypeSelect.value);
+                    } else {
+                        url.searchParams.delete('evalconmodtype');
+                    }
+                    url.searchParams.delete('evalteacher');
                     url.searchParams.delete('evalcourse');
                     url.searchParams.delete('evalcmid');
                     window.location.href = url.toString();
@@ -68,7 +81,9 @@ define([], function() {
                 monthClearBtn.addEventListener('click', function() {
                     var url = new URL(window.location.href);
                     url.searchParams.delete('evalmonth');
-                    url.searchParams.set('evalteacher', '0');
+                    url.searchParams.delete('evalcategory');
+                    url.searchParams.delete('evalconmodtype');
+                    url.searchParams.delete('evalteacher');
                     url.searchParams.delete('evalcourse');
                     url.searchParams.delete('evalcmid');
                     window.location.href = url.toString();

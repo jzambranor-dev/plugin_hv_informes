@@ -40,6 +40,8 @@ $teacheraction = optional_param('teacherinfo', $defaultteacher, PARAM_INT);
 $report = optional_param('report', '', PARAM_TEXT);
 $evalteacher = optional_param('evalteacher', 0, PARAM_INT);
 $evalmonth = optional_param('evalmonth', 0, PARAM_INT);
+$evalcategory = optional_param('evalcategory', 0, PARAM_INT);
+$evalconmodtype = optional_param('evalconmodtype', '', PARAM_TEXT);
 $evalcourse = optional_param('evalcourse', 0, PARAM_INT);
 $evalcmid = optional_param('evalcmid', 0, PARAM_INT);
 $evalmodtype = optional_param('evalmodtype', '', PARAM_TEXT);
@@ -79,6 +81,12 @@ if ($report == 'coursereport') {
     $pageurl->param('evalteacher', $evalteacher);
     if ($evalmonth) {
         $pageurl->param('evalmonth', $evalmonth);
+    }
+    if ($evalcategory) {
+        $pageurl->param('evalcategory', $evalcategory);
+    }
+    if ($evalconmodtype !== '') {
+        $pageurl->param('evalconmodtype', $evalconmodtype);
     }
     if ($evalcourse) {
         $pageurl->param('evalcourse', $evalcourse);
@@ -140,13 +148,15 @@ $output->evalmodtype = $evalmodtype;
 $output->evalfrom = $evalfrom;
 $output->evalto = $evalto;
 $output->evalmonth = $evalmonth;
+$output->evalcategory = $evalcategory;
+$output->evalconmodtype = $evalconmodtype;
 
 // Handle CSV download for consolidated table before any output.
 $download = optional_param('download', '', PARAM_ALPHA);
 if ($download && $report == 'evaluationreport' && !$evalteacher) {
     require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationconsolidated_table.php');
     $table = new \report_lmsace_reports\local\table\evaluationconsolidated_table(
-        'evaluation-consolidated-table', $evalmonth
+        'evaluation-consolidated-table', $evalmonth, $evalcategory, $evalconmodtype
     );
     $table->out(0, false);
     exit;

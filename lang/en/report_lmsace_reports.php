@@ -221,6 +221,8 @@ $string['consolidatedreport'] = 'Consolidated evaluation report';
 $string['filterbymonth'] = 'Filter by month';
 $string['allmonths'] = 'All months';
 $string['notevaluated'] = 'Not evaluated';
+$string['filterbycategory'] = 'Subcategory';
+$string['allcategories'] = 'All subcategories';
 
 // Evaluation reports strings.
 $string['evaluationreports'] = 'Evaluations';

@@ -83,7 +83,7 @@ class teachercoursessummarywidget extends widgets_info {
 
             // Get average grade.
             global $DB;
-            $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 100) as avggrade
+            $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 10) as avggrade
                 FROM {grade_grades} gg
                 JOIN {grade_items} gi ON gi.id = gg.itemid
                 WHERE gi.courseid = :courseid AND gi.itemtype = 'course'
