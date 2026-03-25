@@ -67,13 +67,16 @@ class evaluationconsolidated_table extends \table_sql {
      */
     public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
         $columns = [
-            'teachername', 'categoryname', 'coursename', 'activityname', 'activitytype',
+            'teachername', 'categoryname', 'coursename', 'coursestartdate', 'courseenddate',
+            'activityname', 'activitytype',
             'enrolled', 'completed', 'notcompleted', 'passed', 'failed', 'averagegrade',
         ];
         $headers = [
             get_string('teacher', 'report_lmsace_reports'),
             get_string('category', 'report_lmsace_reports'),
             get_string('coursename', 'report_lmsace_reports'),
+            get_string('startdate', 'report_lmsace_reports'),
+            get_string('enddate', 'report_lmsace_reports'),
             get_string('activityname', 'report_lmsace_reports'),
             get_string('activitytype', 'report_lmsace_reports'),
             get_string('enrolled', 'report_lmsace_reports'),
@@ -89,6 +92,8 @@ class evaluationconsolidated_table extends \table_sql {
         $this->sortable(true, 'lastname', SORT_ASC);
         $this->no_sorting('teachername');
         $this->no_sorting('categoryname');
+        $this->no_sorting('coursestartdate');
+        $this->no_sorting('courseenddate');
         $this->no_sorting('activityname');
         $this->no_sorting('activitytype');
         $this->no_sorting('enrolled');
@@ -160,7 +165,8 @@ class evaluationconsolidated_table extends \table_sql {
             ra.userid AS teacherid,
             u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic,
             u.middlename, u.alternatename,
-            c.id AS courseid, c.fullname AS coursename, cc.name AS categoryname,
+            c.id AS courseid, c.fullname AS coursename, c.startdate AS coursestartdate,
+            c.enddate AS courseenddate, cc.name AS categoryname,
             cm.id AS cmid, cm.instance AS cminstance, m.name AS modulename";
         $from = "{role_assignments} ra
             JOIN {context} ctx ON ctx.id = ra.contextid AND ctx.contextlevel = :contextlevel
@@ -234,6 +240,32 @@ class evaluationconsolidated_table extends \table_sql {
      */
     public function col_categoryname($row) {
         return format_string($row->categoryname);
+    }
+
+    /**
+     * Generate the coursestartdate column.
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function col_coursestartdate($row) {
+        if (empty($row->coursestartdate)) {
+            return '-';
+        }
+        return userdate($row->coursestartdate, get_string('strftimedatefull'));
+    }
+
+    /**
+     * Generate the courseenddate column.
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function col_courseenddate($row) {
+        if (empty($row->courseenddate)) {
+            return '-';
+        }
+        return userdate($row->courseenddate, get_string('strftimedatefull'));
     }
 
     /**

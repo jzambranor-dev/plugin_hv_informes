@@ -79,6 +79,19 @@ if ($report == 'coursereport') {
 } else if ($report == 'evaluationreport') {
     $context = context_system::instance();
     require_capability("report/lmsace_reports:viewevaluationreports", $context);
+
+    // Handle download before any page output.
+    $download = optional_param('download', '', PARAM_ALPHA);
+    if ($download && !$evalteacher) {
+        require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationconsolidated_table.php');
+        $table = new \report_lmsace_reports\local\table\evaluationconsolidated_table(
+            'evaluation-consolidated-table', $evalmonth, $evalcategory, $evalconmodtype
+        );
+        $table->is_downloading($download, 'evaluation_consolidated_report');
+        $table->out(0, false);
+        exit;
+    }
+
     // Add evaluation params to page URL so table pagination/sorting preserves filters.
     $pageurl->param('evalteacher', $evalteacher);
     if ($evalmonth) {
@@ -152,17 +165,6 @@ $output->evalto = $evalto;
 $output->evalmonth = $evalmonth;
 $output->evalcategory = $evalcategory;
 $output->evalconmodtype = $evalconmodtype;
-
-// Handle CSV download for consolidated table before any output.
-$download = optional_param('download', '', PARAM_ALPHA);
-if ($download && $report == 'evaluationreport' && !$evalteacher) {
-    require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationconsolidated_table.php');
-    $table = new \report_lmsace_reports\local\table\evaluationconsolidated_table(
-        'evaluation-consolidated-table', $evalmonth, $evalcategory, $evalconmodtype
-    );
-    $table->out(0, false);
-    exit;
-}
 
 // Print output in page.
 echo $output->header();
