@@ -51,6 +51,8 @@ define([], function() {
             if (monthApplyBtn) {
                 monthApplyBtn.addEventListener('click', function() {
                     var url = new URL(window.location.href);
+                    // Ensure report param is always present.
+                    url.searchParams.set('report', 'evaluationreport');
                     var monthSelect = document.getElementById('eval-month-filter');
                     var categorySelect = document.getElementById('eval-category-filter');
                     var modtypeSelect = document.getElementById('eval-conmodtype-filter');
@@ -80,6 +82,7 @@ define([], function() {
             if (monthClearBtn) {
                 monthClearBtn.addEventListener('click', function() {
                     var url = new URL(window.location.href);
+                    url.searchParams.set('report', 'evaluationreport');
                     url.searchParams.delete('evalmonth');
                     url.searchParams.delete('evalcategory');
                     url.searchParams.delete('evalconmodtype');
