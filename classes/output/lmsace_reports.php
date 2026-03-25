@@ -271,7 +271,7 @@ class lmsace_reports implements renderable, templatable {
 
             $data->hasevalbreadcrumb = count($data->evalbreadcrumb) > 1;
 
-            // Build month filter options for consolidated view.
+            // Build consolidated view when no teacher is selected.
             if (empty($data->evalteacher)) {
                 $data->evalmonthfilter = [];
                 $data->evalmonthfilter[] = [
@@ -288,6 +288,17 @@ class lmsace_reports implements renderable, templatable {
                         'selected' => ($data->evalmonth == $ts) ? 'selected' : '',
                     ];
                 }
+
+                // Render the consolidated table directly (bypasses widget visibility settings).
+                require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationconsolidated_table.php');
+                $contable = new \report_lmsace_reports\local\table\evaluationconsolidated_table(
+                    'evaluation-consolidated-table', $data->evalmonth
+                );
+                ob_start();
+                $contable->out(20, true);
+                $data->consolidatedtablehtml = ob_get_contents();
+                ob_end_clean();
+
                 $data->showconsolidated = true;
             }
         }

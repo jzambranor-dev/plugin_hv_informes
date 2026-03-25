@@ -112,10 +112,8 @@ class report_widgets {
                 $evalto = $output->evalto ?? 0;
 
                 if ($widget->instance == 'evaluationconsolidatedwidget') {
-                    if (!$evalteacher) {
-                        $evalmonth = $output->evalmonth ?? 0;
-                        $widgetinstance = new $classname($evalmonth);
-                    }
+                    // Consolidated view is rendered directly in lmsace_reports.php, skip here.
+                    continue;
                 } else if ($widget->instance == 'stackevaluationreportswidget') {
                     if ($evalteacher && $DB->record_exists('user', ['id' => $evalteacher])) {
                         $widgetinstance = new $classname($evalteacher);

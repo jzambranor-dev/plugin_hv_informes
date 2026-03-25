@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Table class that contains the consolidated evaluation data for all teachers.
+ * Consolidated evaluation table showing all teachers, courses and activities.
  *
  * @package    report_lmsace_reports
  * @copyright  2023 LMSACE <https://lmsace.com>
@@ -30,7 +30,7 @@ require_once($CFG->dirroot.'/lib/tablelib.php');
 require_once($CFG->dirroot. '/report/lmsace_reports/lib.php');
 
 /**
- * Consolidated evaluation table showing all teachers and their courses.
+ * Consolidated evaluation table: one row per teacher + course + activity.
  */
 class evaluationconsolidated_table extends \table_sql {
 
@@ -56,25 +56,32 @@ class evaluationconsolidated_table extends \table_sql {
      * @return void
      */
     public function out($pagesize, $useinitialsbar, $downloadhelpbutton = '') {
-        $columns = ['teachername', 'coursename', 'totalstudents', 'completed', 'notevaluated',
-            'avggrade', 'completionrate'];
+        $columns = [
+            'teachername', 'coursename', 'activityname', 'activitytype',
+            'enrolled', 'completed', 'notcompleted', 'passed', 'failed', 'averagegrade',
+        ];
         $headers = [
             get_string('teacher', 'report_lmsace_reports'),
             get_string('coursename', 'report_lmsace_reports'),
-            get_string('totalstudents', 'report_lmsace_reports'),
-            get_string('coursecompletions', 'report_lmsace_reports'),
-            get_string('notevaluated', 'report_lmsace_reports'),
+            get_string('activityname', 'report_lmsace_reports'),
+            get_string('activitytype', 'report_lmsace_reports'),
+            get_string('enrolled', 'report_lmsace_reports'),
+            get_string('completedcount', 'report_lmsace_reports'),
+            get_string('notcompletedcount', 'report_lmsace_reports'),
+            get_string('passedcount', 'report_lmsace_reports'),
+            get_string('failedcount', 'report_lmsace_reports'),
             get_string('averagegrade', 'report_lmsace_reports'),
-            get_string('completionrate', 'report_lmsace_reports'),
         ];
         $this->define_columns($columns);
         $this->define_headers($headers);
         $this->collapsible(false);
-        $this->no_sorting('totalstudents');
+        $this->sortable(true, 'teachername', SORT_ASC);
+        $this->no_sorting('enrolled');
         $this->no_sorting('completed');
-        $this->no_sorting('notevaluated');
-        $this->no_sorting('avggrade');
-        $this->no_sorting('completionrate');
+        $this->no_sorting('notcompleted');
+        $this->no_sorting('passed');
+        $this->no_sorting('failed');
+        $this->no_sorting('averagegrade');
         $this->is_downloadable(true);
         $this->show_download_buttons_at([TABLE_P_BOTTOM]);
         $this->guess_base_url();
@@ -132,16 +139,20 @@ class evaluationconsolidated_table extends \table_sql {
         ];
         $params = array_merge($params, $roleparams);
 
-        $uniqueid = $DB->sql_concat('ra.userid', "'-'", 'c.id');
+        // One row per teacher + course + activity (course_module).
+        $uniqueid = $DB->sql_concat('ra.userid', "'-'", 'cm.id');
         $select = "$uniqueid AS id,
             ra.userid AS teacherid,
             u.firstname, u.lastname, u.firstnamephonetic, u.lastnamephonetic,
             u.middlename, u.alternatename,
-            c.id AS courseid, c.fullname AS coursename";
+            c.id AS courseid, c.fullname AS coursename,
+            cm.id AS cmid, cm.instance AS cminstance, m.name AS modulename";
         $from = "{role_assignments} ra
             JOIN {context} ctx ON ctx.id = ra.contextid AND ctx.contextlevel = :contextlevel
             JOIN {course} c ON c.id = ctx.instanceid
-            JOIN {user} u ON u.id = ra.userid AND u.deleted = 0";
+            JOIN {user} u ON u.id = ra.userid AND u.deleted = 0
+            JOIN {course_modules} cm ON cm.course = c.id AND cm.deletioninprogress = 0
+            JOIN {modules} m ON m.id = cm.module";
         $where = "ra.roleid $rolesql";
 
         $this->set_sql($select, $from, $where, $params);
@@ -160,7 +171,7 @@ class evaluationconsolidated_table extends \table_sql {
         if ($this->is_downloading()) {
             return $fullname;
         }
-        $url = new \moodle_url($PAGE->url, [
+        $url = new \moodle_url('/report/lmsace_reports/index.php', [
             'report' => 'evaluationreport',
             'evalteacher' => $row->teacherid,
         ]);
@@ -174,11 +185,10 @@ class evaluationconsolidated_table extends \table_sql {
      * @return string
      */
     public function col_coursename($row) {
-        global $PAGE;
         if ($this->is_downloading()) {
             return format_string($row->coursename);
         }
-        $url = new \moodle_url($PAGE->url, [
+        $url = new \moodle_url('/report/lmsace_reports/index.php', [
             'report' => 'evaluationreport',
             'evalteacher' => $row->teacherid,
             'evalcourse' => $row->courseid,
@@ -187,70 +197,143 @@ class evaluationconsolidated_table extends \table_sql {
     }
 
     /**
-     * Generate the totalstudents column.
+     * Generate the activityname column.
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function col_activityname($row) {
+        global $DB;
+        $name = $DB->get_field($row->modulename, 'name', ['id' => $row->cminstance]);
+        if (!$name) {
+            $name = get_string('notavailable', 'report_lmsace_reports');
+        }
+        if ($this->is_downloading()) {
+            return format_string($name);
+        }
+        $url = new \moodle_url('/report/lmsace_reports/index.php', [
+            'report' => 'evaluationreport',
+            'evalteacher' => $row->teacherid,
+            'evalcourse' => $row->courseid,
+            'evalcmid' => $row->cmid,
+        ]);
+        return \html_writer::link($url, format_string($name));
+    }
+
+    /**
+     * Generate the activitytype column.
+     *
+     * @param \stdClass $row
+     * @return string
+     */
+    public function col_activitytype($row) {
+        return get_string('modulename', $row->modulename);
+    }
+
+    /**
+     * Generate the enrolled column.
      *
      * @param \stdClass $row
      * @return int
      */
-    public function col_totalstudents($row) {
+    public function col_enrolled($row) {
         return \report_lmsace_reports\widgets::get_course_progress_status($row->courseid, true);
     }
 
     /**
-     * Generate the completed column.
+     * Generate the completed column (students who completed the activity).
      *
      * @param \stdClass $row
      * @return int
      */
     public function col_completed($row) {
+        global $DB;
+        $params = ['cmid' => $row->cmid];
+        $datewhere = '';
         if ($this->evalmonth) {
-            return $this->get_completions_in_month($row->courseid);
+            $monthend = strtotime('+1 month', $this->evalmonth);
+            $datewhere = ' AND cmc.timemodified >= :timefrom AND cmc.timemodified < :timeto';
+            $params['timefrom'] = $this->evalmonth;
+            $params['timeto'] = $monthend;
         }
-        return \report_lmsace_reports\widgets::get_course_completion_users($row->courseid, [], true);
+        $sql = "SELECT COUNT(*) FROM {course_modules_completion} cmc
+                WHERE cmc.coursemoduleid = :cmid AND cmc.completionstate IN (1,2,3)" . $datewhere;
+        return $DB->count_records_sql($sql, $params);
     }
 
     /**
-     * Generate the notevaluated column.
+     * Generate the notcompleted column (students who did NOT do the activity).
      *
      * @param \stdClass $row
      * @return int
      */
-    public function col_notevaluated($row) {
-        global $DB;
-        $enrolled = \report_lmsace_reports\widgets::get_course_progress_status($row->courseid, true);
-
-        $sql = "SELECT COUNT(DISTINCT cmc.userid)
-                FROM {course_modules_completion} cmc
-                JOIN {course_modules} cm ON cm.id = cmc.coursemoduleid
-                WHERE cm.course = :courseid AND cm.deletioninprogress = 0";
-        $params = ['courseid' => $row->courseid];
-
-        if ($this->evalmonth) {
-            $monthend = strtotime('+1 month', $this->evalmonth);
-            $sql .= " AND cmc.timemodified >= :timefrom AND cmc.timemodified < :timeto";
-            $params['timefrom'] = $this->evalmonth;
-            $params['timeto'] = $monthend;
-        }
-
-        $witheval = $DB->count_records_sql($sql, $params);
-        $without = $enrolled - $witheval;
-        return $without > 0 ? $without : 0;
+    public function col_notcompleted($row) {
+        $enrolled = $this->col_enrolled($row);
+        $completed = $this->col_completed($row);
+        $result = $enrolled - $completed;
+        return $result > 0 ? $result : 0;
     }
 
     /**
-     * Generate the avggrade column.
+     * Generate the passed column.
+     *
+     * @param \stdClass $row
+     * @return int
+     */
+    public function col_passed($row) {
+        global $DB;
+        $params = ['cmid' => $row->cmid];
+        $datewhere = '';
+        if ($this->evalmonth) {
+            $monthend = strtotime('+1 month', $this->evalmonth);
+            $datewhere = ' AND cmc.timemodified >= :timefrom AND cmc.timemodified < :timeto';
+            $params['timefrom'] = $this->evalmonth;
+            $params['timeto'] = $monthend;
+        }
+        $sql = "SELECT COUNT(*) FROM {course_modules_completion} cmc
+                WHERE cmc.coursemoduleid = :cmid AND cmc.completionstate = 2" . $datewhere;
+        return $DB->count_records_sql($sql, $params);
+    }
+
+    /**
+     * Generate the failed column.
+     *
+     * @param \stdClass $row
+     * @return int
+     */
+    public function col_failed($row) {
+        global $DB;
+        $params = ['cmid' => $row->cmid];
+        $datewhere = '';
+        if ($this->evalmonth) {
+            $monthend = strtotime('+1 month', $this->evalmonth);
+            $datewhere = ' AND cmc.timemodified >= :timefrom AND cmc.timemodified < :timeto';
+            $params['timefrom'] = $this->evalmonth;
+            $params['timeto'] = $monthend;
+        }
+        $sql = "SELECT COUNT(*) FROM {course_modules_completion} cmc
+                WHERE cmc.coursemoduleid = :cmid AND cmc.completionstate = 3" . $datewhere;
+        return $DB->count_records_sql($sql, $params);
+    }
+
+    /**
+     * Generate the averagegrade column.
      *
      * @param \stdClass $row
      * @return string
      */
-    public function col_avggrade($row) {
+    public function col_averagegrade($row) {
         global $DB;
         $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 10) as avggrade
             FROM {grade_grades} gg
             JOIN {grade_items} gi ON gi.id = gg.itemid
-            WHERE gi.itemtype = 'course' AND gi.courseid = :courseid
-            AND gg.finalgrade IS NOT NULL AND gi.grademax > 0";
-        $params = ['courseid' => $row->courseid];
+            WHERE gi.itemtype = 'mod' AND gi.itemmodule = :modulename AND gi.iteminstance = :instanceid
+            AND gi.courseid = :courseid AND gg.finalgrade IS NOT NULL AND gi.grademax > 0";
+        $params = [
+            'modulename' => $row->modulename,
+            'instanceid' => $row->cminstance,
+            'courseid' => $row->courseid,
+        ];
 
         if ($this->evalmonth) {
             $monthend = strtotime('+1 month', $this->evalmonth);
@@ -262,47 +345,5 @@ class evaluationconsolidated_table extends \table_sql {
         $result = $DB->get_record_sql($sql, $params);
         $avg = ($result && $result->avggrade !== null) ? round($result->avggrade, 1) : 0;
         return $avg . '/10';
-    }
-
-    /**
-     * Generate the completionrate column.
-     *
-     * @param \stdClass $row
-     * @return string
-     */
-    public function col_completionrate($row) {
-        $enrolled = \report_lmsace_reports\widgets::get_course_progress_status($row->courseid, true);
-        if ($enrolled == 0) {
-            return '0%';
-        }
-        if ($this->evalmonth) {
-            $completed = $this->get_completions_in_month($row->courseid);
-        } else {
-            $completed = \report_lmsace_reports\widgets::get_course_completion_users($row->courseid, [], true);
-        }
-        $rate = round(($completed / $enrolled) * 100, 1);
-        return $rate . '%';
-    }
-
-    /**
-     * Get course completions within the filtered month.
-     *
-     * @param int $courseid
-     * @return int
-     */
-    protected function get_completions_in_month($courseid) {
-        global $DB;
-        $monthend = strtotime('+1 month', $this->evalmonth);
-        $sql = "SELECT COUNT(cc.id)
-                FROM {course_completions} cc
-                WHERE cc.course = :courseid
-                AND cc.timecompleted IS NOT NULL
-                AND cc.timecompleted >= :timefrom
-                AND cc.timecompleted < :timeto";
-        return $DB->count_records_sql($sql, [
-            'courseid' => $courseid,
-            'timefrom' => $this->evalmonth,
-            'timeto' => $monthend,
-        ]);
     }
 }
