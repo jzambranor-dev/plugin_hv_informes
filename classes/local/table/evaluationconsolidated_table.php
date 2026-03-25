@@ -252,7 +252,7 @@ class evaluationconsolidated_table extends \table_sql {
         if (empty($row->coursestartdate)) {
             return '-';
         }
-        return userdate($row->coursestartdate, get_string('strftimedatefull'));
+        return userdate($row->coursestartdate, '%d/%m/%Y');
     }
 
     /**
@@ -265,7 +265,7 @@ class evaluationconsolidated_table extends \table_sql {
         if (empty($row->courseenddate)) {
             return '-';
         }
-        return userdate($row->courseenddate, get_string('strftimedatefull'));
+        return userdate($row->courseenddate, '%d/%m/%Y');
     }
 
     /**
