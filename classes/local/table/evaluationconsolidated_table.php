@@ -203,6 +203,16 @@ class evaluationconsolidated_table extends \table_sql {
             }
         }
 
+        // Filter by month: only show courses active during the selected month.
+        // A course is "active" if it started before the month ends AND
+        // (has no end date OR its end date is after the month starts).
+        if (!empty($this->evalmonth)) {
+            $monthend = strtotime('+1 month', $this->evalmonth);
+            $where .= " AND c.startdate < :monthend AND (c.enddate = 0 OR c.enddate >= :monthstart)";
+            $params['monthend'] = $monthend;
+            $params['monthstart'] = $this->evalmonth;
+        }
+
         // Filter by module type.
         if (!empty($this->evalconmodtype)) {
             $where .= " AND m.name = :modtype";
