@@ -89,19 +89,9 @@ class evaluationconsolidated_table extends \table_sql {
         $this->define_columns($columns);
         $this->define_headers($headers);
         $this->collapsible(false);
-        $this->sortable(true, 'lastname', SORT_ASC);
-        $this->no_sorting('teachername');
-        $this->no_sorting('categoryname');
-        $this->no_sorting('coursestartdate');
-        $this->no_sorting('courseenddate');
+        $this->sortable(true, 'teachername', SORT_ASC);
+        // activityname is resolved in PHP, cannot sort in SQL.
         $this->no_sorting('activityname');
-        $this->no_sorting('activitytype');
-        $this->no_sorting('enrolled');
-        $this->no_sorting('completed');
-        $this->no_sorting('notcompleted');
-        $this->no_sorting('passed');
-        $this->no_sorting('failed');
-        $this->no_sorting('averagegrade');
         $this->is_downloadable(true);
         $this->show_download_buttons_at([TABLE_P_BOTTOM]);
         $this->guess_base_url();
@@ -124,6 +114,31 @@ class evaluationconsolidated_table extends \table_sql {
      */
     public function has_capability(): bool {
         return has_capability('report/lmsace_reports:viewevaluationreports', $this->get_context());
+    }
+
+    /**
+     * Map visible column names to real SQL field names for ORDER BY.
+     *
+     * @return string SQL ORDER BY fragment.
+     */
+    public function get_sql_sort() {
+        $columnmap = [
+            'teachername' => 'lastname',
+            'categoryname' => 'categoryname',
+            'coursename' => 'coursename',
+            'coursestartdate' => 'coursestartdate',
+            'courseenddate' => 'courseenddate',
+            'activitytype' => 'modulename',
+        ];
+        $sorts = $this->get_sort_columns();
+        $result = [];
+        foreach ($sorts as $column => $direction) {
+            $dir = ($direction == SORT_ASC) ? 'ASC' : 'DESC';
+            if (isset($columnmap[$column])) {
+                $result[] = $columnmap[$column] . ' ' . $dir;
+            }
+        }
+        return implode(', ', $result);
     }
 
     /**
@@ -221,6 +236,137 @@ class evaluationconsolidated_table extends \table_sql {
 
         $this->set_sql($select, $from, $where, $params);
         parent::query_db($pagesize, false);
+
+        // Precompute numeric columns so they can be sorted in PHP.
+        $computedcols = ['enrolled', 'completed', 'notcompleted', 'passed', 'failed', 'averagegrade'];
+        $sorts = $this->get_sort_columns();
+        $sortcol = '';
+        $sortdir = SORT_ASC;
+        foreach ($sorts as $col => $dir) {
+            if (in_array($col, $computedcols)) {
+                $sortcol = $col;
+                $sortdir = $dir;
+                break;
+            }
+        }
+
+        if ($sortcol && !empty($this->rawdata)) {
+            // Precompute the values for sorting.
+            foreach ($this->rawdata as $row) {
+                $row->_enrolled = \report_lmsace_reports\widgets::get_course_progress_status($row->courseid, true);
+                $row->_completed = $this->compute_completed($row);
+                $row->_notcompleted = max(0, $row->_enrolled - $row->_completed);
+                $row->_passed = $this->compute_passed($row);
+                $row->_failed = $this->compute_failed($row);
+                $row->_averagegrade = $this->compute_averagegrade($row);
+            }
+            $field = '_' . $sortcol;
+            $rawdata = $this->rawdata;
+            usort($rawdata, function($a, $b) use ($field, $sortdir) {
+                $va = $a->$field ?? 0;
+                $vb = $b->$field ?? 0;
+                if ($va == $vb) {
+                    return 0;
+                }
+                $cmp = ($va < $vb) ? -1 : 1;
+                return ($sortdir == SORT_ASC) ? $cmp : -$cmp;
+            });
+            $this->rawdata = $rawdata;
+        }
+    }
+
+    /**
+     * Compute completed count for a row.
+     *
+     * @param \stdClass $row
+     * @return int
+     */
+    private function compute_completed($row) {
+        global $DB;
+        $params = ['cmid' => $row->cmid];
+        $datewhere = '';
+        if ($this->evalmonth) {
+            $monthend = strtotime('+1 month', $this->evalmonth);
+            $datewhere = ' AND cmc.timemodified >= :timefrom AND cmc.timemodified < :timeto';
+            $params['timefrom'] = $this->evalmonth;
+            $params['timeto'] = $monthend;
+        }
+        return $DB->count_records_sql(
+            "SELECT COUNT(*) FROM {course_modules_completion} cmc
+             WHERE cmc.coursemoduleid = :cmid AND cmc.completionstate IN (1,2,3)" . $datewhere, $params
+        );
+    }
+
+    /**
+     * Compute passed count for a row.
+     *
+     * @param \stdClass $row
+     * @return int
+     */
+    private function compute_passed($row) {
+        global $DB;
+        $params = ['cmid' => $row->cmid];
+        $datewhere = '';
+        if ($this->evalmonth) {
+            $monthend = strtotime('+1 month', $this->evalmonth);
+            $datewhere = ' AND cmc.timemodified >= :timefrom AND cmc.timemodified < :timeto';
+            $params['timefrom'] = $this->evalmonth;
+            $params['timeto'] = $monthend;
+        }
+        return $DB->count_records_sql(
+            "SELECT COUNT(*) FROM {course_modules_completion} cmc
+             WHERE cmc.coursemoduleid = :cmid AND cmc.completionstate = 2" . $datewhere, $params
+        );
+    }
+
+    /**
+     * Compute failed count for a row.
+     *
+     * @param \stdClass $row
+     * @return int
+     */
+    private function compute_failed($row) {
+        global $DB;
+        $params = ['cmid' => $row->cmid];
+        $datewhere = '';
+        if ($this->evalmonth) {
+            $monthend = strtotime('+1 month', $this->evalmonth);
+            $datewhere = ' AND cmc.timemodified >= :timefrom AND cmc.timemodified < :timeto';
+            $params['timefrom'] = $this->evalmonth;
+            $params['timeto'] = $monthend;
+        }
+        return $DB->count_records_sql(
+            "SELECT COUNT(*) FROM {course_modules_completion} cmc
+             WHERE cmc.coursemoduleid = :cmid AND cmc.completionstate = 3" . $datewhere, $params
+        );
+    }
+
+    /**
+     * Compute average grade for a row.
+     *
+     * @param \stdClass $row
+     * @return float
+     */
+    private function compute_averagegrade($row) {
+        global $DB;
+        $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 10) as avggrade
+            FROM {grade_grades} gg
+            JOIN {grade_items} gi ON gi.id = gg.itemid
+            WHERE gi.itemtype = 'mod' AND gi.itemmodule = :modulename AND gi.iteminstance = :instanceid
+            AND gi.courseid = :courseid AND gg.finalgrade IS NOT NULL AND gi.grademax > 0";
+        $params = [
+            'modulename' => $row->modulename,
+            'instanceid' => $row->cminstance,
+            'courseid' => $row->courseid,
+        ];
+        if ($this->evalmonth) {
+            $monthend = strtotime('+1 month', $this->evalmonth);
+            $sql .= " AND gg.timemodified >= :timefrom AND gg.timemodified < :timeto";
+            $params['timefrom'] = $this->evalmonth;
+            $params['timeto'] = $monthend;
+        }
+        $result = $DB->get_record_sql($sql, $params);
+        return ($result && $result->avggrade !== null) ? round($result->avggrade, 1) : 0;
     }
 
     /**
@@ -337,6 +483,9 @@ class evaluationconsolidated_table extends \table_sql {
      * @return int
      */
     public function col_enrolled($row) {
+        if (isset($row->_enrolled)) {
+            return $row->_enrolled;
+        }
         return \report_lmsace_reports\widgets::get_course_progress_status($row->courseid, true);
     }
 
@@ -347,18 +496,10 @@ class evaluationconsolidated_table extends \table_sql {
      * @return int
      */
     public function col_completed($row) {
-        global $DB;
-        $params = ['cmid' => $row->cmid];
-        $datewhere = '';
-        if ($this->evalmonth) {
-            $monthend = strtotime('+1 month', $this->evalmonth);
-            $datewhere = ' AND cmc.timemodified >= :timefrom AND cmc.timemodified < :timeto';
-            $params['timefrom'] = $this->evalmonth;
-            $params['timeto'] = $monthend;
+        if (isset($row->_completed)) {
+            return $row->_completed;
         }
-        $sql = "SELECT COUNT(*) FROM {course_modules_completion} cmc
-                WHERE cmc.coursemoduleid = :cmid AND cmc.completionstate IN (1,2,3)" . $datewhere;
-        return $DB->count_records_sql($sql, $params);
+        return $this->compute_completed($row);
     }
 
     /**
@@ -368,6 +509,9 @@ class evaluationconsolidated_table extends \table_sql {
      * @return int
      */
     public function col_notcompleted($row) {
+        if (isset($row->_notcompleted)) {
+            return $row->_notcompleted;
+        }
         $enrolled = $this->col_enrolled($row);
         $completed = $this->col_completed($row);
         $result = $enrolled - $completed;
@@ -381,18 +525,10 @@ class evaluationconsolidated_table extends \table_sql {
      * @return int
      */
     public function col_passed($row) {
-        global $DB;
-        $params = ['cmid' => $row->cmid];
-        $datewhere = '';
-        if ($this->evalmonth) {
-            $monthend = strtotime('+1 month', $this->evalmonth);
-            $datewhere = ' AND cmc.timemodified >= :timefrom AND cmc.timemodified < :timeto';
-            $params['timefrom'] = $this->evalmonth;
-            $params['timeto'] = $monthend;
+        if (isset($row->_passed)) {
+            return $row->_passed;
         }
-        $sql = "SELECT COUNT(*) FROM {course_modules_completion} cmc
-                WHERE cmc.coursemoduleid = :cmid AND cmc.completionstate = 2" . $datewhere;
-        return $DB->count_records_sql($sql, $params);
+        return $this->compute_passed($row);
     }
 
     /**
@@ -402,18 +538,10 @@ class evaluationconsolidated_table extends \table_sql {
      * @return int
      */
     public function col_failed($row) {
-        global $DB;
-        $params = ['cmid' => $row->cmid];
-        $datewhere = '';
-        if ($this->evalmonth) {
-            $monthend = strtotime('+1 month', $this->evalmonth);
-            $datewhere = ' AND cmc.timemodified >= :timefrom AND cmc.timemodified < :timeto';
-            $params['timefrom'] = $this->evalmonth;
-            $params['timeto'] = $monthend;
+        if (isset($row->_failed)) {
+            return $row->_failed;
         }
-        $sql = "SELECT COUNT(*) FROM {course_modules_completion} cmc
-                WHERE cmc.coursemoduleid = :cmid AND cmc.completionstate = 3" . $datewhere;
-        return $DB->count_records_sql($sql, $params);
+        return $this->compute_failed($row);
     }
 
     /**
@@ -423,27 +551,11 @@ class evaluationconsolidated_table extends \table_sql {
      * @return string
      */
     public function col_averagegrade($row) {
-        global $DB;
-        $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 10) as avggrade
-            FROM {grade_grades} gg
-            JOIN {grade_items} gi ON gi.id = gg.itemid
-            WHERE gi.itemtype = 'mod' AND gi.itemmodule = :modulename AND gi.iteminstance = :instanceid
-            AND gi.courseid = :courseid AND gg.finalgrade IS NOT NULL AND gi.grademax > 0";
-        $params = [
-            'modulename' => $row->modulename,
-            'instanceid' => $row->cminstance,
-            'courseid' => $row->courseid,
-        ];
-
-        if ($this->evalmonth) {
-            $monthend = strtotime('+1 month', $this->evalmonth);
-            $sql .= " AND gg.timemodified >= :timefrom AND gg.timemodified < :timeto";
-            $params['timefrom'] = $this->evalmonth;
-            $params['timeto'] = $monthend;
+        if (isset($row->_averagegrade)) {
+            $avg = $row->_averagegrade;
+        } else {
+            $avg = $this->compute_averagegrade($row);
         }
-
-        $result = $DB->get_record_sql($sql, $params);
-        $avg = ($result && $result->avggrade !== null) ? round($result->avggrade, 1) : 0;
         return $avg . '/10';
     }
 }
