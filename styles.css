@@ -231,7 +231,7 @@
     display: inline-block;
     vertical-align: middle;
     margin-bottom: 0;
-    color: #2c3e50;
+    color: #ffffff;
 }
 .lmsace-reports-body .reports-block .tab-content .heading-block .filter-block {
     float: right;
@@ -779,7 +779,7 @@
 
 /* Chart container */
 .evaluation-activitydetail-block #evaluation-passfail-chart {
-    max-width: 220px;
+    max-width: 320px;
     margin: 0 auto;
 }
 
@@ -806,6 +806,15 @@
 }
 .eval-cat-accordion .form-check-input {
     cursor: pointer;
+}
+
+/* Quiz detail table - horizontal scroll for many questions */
+.evaluation-activitydetail-block .quiz-detail-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.evaluation-activitydetail-block .quiz-detail-table-wrap table th[title] {
+    cursor: help;
 }
 
 /* Loading icon overlay */

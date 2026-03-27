@@ -44,6 +44,61 @@ define([], function() {
                 }
             }
 
+            // Render bar chart for average score per question.
+            var qAvgEl = document.getElementById('evaluation-question-avg-chart');
+            if (qAvgEl) {
+                try {
+                    var qLabels = JSON.parse(qAvgEl.getAttribute('data-labels') || '[]');
+                    var qValues = JSON.parse(qAvgEl.getAttribute('data-values') || '[]');
+
+                    if (qLabels.length > 0) {
+                        var colorKeys = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8'];
+                        var barColorKeys = [];
+                        for (var ci = 0; ci < qLabels.length; ci++) {
+                            barColorKeys.push(colorKeys[ci % colorKeys.length]);
+                        }
+                        var barBgColors = main.getRandomColors(barColorKeys, '', false);
+
+                        new Chart(qAvgEl.getContext('2d'), {
+                            type: 'bar',
+                            data: {
+                                labels: qLabels,
+                                datasets: [{
+                                    data: qValues,
+                                    backgroundColor: barBgColors,
+                                    borderColor: 'white',
+                                    maxBarThickness: 80
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: true,
+                                layout: {padding: 10},
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                },
+                                plugins: {
+                                    legend: {display: false},
+                                    datalabels: {
+                                        anchor: 'end',
+                                        align: 'top',
+                                        color: '#333',
+                                        font: {weight: 'bold'},
+                                        formatter: function(value) {
+                                            return value > 0 ? value : '';
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                } catch (e) {
+                    window.console.warn('Quiz avg chart error:', e);
+                }
+            }
+
             // Category accordion: parent checkbox toggles all children.
             var parentCheckboxes = document.querySelectorAll('.eval-cat-parent');
             parentCheckboxes.forEach(function(parentCb) {

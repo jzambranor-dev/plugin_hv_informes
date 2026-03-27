@@ -154,16 +154,29 @@ $output->evalmonth = $evalmonth;
 $output->evalcategory = $evalcategory;
 $output->evalconmodtype = $evalconmodtype;
 
-// Handle download for consolidated table (after PAGE setup, before HTML output).
+// Handle download for evaluation tables (after PAGE setup, before HTML output).
 $download = optional_param('download', '', PARAM_ALPHA);
-if ($download && $report == 'evaluationreport' && !$evalteacher) {
-    require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationconsolidated_table.php');
-    $table = new \report_lmsace_reports\local\table\evaluationconsolidated_table(
-        'evaluation-consolidated-table', $evalmonth, $evalcategory, $evalconmodtype
-    );
-    $table->is_downloading($download, 'evaluation_consolidated_report');
-    $table->out(0, false);
-    exit;
+if ($download && $report == 'evaluationreport') {
+    // Quiz detail download takes priority (more specific: has evalcmid).
+    if ($evalcmid) {
+        require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationquizdetail_table.php');
+        $table = new \report_lmsace_reports\local\table\evaluationquizdetail_table(
+            'evaluation-quizdetail-table', $evalcmid, $evalcourse
+        );
+        $table->is_downloading($download, 'quiz_attempts_detail');
+        $table->out(0, false);
+        exit;
+    }
+    // Consolidated table download (no specific activity selected).
+    if (!$evalteacher) {
+        require_once($CFG->dirroot . '/report/lmsace_reports/classes/local/table/evaluationconsolidated_table.php');
+        $table = new \report_lmsace_reports\local\table\evaluationconsolidated_table(
+            'evaluation-consolidated-table', $evalmonth, $evalcategory, $evalconmodtype
+        );
+        $table->is_downloading($download, 'evaluation_consolidated_report');
+        $table->out(0, false);
+        exit;
+    }
 }
 
 // Print output in page.

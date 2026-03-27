@@ -835,6 +835,133 @@ class report_helper {
     }
 
     /**
+     * Get quiz slot info (slot number, question name, max mark).
+     *
+     * @param int $quizid The quiz instance ID.
+     * @return array Array of objects with slot, questionname, maxmark.
+     */
+    public static function get_quiz_slots($quizid) {
+        global $DB;
+
+        $sql = "SELECT qs.slot, qs.maxmark, q.name AS questionname
+            FROM {quiz_slots} qs
+            JOIN {question_references} qr ON qr.itemid = qs.id
+                AND qr.component = 'mod_quiz' AND qr.questionarea = 'slot'
+            JOIN {question_bank_entries} qbe ON qbe.id = qr.questionbankentryid
+            JOIN {question_versions} qv ON qv.questionbankentryid = qbe.id
+            JOIN {question} q ON q.id = qv.questionid
+            WHERE qs.quizid = :quizid
+            ORDER BY qs.slot";
+
+        $records = $DB->get_records_sql($sql, ['quizid' => $quizid]);
+
+        // Deduplicate by slot (multiple versions may exist, keep highest questionid).
+        $slots = [];
+        foreach ($records as $rec) {
+            if (!isset($slots[$rec->slot]) || $rec->slot > 0) {
+                $slots[$rec->slot] = $rec;
+            }
+        }
+        ksort($slots);
+        return array_values($slots);
+    }
+
+    /**
+     * Get quiz attempts with per-question marks for the best attempt per student.
+     *
+     * @param int $quizid The quiz instance ID.
+     * @param int $courseid The course ID.
+     * @return array Array with 'attempts' (per-student data) and 'quiz' (quiz record).
+     */
+    public static function get_quiz_attempts_with_questions($quizid, $courseid) {
+        global $DB;
+
+        $quiz = $DB->get_record('quiz', ['id' => $quizid]);
+        if (!$quiz) {
+            return ['attempts' => [], 'quiz' => null];
+        }
+
+        // Get the best finished attempt per student (highest sumgrades, then highest id as tiebreaker).
+        $sql = "SELECT qa.id, qa.userid, qa.uniqueid, qa.sumgrades
+            FROM {quiz_attempts} qa
+            WHERE qa.quiz = :quizid AND qa.state = 'finished'
+            AND qa.id = (
+                SELECT MAX(qa2.id) FROM {quiz_attempts} qa2
+                WHERE qa2.quiz = qa.quiz AND qa2.userid = qa.userid
+                AND qa2.state = 'finished'
+                AND qa2.sumgrades = (
+                    SELECT MAX(qa3.sumgrades) FROM {quiz_attempts} qa3
+                    WHERE qa3.quiz = qa.quiz AND qa3.userid = qa.userid
+                    AND qa3.state = 'finished'
+                )
+            )
+            ORDER BY qa.userid";
+        $attempts = $DB->get_records_sql($sql, ['quizid' => $quizid]);
+
+        if (empty($attempts)) {
+            return ['attempts' => [], 'quiz' => $quiz];
+        }
+
+        // Get user info for all attempt users.
+        $userids = array_column((array) $attempts, 'userid');
+        list($usersql, $userparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'usr');
+        $users = $DB->get_records_select('user', "id $usersql", $userparams);
+
+        // Get per-question marks for all attempts in bulk.
+        $attemptids = array_keys($attempts);
+        list($attsql, $attparams) = $DB->get_in_or_equal($attemptids, SQL_PARAMS_NAMED, 'att');
+        $sql = "SELECT " . $DB->sql_concat('qa.userid', "'-'", 'qatt.slot') . " AS id,
+                qa.userid, qatt.slot, qatt.maxmark, qatt.id AS qattid,
+                (SELECT qas.fraction FROM {question_attempt_steps} qas
+                 WHERE qas.questionattemptid = qatt.id
+                 AND qas.sequencenumber = (
+                    SELECT MAX(qas2.sequencenumber)
+                    FROM {question_attempt_steps} qas2
+                    WHERE qas2.questionattemptid = qatt.id
+                 )
+                ) AS fraction
+            FROM {quiz_attempts} qa
+            JOIN {question_attempts} qatt ON qatt.questionusageid = qa.uniqueid
+            WHERE qa.id $attsql
+            ORDER BY qa.userid, qatt.slot";
+        $questionmarks = $DB->get_records_sql($sql, $attparams);
+
+        // Organize by userid => slot => mark.
+        $markmap = [];
+        foreach ($questionmarks as $qm) {
+            if (!isset($markmap[$qm->userid])) {
+                $markmap[$qm->userid] = [];
+            }
+            if ($qm->fraction !== null) {
+                $markmap[$qm->userid][$qm->slot] = round($qm->maxmark * $qm->fraction, 2);
+            } else {
+                $markmap[$qm->userid][$qm->slot] = null;
+            }
+        }
+
+        // Build result array.
+        $result = [];
+        foreach ($attempts as $att) {
+            $user = isset($users[$att->userid]) ? $users[$att->userid] : null;
+            if (!$user) {
+                continue;
+            }
+            $row = new stdClass();
+            $row->userid = $att->userid;
+            $row->fullname = fullname($user);
+            $row->email = $user->email;
+            $row->idnumber = $user->idnumber ?? '';
+            $row->sumgrades = $att->sumgrades;
+            $row->grade = ($quiz->grade > 0 && $quiz->sumgrades > 0)
+                ? round($att->sumgrades / $quiz->sumgrades * $quiz->grade, 2) : 0;
+            $row->questionmarks = isset($markmap[$att->userid]) ? $markmap[$att->userid] : [];
+            $result[] = $row;
+        }
+
+        return ['attempts' => $result, 'quiz' => $quiz];
+    }
+
+    /**
      * Get list of teachers for the dropdown selector.
      * @param int $selectid The currently selected teacher ID.
      * @return array

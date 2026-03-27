@@ -24,6 +24,7 @@
 namespace report_lmsace_reports\local\widgets;
 
 use report_lmsace_reports\output\widgets_info;
+use report_lmsace_reports\report_helper;
 
 /**
  * Evaluation activity detail widget showing completion stats, grades and a doughnut chart.
@@ -200,6 +201,77 @@ class evaluationactivitydetailwidget extends widgets_info {
             ];
         }
 
+        // Quiz attempts detail with per-question grades.
+        $isquiz = ($module->name === 'quiz');
+        $quizquestions = [];
+        $quizattempts = [];
+        $hasquizattempts = false;
+        $quizattemptscount = 0;
+        $quizdetaildownloadurl = '';
+
+        if ($isquiz) {
+            $slots = report_helper::get_quiz_slots($cm->instance);
+            $attdata = report_helper::get_quiz_attempts_with_questions($cm->instance, $this->courseid);
+
+            if (!empty($slots) && !empty($attdata['attempts'])) {
+                $quiz = $attdata['quiz'];
+                foreach ($slots as $s) {
+                    $quizquestions[] = [
+                        'slot' => $s->slot,
+                        'label' => 'P' . $s->slot,
+                        'questionname' => format_string($s->questionname),
+                        'maxmark' => round($s->maxmark, 2),
+                    ];
+                }
+                $rownum = 1;
+                foreach ($attdata['attempts'] as $att) {
+                    $marks = [];
+                    foreach ($slots as $s) {
+                        $mark = isset($att->questionmarks[$s->slot]) ? $att->questionmarks[$s->slot] : null;
+                        $marks[] = [
+                            'slot' => $s->slot,
+                            'mark' => ($mark !== null) ? $mark : '-',
+                        ];
+                    }
+                    $quizattempts[] = [
+                        'rownum' => $rownum++,
+                        'fullname' => $att->fullname,
+                        'email' => $att->email,
+                        'idnumber' => $att->idnumber,
+                        'questionmarks' => $marks,
+                        'grade' => $att->grade,
+                    ];
+                }
+                // Compute average score per question for the chart.
+                $quizquestionlabels = [];
+                $quizquestionavgs = [];
+                $quizquestionmax = [];
+                foreach ($slots as $s) {
+                    $quizquestionlabels[] = format_string($s->questionname);
+                    $quizquestionmax[] = round($s->maxmark, 2);
+                    $total = 0;
+                    $count = 0;
+                    foreach ($attdata['attempts'] as $att) {
+                        if (isset($att->questionmarks[$s->slot]) && $att->questionmarks[$s->slot] !== null) {
+                            $total += $att->questionmarks[$s->slot];
+                            $count++;
+                        }
+                    }
+                    $quizquestionavgs[] = ($count > 0) ? round($total / $count, 2) : 0;
+                }
+
+                $hasquizattempts = !empty($quizattempts);
+                $quizattemptscount = count($quizattempts);
+                $downloadurl = new \moodle_url('/report/lmsace_reports/index.php', [
+                    'report' => 'evaluationreport',
+                    'evalcmid' => $this->cmid,
+                    'evalcourse' => $this->courseid,
+                    'download' => 'excel',
+                ]);
+                $quizdetaildownloadurl = $downloadurl->out(false);
+            }
+        }
+
         $this->reportdata = [
             'activityname' => format_string($activityname),
             'activitytype' => get_string('modulename', $module->name),
@@ -216,6 +288,15 @@ class evaluationactivitydetailwidget extends widgets_info {
             'notattempted' => $notattemptedlist,
             'notattemptedcount' => count($notattemptedlist),
             'hasnotattempted' => !empty($notattemptedlist),
+            'isquiz' => $isquiz,
+            'quizquestions' => $quizquestions,
+            'quizattempts' => $quizattempts,
+            'hasquizattempts' => $hasquizattempts,
+            'quizattemptscount' => $quizattemptscount,
+            'quizdetaildownloadurl' => $quizdetaildownloadurl,
+            'quizquestionlabelsjson' => json_encode($quizquestionlabels ?? []),
+            'quizquestionavgsjson' => json_encode($quizquestionavgs ?? []),
+            'quizquestionmaxjson' => json_encode($quizquestionmax ?? []),
             // Chart data for pie.
             'label' => [
                 get_string('passed', 'report_lmsace_reports'),
