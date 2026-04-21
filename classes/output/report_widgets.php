@@ -100,8 +100,10 @@ class report_widgets {
                 }
             } else if ($widget->context == "teacher") {
                 $teacheraction = $output->teacheraction ?? 0;
+                $teachermonth = $output->teachermonth ?? 0;
+                $teachercategory = $output->teachercategory ?? '';
                 if ($teacheraction && $DB->record_exists('user', ['id' => $teacheraction])) {
-                    $widgetinstance = new $classname($teacheraction);
+                    $widgetinstance = new $classname($teacheraction, $teachermonth, $teachercategory);
                 }
             } else if ($widget->context == "evaluation") {
                 $evalteacher = $output->evalteacher ?? 0;

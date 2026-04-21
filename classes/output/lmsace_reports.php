@@ -145,6 +145,8 @@ class lmsace_reports implements renderable, templatable {
 
         // Teacher report data.
         $data->teacheraction = $output->teacheraction ?? report_helper::get_first_teacher();
+        $data->teachermonth = $output->teachermonth ?? 0;
+        $data->teachercategory = $output->teachercategory ?? '';
         $data->teachers = report_helper::get_teachers($data->teacheraction);
         $data->enableteacherblock = !empty($data->teachers);
 
@@ -158,6 +160,30 @@ class lmsace_reports implements renderable, templatable {
                 $teacherform->set_data(['teacherinfo' => $data->teacheraction]);
                 // Only render when the form will be in the DOM (not in reportbase mode).
                 $data->teacherform = empty($data->reportbase) ? $teacherform->render() : '';
+
+                // Generate month filter for teacher reports (last 12 months).
+                $data->teachermonthfilter = [];
+                $data->teachermonthfilter[] = [
+                    'value' => 0,
+                    'label' => get_string('allmonths', 'report_lmsace_reports'),
+                    'selected' => empty($data->teachermonth) ? 'selected' : '',
+                ];
+                for ($i = 0; $i < 12; $i++) {
+                    $ts = strtotime("-$i months", strtotime(date('Y-m-01')));
+                    $data->teachermonthfilter[] = [
+                        'value' => $ts,
+                        'label' => userdate($ts, '%B %Y'),
+                        'selected' => ($data->teachermonth == $ts) ? 'selected' : '',
+                    ];
+                }
+
+                // Build teacher category filter (hierarchical, only teacher's categories).
+                $data->teachercategoryfilter = [];
+                if ($data->teacheraction) {
+                    $data->teachercategoryfilter = report_helper::get_teacher_category_tree(
+                        $data->teacheraction, $data->teachercategory
+                    );
+                }
             } else {
                 $data->teacherform = '';
             }

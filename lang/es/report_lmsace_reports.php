@@ -277,3 +277,7 @@ $string['downloadexcel'] = 'Descargar Excel';
 $string['grade'] = 'Calificación';
 $string['question'] = 'Pregunta';
 $string['avgscoreperquestion'] = 'Puntaje promedio por pregunta';
+$string['nocategories'] = 'No hay categorías disponibles';
+$string['allteachers'] = 'Todos los profesores';
+$string['totalteachers'] = 'Total de profesores';
+$string['campaignaverage'] = 'Promedio por campaña';

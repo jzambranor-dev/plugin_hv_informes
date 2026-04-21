@@ -279,3 +279,7 @@ $string['downloadexcel'] = 'Download Excel';
 $string['grade'] = 'Grade';
 $string['question'] = 'Question';
 $string['avgscoreperquestion'] = 'Average score per question';
+$string['nocategories'] = 'No categories available';
+$string['allteachers'] = 'All teachers';
+$string['totalteachers'] = 'Total teachers';
+$string['campaignaverage'] = 'Campaign average';

@@ -48,11 +48,59 @@ define([
     }
 
     /**
+     * Navigate to the teacher report URL with updated filter parameters.
+     */
+    function applyFilters() {
+        var url = new URL(window.location.href);
+        url.searchParams.set('report', 'teacherreport');
+
+        // Month filter.
+        var monthSelect = document.getElementById('teacher-month-select');
+        if (monthSelect) {
+            url.searchParams.set('teachermonth', monthSelect.value);
+        }
+
+        // Category filter (collect all checked checkboxes).
+        var checked = document.querySelectorAll('.teacher-cat-checkbox:checked');
+        var catIds = [];
+        checked.forEach(function(cb) {
+            catIds.push(cb.value);
+        });
+        url.searchParams.set('teachercategory', catIds.join(','));
+
+        window.location.href = url.toString();
+    }
+
+    /**
+     * Bind filter event handlers.
+     */
+    function bindFilters() {
+        // Month filter auto-submit on change.
+        var monthSelect = document.getElementById('teacher-month-select');
+        if (monthSelect) {
+            monthSelect.addEventListener('change', applyFilters);
+        }
+
+        // Category checkbox change.
+        $(document).on('change', '.teacher-cat-checkbox', applyFilters);
+
+        // Category tree toggle (expand/collapse).
+        $(document).on('click', '.teacher-cat-toggle', function() {
+            var $node = $(this).closest('.teacher-cat-node');
+            $node.find('> .teacher-cat-children, > .teacher-cat-courses').toggleClass('d-none');
+            $(this).toggleClass('fa-caret-right fa-caret-down');
+        });
+    }
+
+    /**
      * Initialize - set up lazy loading for teacher charts.
      *
      * @param {Object} main The main LMSACEReports instance.
      */
     function init(main) {
+        // Bind filter controls.
+        bindFilters();
+
         // If teacher tab is already active/visible, initialize immediately.
         var teacherTab = document.getElementById('teacher-report');
         if (teacherTab && teacherTab.classList.contains('active')) {
@@ -61,9 +109,7 @@ define([
         }
 
         // Otherwise, wait for the teacher tab to be shown.
-        // Bootstrap 5 uses 'shown.bs.tab', Bootstrap 4 uses 'shown.bs.tab' too.
         $('a[id="teacher-tab"]').on('shown.bs.tab', function() {
-            // Small delay to ensure the tab content is fully visible.
             setTimeout(function() {
                 initWidgets(main);
             }, 200);

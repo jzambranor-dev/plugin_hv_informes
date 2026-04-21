@@ -737,6 +737,189 @@ class report_helper {
     }
 
     /**
+     * Get teacher's courses filtered by month and category.
+     *
+     * @param int $teacherid Teacher user ID.
+     * @param int $month Unix timestamp of month start (0 = all months).
+     * @param string $categoryids Comma-separated category IDs (empty = all categories).
+     * @return array Filtered course IDs.
+     */
+    public static function get_teacher_courses_filtered($teacherid, $month = 0, $categoryids = '') {
+        global $DB;
+
+        $courses = self::get_teacher_courses($teacherid);
+        $courseids = array_column((array) $courses, 'courseid');
+        if (empty($courseids)) {
+            return [];
+        }
+
+        // Filter by category (expand to include descendants via path matching).
+        if (!empty($categoryids)) {
+            $selectedids = array_map('intval', explode(',', $categoryids));
+            $selectedids = array_filter($selectedids);
+            if (!empty($selectedids)) {
+                $allcats = $DB->get_records('course_categories', null, '', 'id, path');
+                $matchids = [];
+                foreach ($allcats as $cat) {
+                    foreach ($selectedids as $sid) {
+                        if (preg_match('#/' . $sid . '(/|$)#', $cat->path)) {
+                            $matchids[$cat->id] = true;
+                            break;
+                        }
+                    }
+                }
+                if (!empty($matchids)) {
+                    // Filter courseids to only those in matching categories.
+                    list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'cid');
+                    list($catsql, $catparams) = $DB->get_in_or_equal(array_keys($matchids), SQL_PARAMS_NAMED, 'cat');
+                    $filtered = $DB->get_fieldset_sql(
+                        "SELECT id FROM {course} WHERE id $insql AND category $catsql",
+                        array_merge($inparams, $catparams)
+                    );
+                    $courseids = $filtered;
+                } else {
+                    $courseids = [];
+                }
+            }
+        }
+
+        // Filter by month (courses active during the selected month).
+        if (!empty($month) && !empty($courseids)) {
+            $monthend = strtotime('+1 month', $month);
+            list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'cid');
+            $courseids = $DB->get_fieldset_sql(
+                "SELECT id FROM {course}
+                 WHERE id $insql AND startdate < :monthend AND (enddate = 0 OR enddate >= :monthstart)",
+                array_merge($inparams, ['monthstart' => $month, 'monthend' => $monthend])
+            );
+        }
+
+        return $courseids;
+    }
+
+    /**
+     * Build a hierarchical category tree for a teacher's courses.
+     *
+     * Returns only categories where the teacher has courses, organized
+     * as parent → children with course lists.
+     *
+     * @param int $teacherid Teacher user ID.
+     * @param string $selectedcategory Comma-separated selected category IDs.
+     * @return array Hierarchical category tree for template rendering.
+     */
+    public static function get_teacher_category_tree($teacherid, $selectedcategory = '') {
+        global $DB;
+
+        $courses = self::get_teacher_courses($teacherid);
+        $courseids = array_column((array) $courses, 'courseid');
+        if (empty($courseids)) {
+            return [];
+        }
+
+        // Load courses with their category info.
+        list($insql, $inparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
+        $coursesdata = $DB->get_records_sql(
+            "SELECT c.id, c.fullname, c.category, cc.name as categoryname, cc.path as categorypath, cc.parent
+             FROM {course} c
+             JOIN {course_categories} cc ON cc.id = c.category
+             WHERE c.id $insql
+             ORDER BY cc.path, c.fullname",
+            $inparams
+        );
+
+        // Collect all category IDs involved (including ancestors).
+        $catids = [];
+        foreach ($coursesdata as $course) {
+            $pathparts = array_filter(explode('/', $course->categorypath));
+            foreach ($pathparts as $catid) {
+                $catids[(int) $catid] = true;
+            }
+        }
+        if (empty($catids)) {
+            return [];
+        }
+
+        // Load all involved categories.
+        list($catsql, $catparams) = $DB->get_in_or_equal(array_keys($catids), SQL_PARAMS_NAMED);
+        $allcats = $DB->get_records_sql(
+            "SELECT id, name, parent, path, depth FROM {course_categories} WHERE id $catsql ORDER BY path",
+            $catparams
+        );
+
+        // Parse selected categories.
+        $selectedids = [];
+        if (!empty($selectedcategory)) {
+            $selectedids = array_flip(array_map('intval', explode(',', $selectedcategory)));
+        }
+
+        // Build tree: find top-level categories and nest children.
+        $tree = [];
+        $catmap = [];
+        foreach ($allcats as $cat) {
+            $catmap[$cat->id] = $cat;
+        }
+
+        // Group courses by direct category.
+        $coursesbycategory = [];
+        foreach ($coursesdata as $course) {
+            $coursesbycategory[$course->category][] = [
+                'id' => $course->id,
+                'fullname' => format_string($course->fullname),
+            ];
+        }
+
+        // Find root categories (parent not in our set).
+        foreach ($allcats as $cat) {
+            if (!isset($catmap[$cat->parent])) {
+                // This is a root for our tree.
+                $tree[] = self::build_category_node($cat, $catmap, $coursesbycategory, $selectedids);
+            }
+        }
+
+        return $tree;
+    }
+
+    /**
+     * Recursively build a category node for the tree.
+     *
+     * @param object $cat Category record.
+     * @param array $catmap All categories indexed by ID.
+     * @param array $coursesbycategory Courses grouped by category ID.
+     * @param array $selectedids Selected category IDs (as keys).
+     * @return array Category node with children and courses.
+     */
+    private static function build_category_node($cat, $catmap, $coursesbycategory, $selectedids) {
+        $node = [
+            'id' => $cat->id,
+            'name' => format_string($cat->name),
+            'selected' => isset($selectedids[$cat->id]),
+            'courses' => $coursesbycategory[$cat->id] ?? [],
+            'hascourses' => !empty($coursesbycategory[$cat->id]),
+            'children' => [],
+            'haschildren' => false,
+            'expanded' => false,
+        ];
+
+        // Find direct children in our category map.
+        foreach ($catmap as $childcat) {
+            if ($childcat->parent == $cat->id) {
+                $childnode = self::build_category_node($childcat, $catmap, $coursesbycategory, $selectedids);
+                $node['children'][] = $childnode;
+                // Expand parent if any child is selected or expanded.
+                if ($childnode['selected'] || $childnode['expanded']) {
+                    $node['expanded'] = true;
+                }
+            }
+        }
+        $node['haschildren'] = !empty($node['children']);
+        if ($node['selected']) {
+            $node['expanded'] = true;
+        }
+
+        return $node;
+    }
+
+    /**
      * Get the number of additional plugins install in the plugin manager.
      *
      * @return int $numextension

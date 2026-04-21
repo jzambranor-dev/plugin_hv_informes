@@ -1,0 +1,39 @@
+{{!
+    @template report_lmsace_reports/widgets/teachercategorytree
+
+    Recursive category tree for teacher report filter.
+    Each node has: id, name, selected, hascourses, courses[], haschildren, children[], expanded.
+}}
+<ul class="list-unstyled teacher-cat-tree mb-0">
+    <li class="teacher-cat-node">
+        <div class="d-flex align-items-center">
+            {{#haschildren}}
+            <i class="fa fa-caret-{{#expanded}}down{{/expanded}}{{^expanded}}right{{/expanded}} mr-1 teacher-cat-toggle" data-catid="{{id}}" style="cursor:pointer;"></i>
+            {{/haschildren}}
+            {{^haschildren}}
+            <i class="fa fa-circle-o mr-1 small text-muted"></i>
+            {{/haschildren}}
+            <label class="mb-0 small">
+                <input type="checkbox" class="teacher-cat-checkbox mr-1" value="{{id}}" {{#selected}}checked{{/selected}} />
+                {{name}}
+                {{#hascourses}}<span class="badge badge-secondary ml-1">{{courses.length}}</span>{{/hascourses}}
+            </label>
+        </div>
+        {{#haschildren}}
+        <div class="teacher-cat-children ml-3 {{^expanded}}d-none{{/expanded}}">
+            {{#children}}
+            {{> report_lmsace_reports/widgets/teachercategorytree }}
+            {{/children}}
+        </div>
+        {{/haschildren}}
+        {{#hascourses}}
+        <div class="teacher-cat-courses ml-4 {{^expanded}}d-none{{/expanded}}">
+            <ul class="list-unstyled mb-0">
+                {{#courses}}
+                <li class="small text-muted"><i class="fa fa-book mr-1"></i> {{fullname}}</li>
+                {{/courses}}
+            </ul>
+        </div>
+        {{/hascourses}}
+    </li>
+</ul>

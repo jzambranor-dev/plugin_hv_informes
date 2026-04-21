@@ -29,7 +29,38 @@
     <div class="teacher-report-block position-relative">
 
         {{^reportbase}}
-            <div class="teacher-block report-lmsace-selector">{{{teacherform}}}</div>
+            <div class="teacher-block report-lmsace-selector">
+                <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
+                    <div class="teacher-selector-col">{{{teacherform}}}</div>
+
+                    <div class="teacher-month-col">
+                        <label for="teacher-month-select" class="small font-weight-bold mb-1">
+                            {{#str}} filterbymonth, report_lmsace_reports {{/str}}
+                        </label>
+                        <select id="teacher-month-select" class="form-control teacher-filter-select">
+                            {{#teachermonthfilter}}
+                            <option value="{{value}}" {{selected}}>{{label}}</option>
+                            {{/teachermonthfilter}}
+                        </select>
+                    </div>
+
+                    <div class="teacher-category-col">
+                        <label class="small font-weight-bold mb-1">
+                            {{#str}} filterbycategory, report_lmsace_reports {{/str}}
+                        </label>
+                        {{#teachercategoryfilter}}
+                        <div class="teacher-category-tree">
+                            <div class="card card-body p-2">
+                                {{> report_lmsace_reports/widgets/teachercategorytree }}
+                            </div>
+                        </div>
+                        {{/teachercategoryfilter}}
+                        {{^teachercategoryfilter}}
+                        <div class="text-muted small">{{#str}} nocategories, report_lmsace_reports {{/str}}</div>
+                        {{/teachercategoryfilter}}
+                    </div>
+                </div>
+            </div>
         {{/reportbase}}
 
         {{#noteacherreports}}
