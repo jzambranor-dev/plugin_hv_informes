@@ -29,30 +29,28 @@
     <div class="teacher-report-block position-relative">
 
         {{^reportbase}}
-            <div class="teacher-block report-lmsace-selector">
-                <div class="d-flex flex-wrap align-items-end gap-3 mb-3">
-                    <div class="teacher-selector-col">{{{teacherform}}}</div>
-
-                    <div class="teacher-month-col">
-                        <label for="teacher-month-select" class="small font-weight-bold mb-1">
+            <div class="teacher-block report-lmsace-selector mb-3">
+                <div class="row">
+                    <div class="col-md-5">
+                        {{{teacherform}}}
+                    </div>
+                    <div class="col-md-3">
+                        <label for="teacher-month-select" class="small font-weight-bold">
                             {{#str}} filterbymonth, report_lmsace_reports {{/str}}
                         </label>
-                        <select id="teacher-month-select" class="form-control teacher-filter-select">
+                        <select id="teacher-month-select" class="form-control">
                             {{#teachermonthfilter}}
                             <option value="{{value}}" {{selected}}>{{label}}</option>
                             {{/teachermonthfilter}}
                         </select>
                     </div>
-
-                    <div class="teacher-category-col">
-                        <label class="small font-weight-bold mb-1">
+                    <div class="col-md-4">
+                        <label class="small font-weight-bold">
                             {{#str}} filterbycategory, report_lmsace_reports {{/str}}
                         </label>
                         {{#teachercategoryfilter}}
-                        <div class="teacher-category-tree">
-                            <div class="card card-body p-2">
-                                {{> report_lmsace_reports/widgets/teachercategorytree }}
-                            </div>
+                        <div class="card card-body p-2" style="max-height:300px; overflow-y:auto;">
+                            {{> report_lmsace_reports/widgets/teachercategorytree }}
                         </div>
                         {{/teachercategoryfilter}}
                         {{^teachercategoryfilter}}

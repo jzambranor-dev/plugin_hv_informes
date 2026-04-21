@@ -96,6 +96,12 @@ define([
         var url = new URL(window.location.href);
         url.searchParams.set('report', 'teacherreport');
 
+        // Preserve teacher selection from the autocomplete form.
+        var teacherSelect = document.querySelector('[name="teacherinfo"]');
+        if (teacherSelect) {
+            url.searchParams.set('teacherinfo', teacherSelect.value);
+        }
+
         // Month filter.
         var monthSelect = document.getElementById('teacher-month-select');
         if (monthSelect) {

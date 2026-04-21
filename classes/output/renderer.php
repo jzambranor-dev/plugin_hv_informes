@@ -64,6 +64,20 @@ class renderer extends plugin_renderer_base {
     public $teacheraction;
 
     /**
+     * Teacher month filter timestamp.
+     *
+     * @var int
+     */
+    public $teachermonth;
+
+    /**
+     * Teacher category filter (comma-separated IDs).
+     *
+     * @var string
+     */
+    public $teachercategory;
+
+    /**
      * Evaluation teacher ID.
      *
      * @var int
