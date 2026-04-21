@@ -144,11 +144,13 @@ class lmsace_reports implements renderable, templatable {
         }
 
         // Teacher report data.
+        // Value of 0 means "all teachers" — only use default for initial page load.
         $data->teacheraction = $output->teacheraction ?? report_helper::get_first_teacher();
         $data->teachermonth = $output->teachermonth ?? 0;
         $data->teachercategory = $output->teachercategory ?? '';
         $data->teachers = report_helper::get_teachers($data->teacheraction);
         $data->enableteacherblock = !empty($data->teachers);
+        $data->isallteachers = ($data->teacheraction == 0);
 
         if (has_capability("report/lmsace_reports:viewteacherreports", \context_system::instance())
                 && $data->enableteacherblock) {

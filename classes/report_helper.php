@@ -747,8 +747,21 @@ class report_helper {
     public static function get_teacher_courses_filtered($teacherid, $month = 0, $categoryids = '') {
         global $DB;
 
-        $courses = self::get_teacher_courses($teacherid);
-        $courseids = array_column((array) $courses, 'courseid');
+        if ($teacherid == 0) {
+            // All teachers mode: get courses for all valid teachers.
+            $teachers = self::get_teachers();
+            $courseids = [];
+            foreach ($teachers as $teacher) {
+                $tcourses = self::get_teacher_courses($teacher['id']);
+                foreach ($tcourses as $tc) {
+                    $courseids[] = $tc->courseid;
+                }
+            }
+            $courseids = array_unique($courseids);
+        } else {
+            $courses = self::get_teacher_courses($teacherid);
+            $courseids = array_column((array) $courses, 'courseid');
+        }
         if (empty($courseids)) {
             return [];
         }

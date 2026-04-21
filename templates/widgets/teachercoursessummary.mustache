@@ -36,6 +36,45 @@
 
 {{#hascourses}}
 <div class="table-responsive">
+    {{#isallteachers}}
+    {{! All teachers summary table }}
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>{{#str}} teacher, report_lmsace_reports {{/str}}</th>
+                <th>{{#str}} courses {{/str}}</th>
+                <th>{{#str}} enrolled, report_lmsace_reports {{/str}}</th>
+                <th>{{#str}} completionrate, report_lmsace_reports {{/str}}</th>
+                <th>{{#str}} averagegrade, report_lmsace_reports {{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#teachers}}
+            <tr>
+                <td>{{teachername}}</td>
+                <td>{{totalcourses}}</td>
+                <td>{{totalenrolled}}</td>
+                <td>{{completionrate}}%</td>
+                <td>{{averagegrade}}/10</td>
+            </tr>
+            {{/teachers}}
+        </tbody>
+        {{#hastotals}}
+        <tfoot>
+            <tr class="font-weight-bold table-active">
+                <td>{{#str}} total {{/str}}</td>
+                <td>{{totalcourses}}</td>
+                <td>{{totalenrolled}}</td>
+                <td>{{totalcompletionrate}}%</td>
+                <td>{{totalavggrade}}/10</td>
+            </tr>
+        </tfoot>
+        {{/hastotals}}
+    </table>
+    {{/isallteachers}}
+
+    {{^isallteachers}}
+    {{! Individual teacher courses table }}
     <table class="table table-striped table-hover">
         <thead>
             <tr>
@@ -71,6 +110,7 @@
         </tfoot>
         {{/hastotals}}
     </table>
+    {{/isallteachers}}
 </div>
 {{/hascourses}}
 

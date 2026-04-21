@@ -55,7 +55,7 @@ class stackteacherreportswidget extends widgets_info {
         $this->teacherid = $teacherid;
         $this->month = $month;
         $this->categoryids = $categoryids;
-        $this->user = $DB->get_record('user', ['id' => $teacherid]);
+        $this->user = $teacherid ? $DB->get_record('user', ['id' => $teacherid]) : null;
         $this->get_report_data();
     }
 
@@ -86,8 +86,14 @@ class stackteacherreportswidget extends widgets_info {
             $this->teacherid, $this->month, $this->categoryids
         );
 
-        $this->reportdata['teachername'] = $this->user ? fullname($this->user) : '';
+        $isall = ($this->teacherid == 0);
+        $this->reportdata['teachername'] = $this->user ? fullname($this->user) :
+            get_string('allteachers', 'report_lmsace_reports');
         $this->reportdata['totalcourses'] = count($courseids);
+        $this->reportdata['isallteachers'] = $isall;
+        if ($isall) {
+            $this->reportdata['totalteachers'] = count(report_helper::get_teachers());
+        }
 
         // Count students only in filtered courses.
         $totalstudents = 0;

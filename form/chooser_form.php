@@ -95,7 +95,8 @@ class teacher_selector_form extends moodleform {
         $teacherlist = \report_lmsace_reports\report_helper::get_teachers(
             $this->_customdata['teacherinfo'] ?? 0
         );
-        $users = [];
+        // Add "All teachers" option at the top.
+        $users = [0 => get_string('allteachers', 'report_lmsace_reports')];
         foreach ($teacherlist as $teacher) {
             $users[$teacher['id']] = $teacher['teachername'];
         }
