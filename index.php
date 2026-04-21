@@ -80,6 +80,12 @@ if ($report == 'coursereport') {
     $context = context_system::instance();
     require_capability("report/lmsace_reports:viewteacherreports", $context);
     $pageurl->param('teacherinfo', $teacheraction);
+    if ($teachermonth) {
+        $pageurl->param('teachermonth', $teachermonth);
+    }
+    if ($teachercategory !== '') {
+        $pageurl->param('teachercategory', $teachercategory);
+    }
 } else if ($report == 'evaluationreport') {
     $context = context_system::instance();
     require_capability("report/lmsace_reports:viewevaluationreports", $context);
