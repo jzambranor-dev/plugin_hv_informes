@@ -89,21 +89,22 @@ class teacher_selector_form extends moodleform {
      * @return void
      */
     public function definition() {
-        global $DB;
-
         $mform = $this->_form;
-        $options = [
-            'ajax' => 'core_search/form-search-user-selector',
-        ];
 
+        // Pre-load only valid teachers (filtered by role, excluding system accounts).
+        $teacherlist = \report_lmsace_reports\report_helper::get_teachers(
+            $this->_customdata['teacherinfo'] ?? 0
+        );
         $users = [];
-        if (isset($this->_customdata['teacherinfo']) && $this->_customdata['teacherinfo']) {
-            $user = $DB->get_record('user', ['id' => $this->_customdata['teacherinfo']]);
-            if ($user) {
-                $users[$user->id] = fullname($user);
-            }
+        foreach ($teacherlist as $teacher) {
+            $users[$teacher['id']] = $teacher['teachername'];
         }
-        $mform->addElement('autocomplete', 'teacherinfo', get_string('teacher', 'report_lmsace_reports'), $users, $options);
+
+        $options = [
+            'noselectionstring' => get_string('selectteacher', 'report_lmsace_reports'),
+        ];
+        $mform->addElement('autocomplete', 'teacherinfo',
+            get_string('teacher', 'report_lmsace_reports'), $users, $options);
         $this->add_action_buttons(false, get_string('generatereport', 'report_lmsace_reports'));
 
         // Make the form inline.

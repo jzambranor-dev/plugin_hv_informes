@@ -813,23 +813,59 @@ class report_helper {
     }
 
     /**
+     * Get role IDs for valid teacher/manager roles.
+     *
+     * Includes: manager, coursecreator, editingteacher, teacher.
+     * @return array Role IDs.
+     */
+    public static function get_teacher_role_ids() {
+        global $DB;
+
+        // Get roles with the course reports capability (editingteacher, teacher).
+        $caproles = get_roles_with_capability("report/lmsace_reports:viewcoursereports");
+        $roleids = array_keys($caproles);
+
+        // Also include manager and coursecreator archetypes.
+        $archetypes = ['manager', 'coursecreator'];
+        foreach ($archetypes as $archetype) {
+            $archetyperoles = get_archetype_roles($archetype);
+            foreach ($archetyperoles as $role) {
+                $roleids[] = $role->id;
+            }
+        }
+
+        return array_unique($roleids);
+    }
+
+    /**
+     * Usernames to exclude from teacher lists.
+     * @return array
+     */
+    private static function get_excluded_usernames() {
+        return ['guest', 'frontpage', 'wsapiuser', 'asistentedeseleccion'];
+    }
+
+    /**
      * Get the first available teacher (for default selection).
      * @return int teacherid or 0
      */
     public static function get_first_teacher() {
         global $DB;
-        $roles = get_roles_with_capability("report/lmsace_reports:viewcoursereports");
-        $roleids = array_keys($roles);
+        $roleids = self::get_teacher_role_ids();
         if (empty($roleids)) {
             return 0;
         }
-        list($rolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED);
+        list($rolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'role');
+        $excluded = self::get_excluded_usernames();
+        list($excl_sql, $excl_params) = $DB->get_in_or_equal($excluded, SQL_PARAMS_NAMED, 'excl', false);
         $sql = "SELECT DISTINCT ra.userid
             FROM {role_assignments} ra
             JOIN {context} c ON c.id = ra.contextid
+            JOIN {user} u ON u.id = ra.userid AND u.deleted = 0
             WHERE c.contextlevel = :contextlevel AND ra.roleid $rolesql
+            AND u.username $excl_sql
             ORDER BY ra.userid";
-        $params = array_merge(['contextlevel' => CONTEXT_COURSE], $roleparams);
+        $params = array_merge(['contextlevel' => CONTEXT_COURSE], $roleparams, $excl_params);
         $records = $DB->get_records_sql($sql, $params, 0, 1);
         $record = reset($records);
         return !empty($record) ? $record->userid : 0;
@@ -964,25 +1000,31 @@ class report_helper {
 
     /**
      * Get list of teachers for the dropdown selector.
+     *
+     * Only includes users with roles: manager, coursecreator, editingteacher, teacher.
+     * Excludes: guest, frontpage, wsapiuser, asistentedeseleccion.
+     *
      * @param int $selectid The currently selected teacher ID.
      * @return array
      */
     public static function get_teachers($selectid = 0) {
         global $DB;
-        $roles = get_roles_with_capability("report/lmsace_reports:viewcoursereports");
-        $roleids = array_keys($roles);
+        $roleids = self::get_teacher_role_ids();
         if (empty($roleids)) {
             return [];
         }
-        list($rolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED);
+        list($rolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'role');
+        $excluded = self::get_excluded_usernames();
+        list($excl_sql, $excl_params) = $DB->get_in_or_equal($excluded, SQL_PARAMS_NAMED, 'excl', false);
         $sql = "SELECT DISTINCT u.id, u.firstname, u.lastname, u.email,
                 u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename
             FROM {role_assignments} ra
             JOIN {context} c ON c.id = ra.contextid
             JOIN {user} u ON u.id = ra.userid AND u.deleted = 0
             WHERE c.contextlevel = :contextlevel AND ra.roleid $rolesql
+            AND u.username $excl_sql
             ORDER BY u.lastname, u.firstname";
-        $params = array_merge(['contextlevel' => CONTEXT_COURSE], $roleparams);
+        $params = array_merge(['contextlevel' => CONTEXT_COURSE], $roleparams, $excl_params);
         $users = $DB->get_records_sql($sql, $params);
         $data = [];
         foreach ($users as $user) {
