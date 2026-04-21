@@ -67,18 +67,20 @@ class report_helper {
      * @return array list of courses.
      */
     public static function generate_course_chooser_data($courseids, $currentcourse) {
-        global $CFG;
+        global $DB;
         $data = [];
         if (!empty($courseids)) {
+            // Batch load all courses in a single query instead of N+1.
+            list($insql, $params) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED);
+            $courses = $DB->get_records_select('course', "id $insql", $params);
             foreach ($courseids as $courseid) {
-                $course = new core_course_list_element(get_course($courseid));
+                if (!isset($courses[$courseid])) {
+                    continue;
+                }
+                $course = new core_course_list_element($courses[$courseid]);
                 $list['id'] = $course->id;
                 $list['coursename'] = $course->get_formatted_name();
-                if ($currentcourse == $course->id) {
-                    $list['selected'] = "selected";
-                } else {
-                    $list['selected'] = '';
-                }
+                $list['selected'] = ($currentcourse == $course->id) ? "selected" : '';
                 $data[] = $list;
             }
         }
@@ -682,7 +684,7 @@ class report_helper {
         $sql = "SELECT cm.module, count(cm.id) AS count, m.name  FROM {course_modules} cm
             LEFT JOIN {modules} m ON  m.id = cm.module
             WHERE cm.course = :courseid AND cm.deletioninprogress = 0
-            GROUP BY cm.module, m.name, module ORDER BY COUNT(cm.id) DESC";
+            GROUP BY cm.module, m.name ORDER BY COUNT(cm.id) DESC";
 
         $data = $DB->get_records_sql($sql, ['courseid' => $courseid], 0, 3);
         return $data;

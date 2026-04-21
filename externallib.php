@@ -43,6 +43,78 @@ use context;
 class report_lmsace_reports_external extends external_api {
 
     /**
+     * Validate context and capabilities based on chart type and related ID.
+     *
+     * @param string $chartid The chart identifier.
+     * @param int $relatedid The related entity ID (course, user, or teacher).
+     * @param int $contextid Optional explicit context ID (for table reports).
+     * @return \context The validated context.
+     */
+    protected static function validate_report_access($chartid, $relatedid = 0, $contextid = 0) {
+        global $USER;
+
+        // If an explicit context ID is provided, use it directly.
+        if ($contextid > 0) {
+            $context = context::instance_by_id($contextid);
+            self::validate_context($context);
+
+            if ($context instanceof context_course) {
+                require_capability("report/lmsace_reports:viewcoursereports", $context);
+            } else if ($context instanceof context_user) {
+                if ($USER->id == $context->instanceid) {
+                    require_capability("report/lmsace_reports:viewuserreports", $context);
+                } else {
+                    require_capability("report/lmsace_reports:viewotheruserreports", $context);
+                }
+                self::check_admin_user_access($context->instanceid);
+            } else {
+                require_capability("report/lmsace_reports:viewsitereports", $context);
+            }
+            return $context;
+        }
+
+        // Default to system context.
+        $context = context_system::instance();
+        self::validate_context($context);
+
+        if ($relatedid > 0) {
+            if (strpos($chartid, 'teacher') !== false) {
+                require_capability("report/lmsace_reports:viewteacherreports", $context);
+            } else if (strpos($chartid, 'course') !== false) {
+                $context = context_course::instance($relatedid);
+                self::validate_context($context);
+                require_capability("report/lmsace_reports:viewcoursereports", $context);
+            } else {
+                // User-related chart.
+                $context = context_user::instance($relatedid);
+                self::validate_context($context);
+                if ($USER->id == $relatedid) {
+                    require_capability("report/lmsace_reports:viewuserreports", $context);
+                } else {
+                    require_capability("report/lmsace_reports:viewotheruserreports", $context);
+                }
+                self::check_admin_user_access($relatedid);
+            }
+        } else {
+            require_capability("report/lmsace_reports:viewsitereports", $context);
+        }
+
+        return $context;
+    }
+
+    /**
+     * Prevent generating reports for admin users unless the requester has viewsitereports.
+     *
+     * @param int $userid The user ID to check.
+     * @throws moodle_exception If the target is an admin and requester lacks viewsitereports.
+     */
+    protected static function check_admin_user_access($userid) {
+        if (is_siteadmin($userid) && !has_capability('report/lmsace_reports:viewsitereports', context_system::instance())) {
+            throw new moodle_exception('noadminreports', 'report_lmsace_reports');
+        }
+    }
+
+    /**
      * Chart report parameters.
      */
     public static function get_chart_reports_parameters() {
@@ -63,48 +135,12 @@ class report_lmsace_reports_external extends external_api {
      * @return array
      */
     public static function get_chart_reports($filter, $chartid, $relatedid = 0) {
-        global $PAGE, $USER;
+        global $PAGE;
 
-        // Validate parameters.
         $params = self::validate_parameters(self::get_chart_reports_parameters(),
             ['filter' => $filter, 'chartid' => $chartid, 'relatedid' => $relatedid]);
 
-        // Set system context by default.
-        $context = \context_system::instance();
-        self::validate_context($context);
-
-        // Validate context and capabilities based on chart type and related ID.
-        if ($params['relatedid'] > 0) {
-            // Check if this is a teacher-related chart.
-            if (strpos($params['chartid'], 'teacher') !== false) {
-                require_capability("report/lmsace_reports:viewteacherreports", $context);
-            } else if (strpos($params['chartid'], 'course') !== false) {
-                // Check if this is a course-related chart.
-                $context = \context_course::instance($params['relatedid']);
-                self::validate_context($context);
-                require_capability("report/lmsace_reports:viewcoursereports", $context);
-            } else {
-                // This is a user-related chart.
-                if ($USER->id == $params['relatedid']) {
-                    $context = \context_user::instance($params['relatedid']);
-                    self::validate_context($context);
-                    require_capability("report/lmsace_reports:viewuserreports", $context);
-                } else {
-                    $context = \context_user::instance($params['relatedid']);
-                    self::validate_context($context);
-                    require_capability("report/lmsace_reports:viewotheruserreports", $context);
-                }
-
-                // Prevent generating reports for admin users.
-                if (is_siteadmin($params['relatedid']) && !has_capability('report/lmsace_reports:viewsitereports', \context_system::instance())) {
-                    throw new moodle_exception('noadminreports', 'report_lmsace_reports');
-                }
-            }
-        } else {
-            // Site-level reports.
-            require_capability("report/lmsace_reports:viewsitereports", $context);
-        }
-
+        $context = self::validate_report_access($params['chartid'], $params['relatedid']);
         $PAGE->set_context($context);
 
         $data = report_helper::ajax_chart_reports($params['filter'], $params['chartid'], $params['relatedid']);
@@ -155,35 +191,10 @@ class report_lmsace_reports_external extends external_api {
      * @return array list of visits
      */
     public static function get_site_visits($filter, $chartid, $relatedid = 0) {
-        global $USER;
-
-        // Validate parameters.
         $params = self::validate_parameters(self::get_site_visits_parameters(),
             ['filter' => $filter, 'chartid' => $chartid, 'relatedid' => $relatedid]);
 
-        // Validate context and capabilities.
-        if ($params['relatedid'] > 0) {
-            // User-specific visits.
-            if ($USER->id == $params['relatedid']) {
-                $context = context_user::instance($params['relatedid']);
-                self::validate_context($context);
-                require_capability("report/lmsace_reports:viewuserreports", $context);
-            } else {
-                $context = context_user::instance($params['relatedid']);
-                self::validate_context($context);
-                require_capability("report/lmsace_reports:viewotheruserreports", $context);
-            }
-
-            // Prevent generating reports for admin users.
-            if (is_siteadmin($params['relatedid']) && !has_capability('report/lmsace_reports:viewsitereports', \context_system::instance())) {
-                throw new moodle_exception('noadminreports', 'report_lmsace_reports');
-            }
-        } else {
-            // Site-level visits.
-            $context = context_system::instance();
-            self::validate_context($context);
-            require_capability("report/lmsace_reports:viewsitereports", $context);
-        }
+        self::validate_report_access($params['chartid'], $params['relatedid']);
 
         $data = report_helper::ajax_chart_reports($params['filter'], $params['chartid'], $params['relatedid']);
         return $data;
@@ -295,33 +306,14 @@ class report_lmsace_reports_external extends external_api {
      * @param int $relatedid
      */
     public static function get_table_reports($filter, $chartid, $contextid, $relatedid = 0) {
-        global $PAGE, $USER;
+        global $PAGE;
 
         $params = self::validate_parameters(self::get_table_reports_parameters(),
             ['filter' => $filter, 'chartid' => $chartid, 'contextid' => $contextid, 'relatedid' => $relatedid]);
 
-        $context = context::instance_by_id($params['contextid']);
-        self::validate_context($context);
-
-        // Additional validation based on context type.
-        if ($context instanceof context_course) {
-            require_capability("report/lmsace_reports:viewcoursereports", $context);
-        } else if ($context instanceof context_user) {
-            if ($USER->id == $context->instanceid) {
-                require_capability("report/lmsace_reports:viewuserreports", $context);
-            } else {
-                require_capability("report/lmsace_reports:viewotheruserreports", $context);
-            }
-
-            // Prevent generating reports for admin users.
-            if (is_siteadmin($context->instanceid) && !has_capability('report/lmsace_reports:viewsitereports', \context_system::instance())) {
-                throw new moodle_exception('noadminreports', 'report_lmsace_reports');
-            }
-        } else {
-            require_capability("report/lmsace_reports:viewsitereports", $context);
-        }
-
+        $context = self::validate_report_access($params['chartid'], $params['relatedid'], $params['contextid']);
         $PAGE->set_context($context);
+
         $data = report_helper::ajax_chart_reports($params['filter'],
             $params['chartid'], $params['relatedid'], '');
         return $data;
