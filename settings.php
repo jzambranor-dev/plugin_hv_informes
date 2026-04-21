@@ -29,7 +29,8 @@ require_once($CFG->dirroot. "/report/lmsace_reports/lib.php");
 
 // Just a link to site report.
 $ADMIN->add('reports', new admin_externalpage('lmsacesitereports', get_string('pluginname', 'report_lmsace_reports'),
-    $CFG->wwwroot . "/report/lmsace_reports/index.php"));
+    $CFG->wwwroot . "/report/lmsace_reports/index.php",
+    'report/lmsace_reports:viewsitereports'));
 
 // Enable / Disable available layouts.
 $choices = [

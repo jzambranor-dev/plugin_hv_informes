@@ -68,7 +68,7 @@ if ($report == 'coursereport') {
     }
 
     // Prevent generating the reports for admin users.
-    if (is_siteadmin($useraction)) {
+    if (is_siteadmin($useraction) && !has_capability('report/lmsace_reports:viewsitereports', context_system::instance())) {
         core\notification::info(get_string('noadminreports', 'report_lmsace_reports'));
     }
     $pageurl->param('userinfo', $useraction);

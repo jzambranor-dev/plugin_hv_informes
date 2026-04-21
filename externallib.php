@@ -96,7 +96,7 @@ class report_lmsace_reports_external extends external_api {
                 }
 
                 // Prevent generating reports for admin users.
-                if (is_siteadmin($params['relatedid'])) {
+                if (is_siteadmin($params['relatedid']) && !has_capability('report/lmsace_reports:viewsitereports', \context_system::instance())) {
                     throw new moodle_exception('noadminreports', 'report_lmsace_reports');
                 }
             }
@@ -175,7 +175,7 @@ class report_lmsace_reports_external extends external_api {
             }
 
             // Prevent generating reports for admin users.
-            if (is_siteadmin($params['relatedid'])) {
+            if (is_siteadmin($params['relatedid']) && !has_capability('report/lmsace_reports:viewsitereports', \context_system::instance())) {
                 throw new moodle_exception('noadminreports', 'report_lmsace_reports');
             }
         } else {
@@ -314,7 +314,7 @@ class report_lmsace_reports_external extends external_api {
             }
 
             // Prevent generating reports for admin users.
-            if (is_siteadmin($context->instanceid)) {
+            if (is_siteadmin($context->instanceid) && !has_capability('report/lmsace_reports:viewsitereports', \context_system::instance())) {
                 throw new moodle_exception('noadminreports', 'report_lmsace_reports');
             }
         } else {

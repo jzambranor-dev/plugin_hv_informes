@@ -63,7 +63,7 @@ class report_widgets {
 
         if (empty(array_filter($visibleuserwidgets))) {
             $this->instance['nouserreports'] = true;
-        } else if (is_siteadmin($output->useraction)) {
+        } else if (is_siteadmin($output->useraction) && !has_capability('report/lmsace_reports:viewsitereports', \context_system::instance())) {
             $this->instance['enableuserblock'] = false;
             $this->instance['isforadmin'] = true;
         }
