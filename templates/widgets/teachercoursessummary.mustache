@@ -40,6 +40,7 @@
         <thead>
             <tr>
                 <th>{{#str}} course {{/str}}</th>
+                <th>{{#str}} category, report_lmsace_reports {{/str}}</th>
                 <th>{{#str}} enrolled, report_lmsace_reports {{/str}}</th>
                 <th>{{#str}} completionrate, report_lmsace_reports {{/str}}</th>
                 <th>{{#str}} averagegrade, report_lmsace_reports {{/str}}</th>
@@ -50,6 +51,7 @@
             {{#courses}}
             <tr>
                 <td>{{coursename}}</td>
+                <td>{{categoryname}}</td>
                 <td>{{enrolled}}</td>
                 <td>{{completionrate}}%</td>
                 <td>{{averagegrade}}/10</td>
@@ -57,6 +59,17 @@
             </tr>
             {{/courses}}
         </tbody>
+        {{#hastotals}}
+        <tfoot>
+            <tr class="font-weight-bold table-active">
+                <td colspan="2">{{#str}} total {{/str}}</td>
+                <td>{{totalenrolled}}</td>
+                <td>{{totalcompletionrate}}%</td>
+                <td>{{totalavggrade}}/10</td>
+                <td>{{totalactivitiescount}}</td>
+            </tr>
+        </tfoot>
+        {{/hastotals}}
     </table>
 </div>
 {{/hascourses}}

@@ -37,14 +37,24 @@ class stackteacherreportswidget extends widgets_info {
     /** @var int Teacher user ID. */
     protected $teacherid;
 
+    /** @var int Month filter timestamp. */
+    protected $month;
+
+    /** @var string Comma-separated category IDs. */
+    protected $categoryids;
+
     /**
      * Constructor.
      * @param int $teacherid
+     * @param int $month Month filter timestamp (0 = all).
+     * @param string $categoryids Comma-separated category IDs (empty = all).
      */
-    public function __construct($teacherid) {
+    public function __construct($teacherid, $month = 0, $categoryids = '') {
         global $DB;
         parent::__construct();
         $this->teacherid = $teacherid;
+        $this->month = $month;
+        $this->categoryids = $categoryids;
         $this->user = $DB->get_record('user', ['id' => $teacherid]);
         $this->get_report_data();
     }
@@ -71,12 +81,32 @@ class stackteacherreportswidget extends widgets_info {
     private function get_report_data() {
         global $DB;
 
-        $teachercourses = report_helper::get_teacher_courses($this->teacherid);
-        $courseids = array_column((array) $teachercourses, 'courseid');
+        // Use filtered courses when month/category filters are active.
+        $courseids = report_helper::get_teacher_courses_filtered(
+            $this->teacherid, $this->month, $this->categoryids
+        );
 
         $this->reportdata['teachername'] = $this->user ? fullname($this->user) : '';
         $this->reportdata['totalcourses'] = count($courseids);
-        $this->reportdata['totalstudents'] = report_helper::get_teacher_total_students($this->teacherid);
+
+        // Count students only in filtered courses.
+        $totalstudents = 0;
+        if (!empty($courseids)) {
+            $studentroles = \report_lmsace_reports\widgets::get_student_roles();
+            if (!empty($studentroles)) {
+                list($coursesql, $courseparams) = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'c');
+                list($rolesql, $roleparams) = $DB->get_in_or_equal($studentroles, SQL_PARAMS_NAMED, 'r');
+                $sql = "SELECT COUNT(DISTINCT ra.userid)
+                    FROM {role_assignments} ra
+                    JOIN {context} ctx ON ctx.id = ra.contextid AND ctx.contextlevel = :ctxlevel
+                    JOIN {enrol} e ON e.courseid = ctx.instanceid
+                    JOIN {user_enrolments} ue ON ue.enrolid = e.id AND ue.userid = ra.userid AND ue.status = 0
+                    WHERE ctx.instanceid $coursesql AND ra.roleid $rolesql";
+                $params = array_merge(['ctxlevel' => CONTEXT_COURSE], $courseparams, $roleparams);
+                $totalstudents = $DB->count_records_sql($sql, $params);
+            }
+        }
+        $this->reportdata['totalstudents'] = $totalstudents;
 
         $totalrate = 0;
         $coursecount = 0;

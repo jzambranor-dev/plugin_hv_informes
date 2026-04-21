@@ -40,15 +40,24 @@ class teacherstudentperformancewidget extends widgets_info {
     /** @var int Teacher user ID. */
     protected $teacherid;
 
+    /** @var int Month filter timestamp. */
+    protected $month;
+
+    /** @var string Comma-separated category IDs. */
+    protected $categoryids;
+
     /**
      * Constructor.
      * @param int $teacherid
-     * @param string $filter
+     * @param int $month Month filter timestamp (0 = all).
+     * @param string $categoryids Comma-separated category IDs (empty = all).
      */
-    public function __construct($teacherid, $filter = '') {
+    public function __construct($teacherid, $month = 0, $categoryids = '') {
         parent::__construct();
         $this->teacherid = $teacherid;
-        $this->filter = $filter ?: 'all';
+        $this->month = $month;
+        $this->categoryids = $categoryids;
+        $this->filter = 'all';
         $this->prepare_chartdata();
     }
 
@@ -73,7 +82,7 @@ class teacherstudentperformancewidget extends widgets_info {
      * @return string
      */
     public function get_cache_key() {
-        return "t_" . $this->teacherid . "_studentperformance_" . $this->filter;
+        return "t_" . $this->teacherid . "_studentperformance_" . $this->month . "_" . md5($this->categoryids);
     }
 
     /**
@@ -81,8 +90,9 @@ class teacherstudentperformancewidget extends widgets_info {
      */
     private function prepare_chartdata() {
         if (!$this->cache->get($this->get_cache_key())) {
-            $teachercourses = report_helper::get_teacher_courses($this->teacherid);
-            $courseids = array_column((array) $teachercourses, 'courseid');
+            $courseids = report_helper::get_teacher_courses_filtered(
+                $this->teacherid, $this->month, $this->categoryids
+            );
 
             $completed = 0;
             $inprogress = 0;

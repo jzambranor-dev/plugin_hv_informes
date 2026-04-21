@@ -37,13 +37,23 @@ class teachercoursessummarywidget extends widgets_info {
     /** @var int Teacher user ID. */
     protected $teacherid;
 
+    /** @var int Month filter timestamp. */
+    protected $month;
+
+    /** @var string Comma-separated category IDs. */
+    protected $categoryids;
+
     /**
      * Constructor.
      * @param int $teacherid
+     * @param int $month Month filter timestamp (0 = all).
+     * @param string $categoryids Comma-separated category IDs (empty = all).
      */
-    public function __construct($teacherid) {
+    public function __construct($teacherid, $month = 0, $categoryids = '') {
         parent::__construct();
         $this->teacherid = $teacherid;
+        $this->month = $month;
+        $this->categoryids = $categoryids;
         $this->get_report_data();
     }
 
@@ -67,22 +77,32 @@ class teachercoursessummarywidget extends widgets_info {
      * Prepare report data.
      */
     private function get_report_data() {
-        global $OUTPUT;
+        global $OUTPUT, $DB;
 
-        $courses = report_helper::get_teacher_courses($this->teacherid);
+        // Use filtered courses when month/category filters are active.
+        $courseids = report_helper::get_teacher_courses_filtered(
+            $this->teacherid, $this->month, $this->categoryids
+        );
+
         $data = [];
-        $data['hascourses'] = !empty($courses);
+        $data['hascourses'] = !empty($courseids);
         $data['courses'] = [];
+        $totalenrolled = 0;
+        $totalcompleted = 0;
+        $totalactivities = 0;
+        $gradesum = 0;
+        $gradecount = 0;
 
-        foreach ($courses as $course) {
-            $courseid = $course->courseid;
+        foreach ($courseids as $courseid) {
+            if (!$DB->record_exists('course', ['id' => $courseid])) {
+                continue;
+            }
             $courserecord = get_course($courseid);
             $enrolled = \report_lmsace_reports\widgets::get_course_progress_status($courseid, true);
             $completed = \report_lmsace_reports\widgets::get_course_completion_users($courseid, [], true);
             $rate = $enrolled > 0 ? round(($completed / $enrolled) * 100, 1) : 0;
 
             // Get average grade.
-            global $DB;
             $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 10) as avggrade
                 FROM {grade_grades} gg
                 JOIN {grade_items} gi ON gi.id = gg.itemid
@@ -95,14 +115,39 @@ class teachercoursessummarywidget extends widgets_info {
                 'course' => $courseid, 'deletioninprogress' => 0,
             ]);
 
+            // Get category name for this course.
+            $categoryname = '';
+            $cat = $DB->get_record('course_categories', ['id' => $courserecord->category], 'name');
+            if ($cat) {
+                $categoryname = format_string($cat->name);
+            }
+
             $data['courses'][] = [
-                'coursename' => $courserecord->fullname,
+                'coursename' => format_string($courserecord->fullname),
+                'categoryname' => $categoryname,
                 'enrolled' => $enrolled,
                 'completionrate' => $rate,
                 'averagegrade' => $avggrade,
                 'activitiescount' => $activitiescount,
             ];
+
+            // Accumulate totals.
+            $totalenrolled += $enrolled;
+            $totalcompleted += $completed;
+            $totalactivities += $activitiescount;
+            if ($avggrade > 0) {
+                $gradesum += $avggrade;
+                $gradecount++;
+            }
         }
+
+        // Add totals row data.
+        $data['hastotals'] = count($data['courses']) > 1;
+        $data['totalenrolled'] = $totalenrolled;
+        $data['totalcompletionrate'] = $totalenrolled > 0
+            ? round(($totalcompleted / $totalenrolled) * 100, 1) : 0;
+        $data['totalavggrade'] = $gradecount > 0 ? round($gradesum / $gradecount, 1) : 0;
+        $data['totalactivitiescount'] = $totalactivities;
 
         $this->reportdata = $OUTPUT->render_from_template('report_lmsace_reports/widgets/teachercoursessummary', $data);
     }
