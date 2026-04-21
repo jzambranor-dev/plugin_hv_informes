@@ -29,42 +29,61 @@
     <div class="teacher-report-block position-relative">
 
         {{^reportbase}}
-            <div class="teacher-block report-lmsace-selector mb-3">
-                <div class="row">
-                    <div class="col-md-5">
-                        {{{teacherform}}}
-                    </div>
-                    {{#hasteacherselected}}
-                    <div class="col-md-3">
-                        <label for="teacher-month-select" class="small font-weight-bold">
-                            {{#str}} filterbymonth, report_lmsace_reports {{/str}}
-                        </label>
-                        <select id="teacher-month-select" class="form-control">
-                            {{#teachermonthfilter}}
-                            <option value="{{value}}" {{selected}}>{{label}}</option>
-                            {{/teachermonthfilter}}
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="small font-weight-bold">
-                            {{#str}} filterbycategory, report_lmsace_reports {{/str}}
-                        </label>
-                        {{#teachercategoryfilter}}
-                        <div class="card card-body p-2" style="max-height:300px; overflow-y:auto;">
-                            {{> report_lmsace_reports/widgets/teachercategorytree }}
+            <div class="teacher-filters-panel block-report mb-4">
+                <div class="main-panel">
+                    <div class="header-panel">
+                        <div class="heading-block">
+                            <h5><i class="fa fa-filter mr-2"></i>{{#str}} filterbymonth, report_lmsace_reports {{/str}}</h5>
                         </div>
-                        {{/teachercategoryfilter}}
-                        {{^teachercategoryfilter}}
-                        <div class="text-muted small">{{#str}} nocategories, report_lmsace_reports {{/str}}</div>
-                        {{/teachercategoryfilter}}
                     </div>
-                    {{/hasteacherselected}}
+                    <div class="body-panel p-3">
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                {{{teacherform}}}
+                            </div>
+                            {{#hasteacherselected}}
+                            <div class="col-md-3 mb-2">
+                                <label for="teacher-month-select" class="small font-weight-bold text-muted mb-1 d-block">
+                                    <i class="fa fa-calendar mr-1"></i>{{#str}} filterbymonth, report_lmsace_reports {{/str}}
+                                </label>
+                                <select id="teacher-month-select" class="form-control form-control-sm">
+                                    {{#teachermonthfilter}}
+                                    <option value="{{value}}" {{selected}}>{{label}}</option>
+                                    {{/teachermonthfilter}}
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label class="small font-weight-bold text-muted mb-1 d-block">
+                                    <i class="fa fa-sitemap mr-1"></i>{{#str}} filterbycategory, report_lmsace_reports {{/str}}
+                                </label>
+                                {{#teachercategoryfilter}}
+                                <div class="border rounded p-2" style="max-height:200px; overflow-y:auto; background:#f8f9fa;">
+                                    {{> report_lmsace_reports/widgets/teachercategorytree }}
+                                </div>
+                                {{/teachercategoryfilter}}
+                                {{^teachercategoryfilter}}
+                                <div class="text-muted small p-2">{{#str}} nocategories, report_lmsace_reports {{/str}}</div>
+                                {{/teachercategoryfilter}}
+                            </div>
+                            <div class="col-md-2 mb-2 d-flex align-items-end">
+                                <div class="w-100">
+                                    <button type="button" id="teacher-apply-filters" class="btn btn-primary btn-sm btn-block mb-1">
+                                        <i class="fa fa-check mr-1"></i>{{#str}} applyfilter, report_lmsace_reports {{/str}}
+                                    </button>
+                                    <button type="button" id="teacher-clear-filters" class="btn btn-outline-secondary btn-sm btn-block">
+                                        <i class="fa fa-times mr-1"></i>{{#str}} clearfilter, report_lmsace_reports {{/str}}
+                                    </button>
+                                </div>
+                            </div>
+                            {{/hasteacherselected}}
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {{^hasteacherselected}}
             <div class="alert alert-info">
-                {{#str}} selectteacher, report_lmsace_reports {{/str}}
+                <i class="fa fa-info-circle mr-2"></i>{{#str}} selectteacher, report_lmsace_reports {{/str}}
             </div>
             {{/hasteacherselected}}
         {{/reportbase}}

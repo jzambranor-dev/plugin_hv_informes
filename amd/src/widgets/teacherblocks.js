@@ -90,21 +90,22 @@ define([
     }
 
     /**
-     * Navigate to the teacher report URL with updated filter parameters.
+     * Build URL with current filter values and navigate.
      */
     function applyFilters() {
-        var url = new URL(window.location.href);
+        var baseUrl = window.location.pathname;
+        var url = new URL(baseUrl, window.location.origin);
         url.searchParams.set('report', 'teacherreport');
 
-        // Preserve teacher selection from the autocomplete form.
-        var teacherSelect = document.querySelector('[name="teacherinfo"]');
-        if (teacherSelect) {
+        // Get teacher from the autocomplete select element.
+        var teacherSelect = document.querySelector('select[name="teacherinfo"]');
+        if (teacherSelect && teacherSelect.value) {
             url.searchParams.set('teacherinfo', teacherSelect.value);
         }
 
         // Month filter.
         var monthSelect = document.getElementById('teacher-month-select');
-        if (monthSelect) {
+        if (monthSelect && monthSelect.value !== '0') {
             url.searchParams.set('teachermonth', monthSelect.value);
         }
 
@@ -114,7 +115,26 @@ define([
         checked.forEach(function(cb) {
             catIds.push(cb.value);
         });
-        url.searchParams.set('teachercategory', catIds.join(','));
+        if (catIds.length > 0) {
+            url.searchParams.set('teachercategory', catIds.join(','));
+        }
+
+        window.location.href = url.toString();
+    }
+
+    /**
+     * Clear all filters and reload with just the teacher selected.
+     */
+    function clearFilters() {
+        var baseUrl = window.location.pathname;
+        var url = new URL(baseUrl, window.location.origin);
+        url.searchParams.set('report', 'teacherreport');
+
+        // Keep teacher selection.
+        var teacherSelect = document.querySelector('select[name="teacherinfo"]');
+        if (teacherSelect && teacherSelect.value) {
+            url.searchParams.set('teacherinfo', teacherSelect.value);
+        }
 
         window.location.href = url.toString();
     }
@@ -123,20 +143,22 @@ define([
      * Bind filter event handlers.
      */
     function bindFilters() {
-        // Month filter auto-submit on change.
-        var monthSelect = document.getElementById('teacher-month-select');
-        if (monthSelect) {
-            monthSelect.addEventListener('change', applyFilters);
+        // Apply filters button.
+        var applyBtn = document.getElementById('teacher-apply-filters');
+        if (applyBtn) {
+            applyBtn.addEventListener('click', applyFilters);
         }
 
-        // Category checkbox change.
-        $(document).on('change', '.teacher-cat-checkbox', applyFilters);
+        // Clear filters button.
+        var clearBtn = document.getElementById('teacher-clear-filters');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearFilters);
+        }
 
         // Category tree toggle (expand/collapse).
         $(document).on('click', '.teacher-cat-toggle', function(e) {
             e.stopPropagation();
             var catId = $(this).data('catid');
-            // Toggle direct children and courses containers for this specific category.
             $('[data-parent-cat="' + catId + '"], [data-courses-cat="' + catId + '"]').toggleClass('d-none');
             $(this).toggleClass('fa-caret-right fa-caret-down');
         });
