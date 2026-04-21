@@ -2,35 +2,35 @@
     @template report_lmsace_reports/widgets/teachercategorytree
 
     Recursive category tree for teacher report filter.
-    Each node has: id, name, selected, hascourses, courses[], haschildren, children[], expanded.
+    Each node has: id, name, selected, hascourses, courses[], haschildren, children[], expanded, coursecount.
 }}
 <ul class="list-unstyled teacher-cat-tree mb-0">
     <li class="teacher-cat-node">
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center py-1">
             {{#haschildren}}
-            <i class="fa fa-caret-{{#expanded}}down{{/expanded}}{{^expanded}}right{{/expanded}} mr-1 teacher-cat-toggle" data-catid="{{id}}" style="cursor:pointer;"></i>
+            <i class="fa fa-caret-{{#expanded}}down{{/expanded}}{{^expanded}}right{{/expanded}} mr-1 teacher-cat-toggle" data-catid="{{id}}" style="cursor:pointer; min-width:12px;"></i>
             {{/haschildren}}
             {{^haschildren}}
-            <i class="fa fa-circle-o mr-1 small text-muted"></i>
+            <span class="mr-1" style="min-width:12px;"></span>
             {{/haschildren}}
-            <label class="mb-0 small">
+            <label class="mb-0 small d-flex align-items-center" style="cursor:pointer;">
                 <input type="checkbox" class="teacher-cat-checkbox mr-1" value="{{id}}" {{#selected}}checked{{/selected}} />
-                {{name}}
-                {{#hascourses}}<span class="badge badge-secondary ml-1">{{courses.length}}</span>{{/hascourses}}
+                <span>{{name}}</span>
+                {{#coursecount}}<span class="badge badge-secondary ml-1">{{coursecount}}</span>{{/coursecount}}
             </label>
         </div>
         {{#haschildren}}
-        <div class="teacher-cat-children ml-3 {{^expanded}}d-none{{/expanded}}">
+        <div class="teacher-cat-children ml-3 {{^expanded}}d-none{{/expanded}}" data-parent-cat="{{id}}">
             {{#children}}
             {{> report_lmsace_reports/widgets/teachercategorytree }}
             {{/children}}
         </div>
         {{/haschildren}}
         {{#hascourses}}
-        <div class="teacher-cat-courses ml-4 {{^expanded}}d-none{{/expanded}}">
+        <div class="teacher-cat-courses ml-4 {{^expanded}}d-none{{/expanded}}" data-courses-cat="{{id}}">
             <ul class="list-unstyled mb-0">
                 {{#courses}}
-                <li class="small text-muted"><i class="fa fa-book mr-1"></i> {{fullname}}</li>
+                <li class="small text-muted py-0"><i class="fa fa-book mr-1"></i> {{fullname}}</li>
                 {{/courses}}
             </ul>
         </div>

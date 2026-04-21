@@ -902,15 +902,17 @@ class report_helper {
      * @return array Category node with children and courses.
      */
     private static function build_category_node($cat, $catmap, $coursesbycategory, $selectedids) {
+        $courselist = $coursesbycategory[$cat->id] ?? [];
         $node = [
             'id' => $cat->id,
             'name' => format_string($cat->name),
             'selected' => isset($selectedids[$cat->id]),
-            'courses' => $coursesbycategory[$cat->id] ?? [],
-            'hascourses' => !empty($coursesbycategory[$cat->id]),
+            'courses' => $courselist,
+            'hascourses' => !empty($courselist),
+            'coursecount' => count($courselist),
             'children' => [],
             'haschildren' => false,
-            'expanded' => false,
+            'expanded' => true,
         ];
 
         // Find direct children in our category map.
