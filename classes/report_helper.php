@@ -1040,7 +1040,23 @@ class report_helper {
      * @return array
      */
     private static function get_excluded_usernames() {
-        return ['guest', 'frontpage', 'wsapiuser', 'asistentedeseleccion'];
+        return ['guest', 'frontpage', 'wsapiuser', 'asistentedeseleccion', 'userapi', 'user_api', 'apiuser'];
+    }
+
+    /**
+     * Build SQL conditions to exclude system/service accounts from teacher queries.
+     *
+     * @return array [sql_fragment, params] for use in WHERE clause.
+     */
+    private static function get_excluded_users_sql() {
+        global $DB;
+        $excluded = self::get_excluded_usernames();
+        list($excl_sql, $excl_params) = $DB->get_in_or_equal($excluded, SQL_PARAMS_NAMED, 'excl', false);
+        // Also exclude by LIKE patterns for variations.
+        $likeconditions = " AND u.username NOT LIKE :likeapi AND u.username NOT LIKE :likews";
+        $excl_params['likeapi'] = '%api%';
+        $excl_params['likews'] = '%wsuser%';
+        return ["u.username $excl_sql $likeconditions", $excl_params];
     }
 
     /**
@@ -1054,14 +1070,13 @@ class report_helper {
             return 0;
         }
         list($rolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'role');
-        $excluded = self::get_excluded_usernames();
-        list($excl_sql, $excl_params) = $DB->get_in_or_equal($excluded, SQL_PARAMS_NAMED, 'excl', false);
+        list($excl_fragment, $excl_params) = self::get_excluded_users_sql();
         $sql = "SELECT DISTINCT ra.userid
             FROM {role_assignments} ra
             JOIN {context} c ON c.id = ra.contextid
             JOIN {user} u ON u.id = ra.userid AND u.deleted = 0
             WHERE c.contextlevel = :contextlevel AND ra.roleid $rolesql
-            AND u.username $excl_sql
+            AND $excl_fragment
             ORDER BY ra.userid";
         $params = array_merge(['contextlevel' => CONTEXT_COURSE], $roleparams, $excl_params);
         $records = $DB->get_records_sql($sql, $params, 0, 1);
@@ -1212,15 +1227,14 @@ class report_helper {
             return [];
         }
         list($rolesql, $roleparams) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'role');
-        $excluded = self::get_excluded_usernames();
-        list($excl_sql, $excl_params) = $DB->get_in_or_equal($excluded, SQL_PARAMS_NAMED, 'excl', false);
+        list($excl_fragment, $excl_params) = self::get_excluded_users_sql();
         $sql = "SELECT DISTINCT u.id, u.firstname, u.lastname, u.email,
                 u.firstnamephonetic, u.lastnamephonetic, u.middlename, u.alternatename
             FROM {role_assignments} ra
             JOIN {context} c ON c.id = ra.contextid
             JOIN {user} u ON u.id = ra.userid AND u.deleted = 0
             WHERE c.contextlevel = :contextlevel AND ra.roleid $rolesql
-            AND u.username $excl_sql
+            AND $excl_fragment
             ORDER BY u.lastname, u.firstname";
         $params = array_merge(['contextlevel' => CONTEXT_COURSE], $roleparams, $excl_params);
         $users = $DB->get_records_sql($sql, $params);

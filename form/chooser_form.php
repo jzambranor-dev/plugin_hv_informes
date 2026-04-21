@@ -104,11 +104,8 @@ class teacher_selector_form extends moodleform {
             'noselectionstring' => get_string('selectteacher', 'report_lmsace_reports'),
         ];
         $mform->addElement('autocomplete', 'teacherinfo',
-            get_string('teacher', 'report_lmsace_reports'), $users, $options);
+            get_string('selectteacher', 'report_lmsace_reports'), $users, $options);
         $this->add_action_buttons(false, get_string('generatereport', 'report_lmsace_reports'));
-
-        // Make the form inline.
-        $mform->updateAttributes(['class' => 'form-inline']);
     }
 }
 
