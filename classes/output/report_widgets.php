@@ -102,16 +102,13 @@ class report_widgets {
                 $teacheraction = $output->teacheraction ?? 0;
                 $teachermonth = $output->teachermonth ?? 0;
                 $teachercategory = $output->teachercategory ?? '';
-                $isallteachers = ($teacheraction == 0);
 
-                // In "all teachers" mode, only show stack and summary widgets (no charts).
-                if ($isallteachers) {
-                    $allowedinall = ['stackteacherreportswidget', 'teachercoursessummarywidget'];
-                    if (!in_array($widget->instance, $allowedinall)) {
-                        continue;
-                    }
-                    $widgetinstance = new $classname(0, $teachermonth, $teachercategory);
-                } else if ($DB->record_exists('user', ['id' => $teacheraction])) {
+                // No teacher selected — skip widget instantiation entirely.
+                if (!$teacheraction) {
+                    continue;
+                }
+
+                if ($teacheraction && $DB->record_exists('user', ['id' => $teacheraction])) {
                     $widgetinstance = new $classname($teacheraction, $teachermonth, $teachercategory);
                 }
             } else if ($widget->context == "evaluation") {

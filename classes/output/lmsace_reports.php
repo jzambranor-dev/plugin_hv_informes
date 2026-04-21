@@ -144,13 +144,13 @@ class lmsace_reports implements renderable, templatable {
         }
 
         // Teacher report data.
-        // Value of 0 means "all teachers" — only use default for initial page load.
-        $data->teacheraction = $output->teacheraction ?? report_helper::get_first_teacher();
+        // Value of 0 means no teacher selected yet — show only the selector form.
+        $data->teacheraction = $output->teacheraction ?? 0;
         $data->teachermonth = $output->teachermonth ?? 0;
         $data->teachercategory = $output->teachercategory ?? '';
         $data->teachers = report_helper::get_teachers($data->teacheraction);
         $data->enableteacherblock = !empty($data->teachers);
-        $data->isallteachers = ($data->teacheraction == 0);
+        $data->hasteacherselected = ($data->teacheraction > 0);
 
         if (has_capability("report/lmsace_reports:viewteacherreports", \context_system::instance())
                 && $data->enableteacherblock) {
@@ -163,25 +163,26 @@ class lmsace_reports implements renderable, templatable {
                 // Only render when the form will be in the DOM (not in reportbase mode).
                 $data->teacherform = empty($data->reportbase) ? $teacherform->render() : '';
 
-                // Generate month filter for teacher reports (last 12 months).
+                // Only show month/category filters when a teacher is selected.
                 $data->teachermonthfilter = [];
-                $data->teachermonthfilter[] = [
-                    'value' => 0,
-                    'label' => get_string('allmonths', 'report_lmsace_reports'),
-                    'selected' => empty($data->teachermonth) ? 'selected' : '',
-                ];
-                for ($i = 0; $i < 12; $i++) {
-                    $ts = strtotime("-$i months", strtotime(date('Y-m-01')));
-                    $data->teachermonthfilter[] = [
-                        'value' => $ts,
-                        'label' => userdate($ts, '%B %Y'),
-                        'selected' => ($data->teachermonth == $ts) ? 'selected' : '',
-                    ];
-                }
-
-                // Build teacher category filter (hierarchical, only teacher's categories).
                 $data->teachercategoryfilter = [];
-                if ($data->teacheraction) {
+                if ($data->hasteacherselected) {
+                    // Generate month filter for teacher reports (last 12 months).
+                    $data->teachermonthfilter[] = [
+                        'value' => 0,
+                        'label' => get_string('allmonths', 'report_lmsace_reports'),
+                        'selected' => empty($data->teachermonth) ? 'selected' : '',
+                    ];
+                    for ($i = 0; $i < 12; $i++) {
+                        $ts = strtotime("-$i months", strtotime(date('Y-m-01')));
+                        $data->teachermonthfilter[] = [
+                            'value' => $ts,
+                            'label' => userdate($ts, '%B %Y'),
+                            'selected' => ($data->teachermonth == $ts) ? 'selected' : '',
+                        ];
+                    }
+
+                    // Build teacher category filter (hierarchical, only teacher's categories).
                     $data->teachercategoryfilter = report_helper::get_teacher_category_tree(
                         $data->teacheraction, $data->teachercategory
                     );

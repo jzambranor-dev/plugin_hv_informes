@@ -36,7 +36,7 @@ $defaultuser = report_helper::get_first_user();
 $defaultteacher = report_helper::get_first_teacher();
 $courseaction = optional_param('courseinfo', $defaultcourse, PARAM_INT);
 $useraction = optional_param('userinfo', $defaultuser, PARAM_INT);
-$teacheraction = optional_param('teacherinfo', $defaultteacher, PARAM_INT);
+$teacheraction = optional_param('teacherinfo', 0, PARAM_INT);
 $teachermonth = optional_param('teachermonth', 0, PARAM_INT);
 $teachercategory = optional_param('teachercategory', '', PARAM_TEXT);
 // Sanitise: only allow digits and commas.

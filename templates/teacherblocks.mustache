@@ -34,6 +34,7 @@
                     <div class="col-md-5">
                         {{{teacherform}}}
                     </div>
+                    {{#hasteacherselected}}
                     <div class="col-md-3">
                         <label for="teacher-month-select" class="small font-weight-bold">
                             {{#str}} filterbymonth, report_lmsace_reports {{/str}}
@@ -57,8 +58,15 @@
                         <div class="text-muted small">{{#str}} nocategories, report_lmsace_reports {{/str}}</div>
                         {{/teachercategoryfilter}}
                     </div>
+                    {{/hasteacherselected}}
                 </div>
             </div>
+
+            {{^hasteacherselected}}
+            <div class="alert alert-info">
+                {{#str}} selectteacher, report_lmsace_reports {{/str}}
+            </div>
+            {{/hasteacherselected}}
         {{/reportbase}}
 
         {{#noteacherreports}}
