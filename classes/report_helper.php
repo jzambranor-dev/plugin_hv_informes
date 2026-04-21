@@ -39,7 +39,6 @@ class report_helper {
      * @return array list of courses.
      */
     public static function get_course($selectid = 0, $getcourse = false) {
-        global $CFG;
         $data = [];
         $courses = \core_course_category::get(0)->get_courses(['recursive' => true]);
         if ($getcourse) {
@@ -93,7 +92,7 @@ class report_helper {
      * @param bool $getusers
      */
     public static function get_users($selectid = 0, $getusers = false) {
-        global $CFG, $OUTPUT, $PAGE;
+        global $OUTPUT;
         $data = [];
         $context = \context_system::instance();
         $users = get_users_listing();
@@ -192,7 +191,7 @@ class report_helper {
      *
      */
     public static function get_site_visits($filter = '', $details = false, $userid = 0) {
-        global $CFG, $DB;
+        global $DB;
 
         if (!$filter) {
             $filter = 'week';

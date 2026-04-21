@@ -30,8 +30,7 @@ Este es un plugin integral de analitica y reportes para Moodle LMS. Proporciona 
 │   │   ├── report_widgets.php    # Renderer de coleccion de widgets
 │   │   └── widgets_info.php      # Clase base para todos los widgets
 │   ├── privacy/provider.php      # API de privacidad (null_provider — no almacena datos de usuario)
-│   ├── table/                    # Clases de tablas legacy (duplicados de local/table/)
-│   ├── widgets/                  # Clases de widgets legacy (duplicados de local/widgets/)
+│   │   └── (legacy directories removed — all classes now in local/)
 │   ├── report_helper.php         # Helper estatico central (~893 lineas de consultas SQL/procesamiento)
 │   └── widgets.php               # Registro de widgets y helpers estaticos
 ├── db/
@@ -71,7 +70,7 @@ El plugin utiliza una arquitectura basada en widgets. Cada elemento de reporte e
 3. Todos los widgets extienden `classes/output/widgets_info.php`
 4. Los widgets se registran mediante constantes en `lib.php` y se activan/desactivan en `settings.php`
 
-Las clases de widgets se encuentran en `classes/local/widgets/`. Existe un conjunto paralelo en `classes/widgets/` (legacy). Las versiones en `local/` son las canonicas.
+Las clases de widgets se encuentran en `classes/local/widgets/`. Las clases de tablas dinamicas estan en `classes/local/table/`.
 
 ### Flujo de Datos
 
@@ -226,7 +225,7 @@ Los archivos fuente de JavaScript estan en `amd/src/`. Moodle requiere versiones
 
 ### Errores Comunes
 
-- **Ubicaciones duales de clases:** Las clases de widgets y tablas existen tanto en `classes/local/` como en `classes/` (sin `local`). Las versiones en `classes/local/` son las canonicas. Los directorios `classes/widgets/` y `classes/table/` en la raiz contienen copias legacy.
+- **Ubicacion de clases:** Todas las clases de widgets estan en `classes/local/widgets/` y las tablas en `classes/local/table/`. No existen directorios legacy.
 - **Incremento de version:** Cualquier cambio en archivos de `db/` (access, services, caches) requiere incrementar `$plugin->version` en `version.php`
 - **Recompilacion de JS requerida:** Despues de editar `amd/src/*.js`, las versiones minificadas en `amd/build/` deben ser regeneradas
 - **Sin tablas de BD propias:** Este plugin nunca crea sus propias tablas. Todos los datos provienen de tablas estandar de Moodle.
