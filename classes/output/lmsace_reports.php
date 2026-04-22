@@ -152,6 +152,18 @@ class lmsace_reports implements renderable, templatable {
         $data->enableteacherblock = !empty($data->teachers);
         $data->hasteacherselected = ($data->teacheraction > 0);
 
+        // Build download URL for teacher report export.
+        if ($data->hasteacherselected) {
+            $dlparams = ['report' => 'teacherreport', 'teacherinfo' => $data->teacheraction];
+            if (!empty($data->teachermonth)) {
+                $dlparams['teachermonth'] = $data->teachermonth;
+            }
+            if (!empty($data->teachercategory)) {
+                $dlparams['teachercategory'] = $data->teachercategory;
+            }
+            $data->teacherdownloadurl = (new \moodle_url('/report/lmsace_reports/index.php', $dlparams))->out(false);
+        }
+
         if (has_capability("report/lmsace_reports:viewteacherreports", \context_system::instance())
                 && $data->enableteacherblock) {
             if ($PAGE->context->contextlevel == CONTEXT_SYSTEM) {

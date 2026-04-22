@@ -166,8 +166,14 @@ $output->evalmonth = $evalmonth;
 $output->evalcategory = $evalcategory;
 $output->evalconmodtype = $evalconmodtype;
 
-// Handle download for evaluation tables (after PAGE setup, before HTML output).
+// Handle download for teacher report.
 $download = optional_param('download', '', PARAM_ALPHA);
+if ($download && $report == 'teacherreport' && $teacheraction) {
+    report_helper::download_teacher_report($teacheraction, $teachermonth, $teachercategory, $download);
+    exit;
+}
+
+// Handle download for evaluation tables (after PAGE setup, before HTML output).
 if ($download && $report == 'evaluationreport') {
     // Quiz detail download takes priority (more specific: has evalcmid).
     if ($evalcmid) {

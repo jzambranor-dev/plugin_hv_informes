@@ -1285,4 +1285,155 @@ class report_helper {
         return $DB->count_records_sql($sql, $params);
     }
 
+    /**
+     * Download teacher courses report as Excel or CSV.
+     *
+     * @param int $teacherid Teacher user ID.
+     * @param int $month Month filter timestamp.
+     * @param string $categoryids Comma-separated category IDs.
+     * @param string $format 'excel' or 'csv'.
+     */
+    public static function download_teacher_report($teacherid, $month, $categoryids, $format) {
+        global $DB;
+
+        $user = $DB->get_record('user', ['id' => $teacherid]);
+        $teachername = $user ? fullname($user) : 'teacher';
+        $filename = clean_filename('teacher_report_' . $teachername . '_' . date('Y-m-d'));
+
+        $courseids = self::get_teacher_courses_filtered($teacherid, $month, $categoryids);
+
+        // Build data rows.
+        $rows = [];
+        $totalenrolled = 0;
+        $totalcompleted = 0;
+        $totalactivities = 0;
+        $gradesum = 0;
+        $gradecount = 0;
+
+        foreach ($courseids as $courseid) {
+            if (!$DB->record_exists('course', ['id' => $courseid])) {
+                continue;
+            }
+            $course = get_course($courseid);
+            $cat = $DB->get_record('course_categories', ['id' => $course->category], 'name');
+            $enrolled = \report_lmsace_reports\widgets::get_course_progress_status($courseid, true);
+            $completed = \report_lmsace_reports\widgets::get_course_completion_users($courseid, [], true);
+            $rate = $enrolled > 0 ? round(($completed / $enrolled) * 100, 1) : 0;
+
+            $sql = "SELECT AVG(gg.finalgrade / gi.grademax * 10) as avggrade
+                FROM {grade_grades} gg
+                JOIN {grade_items} gi ON gi.id = gg.itemid
+                WHERE gi.courseid = :courseid AND gi.itemtype = 'course'
+                    AND gg.finalgrade IS NOT NULL AND gi.grademax > 0";
+            $graderesult = $DB->get_record_sql($sql, ['courseid' => $courseid]);
+            $avggrade = ($graderesult && $graderesult->avggrade !== null) ? round($graderesult->avggrade, 1) : 0;
+
+            $activitiescount = $DB->count_records('course_modules', [
+                'course' => $courseid, 'deletioninprogress' => 0,
+            ]);
+
+            $rows[] = [
+                format_string($course->fullname),
+                $cat ? format_string($cat->name) : '',
+                $enrolled,
+                $rate . '%',
+                $avggrade . '/10',
+                $activitiescount,
+            ];
+
+            $totalenrolled += $enrolled;
+            $totalcompleted += $completed;
+            $totalactivities += $activitiescount;
+            if ($avggrade > 0) {
+                $gradesum += $avggrade;
+                $gradecount++;
+            }
+        }
+
+        // Totals row.
+        $totalrate = $totalenrolled > 0 ? round(($totalcompleted / $totalenrolled) * 100, 1) : 0;
+        $totalavg = $gradecount > 0 ? round($gradesum / $gradecount, 1) : 0;
+        $rows[] = [
+            get_string('total'),
+            '',
+            $totalenrolled,
+            $totalrate . '%',
+            $totalavg . '/10',
+            $totalactivities,
+        ];
+
+        $headers = [
+            get_string('course'),
+            get_string('category', 'report_lmsace_reports'),
+            get_string('enrolled', 'report_lmsace_reports'),
+            get_string('completionrate', 'report_lmsace_reports'),
+            get_string('averagegrade', 'report_lmsace_reports'),
+            get_string('activities', 'report_lmsace_reports'),
+        ];
+
+        if ($format === 'excel') {
+            self::download_excel($filename, $headers, $rows, $teachername);
+        } else {
+            self::download_csv($filename, $headers, $rows);
+        }
+    }
+
+    /**
+     * Generate Excel download.
+     *
+     * @param string $filename File name without extension.
+     * @param array $headers Column headers.
+     * @param array $rows Data rows.
+     * @param string $teachername Teacher name for the sheet title.
+     */
+    private static function download_excel($filename, $headers, $rows, $teachername = '') {
+        global $CFG;
+        require_once($CFG->libdir . '/excellib.class.php');
+
+        $workbook = new \MoodleExcelWorkbook($filename);
+        $sheet = $workbook->add_worksheet($teachername ?: 'Report');
+
+        // Header format.
+        $headerformat = $workbook->add_format(['bold' => 1, 'bg_color' => '#1b3a5f', 'color' => 'white']);
+
+        // Write headers.
+        foreach ($headers as $col => $header) {
+            $sheet->write_string(0, $col, $header, $headerformat);
+        }
+
+        // Write data.
+        $rownum = 1;
+        foreach ($rows as $row) {
+            foreach ($row as $col => $value) {
+                if (is_numeric($value)) {
+                    $sheet->write_number($rownum, $col, $value);
+                } else {
+                    $sheet->write_string($rownum, $col, $value);
+                }
+            }
+            $rownum++;
+        }
+
+        $workbook->close();
+    }
+
+    /**
+     * Generate CSV download.
+     *
+     * @param string $filename File name without extension.
+     * @param array $headers Column headers.
+     * @param array $rows Data rows.
+     */
+    private static function download_csv($filename, $headers, $rows) {
+        global $CFG;
+        require_once($CFG->libdir . '/csvlib.class.php');
+
+        $csvexport = new \csv_export_writer('comma');
+        $csvexport->set_filename($filename);
+        $csvexport->add_data($headers);
+        foreach ($rows as $row) {
+            $csvexport->add_data($row);
+        }
+        $csvexport->download_file();
+    }
 }
